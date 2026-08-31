@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MyEden Group — EAF User Manual</title>
+<style>
+  :root{ --green:#1a7340; --green-light:#e3f2e3; --blue:#1565c0; --blue-light:#e3ecf9; --ink:#1a1a1a; --muted:#666; }
+  body{font-family:Arial,"Microsoft YaHei","PingFang SC",Helvetica,sans-serif;color:var(--ink);max-width:880px;margin:0 auto;padding:0 24px 80px;line-height:1.7;font-size:14px}
+  .top-bar{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid #eee;margin-bottom:0}
+  .top-bar .logo-mark{width:34px;height:34px;flex:0 0 34px}
+  .top-bar h1{font-size:17px;margin:0;color:#222}
+  .top-bar h1 .brand-my{color:#1a1a1a}
+  .top-bar h1 .brand-eden{color:var(--green)}
+  .top-bar .verline{font-size:11px;color:var(--muted);margin-top:1px}
+  .lang-toggle{margin-left:auto;display:flex;gap:8px}
+  .lang-btn{border-radius:20px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--green);background:#fff;color:var(--green)}
+  .lang-btn.active{background:var(--green);color:#fff}
+  .full-rule{border:none;border-top:3px solid var(--green);margin:0 0 24px}
+  header{display:none}
+  nav.toc{background:#f7f9f7;border:1px solid #dde5dd;border-radius:8px;padding:16px 20px;margin-bottom:32px}
+  nav.toc h2{font-size:14px;margin:0 0 10px;color:var(--green)}
+  nav.toc ol{margin:0;padding-left:20px;font-size:13px}
+  nav.toc li{margin-bottom:4px}
+  nav.toc a{color:var(--ink);text-decoration:none}
+  nav.toc a:hover{text-decoration:underline;color:var(--green)}
+  .part-banner{background:var(--green);color:#fff;font-weight:700;font-size:16px;padding:10px 16px;border-radius:6px;margin:40px 0 20px}
+  .part-banner.staff{background:var(--blue)}
+  h2{font-size:18px;border-bottom:2px solid #ddd;padding-bottom:6px;margin-top:36px;color:var(--green)}
+  .staff h2{color:var(--blue)}
+  h3{font-size:15px;margin-top:22px;color:#333}
+  p{margin:8px 0}
+  ul,ol{margin:6px 0;padding-left:24px}
+  li{margin-bottom:4px}
+  .note{background:#fff8e1;border-left:4px solid #f9a825;padding:10px 14px;margin:14px 0;font-size:13px;border-radius:0 4px 4px 0}
+  .tip{background:var(--green-light);border-left:4px solid var(--green);padding:10px 14px;margin:14px 0;font-size:13px;border-radius:0 4px 4px 0}
+  .staff .tip{background:var(--blue-light);border-left-color:var(--blue)}
+  code{background:#eee;padding:1px 5px;border-radius:3px;font-size:12.5px}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+  th,td{border:1px solid #ccc;padding:6px 10px;text-align:left;vertical-align:top}
+  th{background:#f0f0f0}
+  .btn-ex{display:inline-block;background:#eee;border:1px solid #bbb;border-radius:4px;padding:2px 8px;font-size:12px;font-weight:600}
+  footer{margin-top:60px;padding-top:16px;border-top:1px solid #ddd;font-size:12px;color:var(--muted);text-align:center}
+  #content-zh{display:none}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <path d="M20 10 L38 10 L38 28 L20 28 Z" fill="#5cb85c"/>
+  <circle cx="35" cy="55" r="30" fill="none" stroke="#1565c0" stroke-width="12"/>
+  <circle cx="65" cy="55" r="16" fill="#f2851c"/>
+</svg>
+  <div>
+    <h1><span class="brand-my">My</span><span class="brand-eden">Eden</span> Group &mdash; EAF User Manual</h1>
+    <div class="verline">MEG-EAF User Manual v2026.08.12-11:30</div>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="btnLangEn" onclick="showLang('en')">English</button>
+    <button class="lang-btn" id="btnLangZh" onclick="showLang('zh')">中文</button>
+  </div>
+</div>
+<hr class="full-rule">
+
+<div id="content-en">
+
+
+<header>
+  <h1>MEG-EAF User Manual</h1>
+  <div class="sub">MyEden Group Employment Application &amp; Appointment Letter System &mdash; English Edition</div>
+  <span class="ver">MEG-EAF v2026.08.12-11:30</span>
+</header>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#overview">System Overview</a></li>
+    <li><strong>Part 1 &mdash; Applicant Guide</strong>
+      <ol type="a">
+        <li><a href="#a-access">Accessing the Application Form</a></li>
+        <li><a href="#a-filling">Filling In the Form</a></li>
+        <li><a href="#a-photos">Photos, ID Documents &amp; Signature</a></li>
+        <li><a href="#a-draft">Saving a Draft &amp; Resuming Later</a></li>
+        <li><a href="#a-json">Local Backup (Download / Load JSON)</a></li>
+        <li><a href="#a-submit">Submitting the Application</a></li>
+        <li><a href="#a-trouble">Troubleshooting</a></li>
+      </ol>
+    </li>
+    <li><strong>Part 2 &mdash; HR / Admin Staff Guide</strong>
+      <ol type="a">
+        <li><a href="#h-access">Signing In</a></li>
+        <li><a href="#h-dash">Dashboard Overview</a></li>
+        <li><a href="#h-apps">Applications Tab</a></li>
+        <li><a href="#h-office">Office Use &amp; Appointment Letter Details</a></li>
+        <li><a href="#h-actions">Saving, Status &amp; Deleting</a></li>
+        <li><a href="#h-summary">Application Summary</a></li>
+        <li><a href="#h-drafts">Drafts Tab</a></li>
+        <li><a href="#h-print">Printing &amp; PDF Export</a></li>
+        <li><a href="#h-json">Local Backup (Download / Load JSON)</a></li>
+        <li><a href="#h-staff">Manage Staff (Admin Only)</a></li>
+        <li><a href="#h-accounts">Creating Staff Accounts</a></li>
+        <li><a href="#h-trouble">Troubleshooting</a></li>
+      </ol>
+    </li>
+    <li><a href="#versioning">Versioning &amp; Change Log Convention</a></li>
+  </ol>
+</nav>
+
+<h2 id="overview">System Overview</h2>
+<p>MEG-EAF is a shared employment application and appointment-letter system covering all four MyEden Group entities. It has three parts:</p>
+<ul>
+  <li><strong>Start Page</strong> (<code>dashboard.html</code>) &mdash; the front door of the system, offering two clearly labelled options: <em>Apply Now</em> (for job applicants) and <em>HR Staff Login</em> (for staff).</li>
+  <li><strong>Applicant Form</strong> (<code>index.html</code>) &mdash; a public web page where job applicants select the company they're applying to and fill in and submit their application. No login or account is required.</li>
+  <li><strong>HR Dashboard</strong> (<code>hr.html</code>) &mdash; a login-protected page for HR/admin staff to review applications, complete internal Office Use details, and generate the official Appointment Letter &mdash; correctly branded for whichever of the four companies the applicant applied to.</li>
+</ul>
+<p>All four entities &mdash; <strong>MyEden Group, Happy Dino, Aborne, and MyEden Edu Hub</strong> &mdash; share this one system. Each carries its own letterhead, business address, and registered address, selected automatically based on the company chosen on the application.</p>
+<p>All pages are hosted together and share the same underlying data, stored securely online. Applicant submissions appear in the HR Dashboard automatically &mdash; no email or manual file transfer is needed.</p>
+<div class="tip">Both files always carry the same version stamp (e.g. <code>v2026.08.12-11:30</code>) so you can tell at a glance that they are aligned and from the same update.</div>
+
+<div class="part-banner">Part 1 &mdash; Applicant Guide</div>
+
+<h2 id="a-access">A. Accessing the Application Form</h2>
+<p>Open the link provided to you in any web browser (desktop or mobile). You will usually land on the <strong>Start Page</strong>, showing two options &mdash; click <strong>"Apply Now"</strong> to go to the application form. (If you were given a direct link to the application form itself, it will open immediately.) There is no login step and no access code needed.</p>
+<p>At the top of the form, first select which <strong>company</strong> you are applying to &mdash; MyEden Group, Happy Dino, Aborne, or MyEden Edu Hub. The form's letterhead and company details update automatically to match your selection, and this same choice carries through to your Appointment Letter later.</p>
+
+<h2 id="a-filling">B. Filling In the Form</h2>
+<p>The form is organised into clearly labelled sections. Fields marked with a red asterisk (<span style="color:red">*</span>) are required.</p>
+<ul>
+  <li><strong>Personal Particulars</strong> &mdash; name (English and Chinese, if applicable), NRIC or passport number, date of birth, gender, marital status, race, religion, number of children.</li>
+  <li><strong>Address &amp; Contact</strong> &mdash; home address, postcode/township, state, phone number, email address.</li>
+  <li><strong>Family Information</strong> &mdash; add one row per family member using <span class="btn-ex">+ Add family member</span>.</li>
+  <li><strong>Academic Achievements</strong> &mdash; add one row per qualification using <span class="btn-ex">+ Add qualification</span>.</li>
+  <li><strong>Work Experience</strong> &mdash; add a block per previous employer.</li>
+  <li><strong>Job Requirements</strong> &mdash; tick the position(s) you are applying for, grouped as:
+    <ul>
+      <li><strong>A. Operations</strong> &mdash; Childcare Mentor, Kindergarten Teacher, Infant Childcare, Playgroup Mentor, or Others (please specify).</li>
+      <li><strong>B. Office</strong> &mdash; Management, HR, Admin, Account, Account &amp; Payroll, Content Creator, Marketing, or Others (please specify).</li>
+    </ul>
+    Also indicate your desired working hours (Full Time, Part Time, Internship, Temporary, or Others).
+  </li>
+  <li><strong>Other Questions</strong> &mdash; language proficiency, special skills, and standard screening questions.</li>
+  <li><strong>Declaration</strong> &mdash; read the declaration statement and tick to confirm before submitting.</li>
+</ul>
+
+<h2 id="a-photos">C. Photos, ID Documents &amp; Signature</h2>
+<p>You will be asked to provide:</p>
+<ul>
+  <li>A passport-style photo of yourself.</li>
+  <li>Front and back photos of your I/C (or your passport photo page, if you tick <strong>"Using Passport instead of I/C"</strong>).</li>
+  <li>Your signature, drawn directly on screen using your finger, stylus, or mouse.</li>
+</ul>
+<p>For each photo box, use the <span class="btn-ex">Camera</span> button to take a photo directly, or <span class="btn-ex">Gallery</span> to upload an existing image. Use <span class="btn-ex">Clear</span> to remove and retake a photo. Position your I/C so it fills the frame guide as closely as possible before capturing, for the clearest result.</p>
+<div class="tip">Photos are shown in full within their box, scaled to fit &mdash; if a photo appears with grey bands on the sides, this simply means the original picture wasn't perfectly cropped to the card; the full image is still there underneath.</div>
+
+<h2 id="a-draft">D. Saving a Draft &amp; Resuming Later</h2>
+<p>If you can't finish the form in one sitting:</p>
+<ul>
+  <li>Click <span class="btn-ex">&#128190; Save Draft</span> at any time. You'll see a brief confirmation (<em>"Draft saved &#10003;"</em>) &mdash; there is nothing further to note down.</li>
+  <li>If you return to the <strong>same device and browser</strong> later using the same link, the form will automatically ask: <em>"You have a saved draft &mdash; continue where you left off?"</em> Tap Yes to restore everything, including your signature.</li>
+  <li>Even if you forget to click Save Draft, the form automatically keeps a local backup of your progress every couple of seconds, so switching tabs or closing by accident is usually recoverable on the same device.</li>
+</ul>
+<div class="note">
+  <strong>Resuming on a different device.</strong> Because the form doesn't require an account, a saved draft can only be found automatically on the device you saved it from. If you need to continue on a different phone or computer, click <span class="btn-ex">&#128194; Resume Draft</span> and you will be asked for a draft code. If you don't have this code, simply contact MyEden Group HR &mdash; they can look up your draft by your name and read the code to you.
+</div>
+
+<h2 id="a-json">E. Local Backup (Download / Load JSON)</h2>
+<p>As an extra safety net independent of the online draft system, you can keep your own backup file on your device:</p>
+<ul>
+  <li><span class="btn-ex">&#128190; Download JSON</span> &mdash; saves everything currently entered on the form as a small file (ending in <code>.json</code>) to your device's usual downloads folder. This file is for your own records; it is not sent anywhere.</li>
+  <li><span class="btn-ex">&#128194; Load from JSON</span> &mdash; choose a previously downloaded file to restore all of that data back into the form. This will replace anything currently on screen, so use it at the start of a session.</li>
+</ul>
+<p>After you submit your application, the confirmation screen also offers a <strong>"Download a copy (JSON)"</strong> button, so you can keep a personal record of exactly what was submitted.</p>
+
+<h2 id="a-submit">F. Submitting the Application</h2>
+<p>Once every required field is filled in, click <span class="btn-ex" style="background:#1b5e20;color:#fff;border-color:#1b5e20">&#128228; Submit Application</span>. You will be asked to confirm, since the application cannot be edited once submitted. After confirming, a success screen appears &mdash; your application has been received, and you may safely close the page.</p>
+
+<h2 id="a-trouble">G. Troubleshooting (Applicant)</h2>
+<table>
+  <tr><th>Issue</th><th>What to do</th></tr>
+  <tr><td>Submit button shows an error / won't proceed</td><td>Scroll up &mdash; any missing required fields are highlighted in red with a message explaining what's needed.</td></tr>
+  <tr><td>I lost my draft and don't have the code</td><td>Contact MyEden Group HR with your name; they can retrieve your draft code from the dashboard.</td></tr>
+  <tr><td>My photo looks stretched or off-centre</td><td>Use Clear and retake the photo, positioning your I/C or passport fully within the guide frame.</td></tr>
+  <tr><td>The page won't load</td><td>Check your internet connection and make sure you're using the exact link provided by MyEden Group.</td></tr>
+</table>
+
+<div class="part-banner staff">Part 2 &mdash; HR / Admin Staff Guide</div>
+
+<div class="staff">
+
+<h2 id="h-access">A. Signing In</h2>
+<p>From the Start Page, click <strong>"HR Staff Login"</strong> (or open the HR Dashboard link directly, usually ending in <code>/hr.html</code>). Sign in with the email and password given to you by your administrator. Your session stays active for the duration of your visit and refreshes automatically; use <span class="btn-ex">Sign Out</span> when you're done, especially on a shared computer.</p>
+<div class="tip">Staff accounts are created by the administrator directly &mdash; there is no self-registration.</div>
+
+<h2 id="h-dash">B. Dashboard Overview</h2>
+<p>After signing in you'll see a company selector followed by up to four tabs (which ones you see depends on your permissions):</p>
+<ul>
+  <li><strong>&#128229; Applications</strong> &mdash; every submitted application, newest first.</li>
+  <li><strong>&#128221; Drafts</strong> &mdash; applicants' in-progress, not-yet-submitted forms.</li>
+  <li><strong>&#128202; Application Summary</strong> &mdash; a report view, visible only to staff granted the "View Application Summary" permission.</li>
+  <li><strong>&#128101; Manage Staff</strong> (admin only) &mdash; control what each staff member is allowed to do.</li>
+</ul>
+<p>Use the company selector to switch which of the four entities' applications you are viewing, and use the search box at any time to filter the current tab by applicant name.</p>
+
+<h2 id="h-apps">C. Applications Tab</h2>
+<p>Each application is shown as a card with the applicant's name, position applied for, submission date, and a status badge (<strong>PENDING</strong> or <strong>PROCESSED</strong>). Click a card to open the full application, exactly as the applicant filled it in, plus the internal Office Use section described next.</p>
+
+<h2 id="h-office">D. Office Use &amp; Appointment Letter Details</h2>
+<p>Scroll to the green <strong>"For Office Use Only"</strong> section (visible only to staff with the appropriate permission). Complete the following before generating a letter:</p>
+<ul>
+  <li><strong>Approved Job Title</strong> &mdash; choose from the Operations/Office list, or select <em>Other</em> to type a title manually.</li>
+  <li><strong>Job Title Level</strong> &mdash; once a title is chosen, this list automatically shows that role's career levels (e.g. Kindergarten Associate &rarr; Kindergarten Mentor &rarr; Senior Kindergarten Mentor &rarr; Kindergarten Manager &rarr; Head of Kindergarten). The <strong>Resolved Position</strong> line beneath confirms exactly what will print on the letter.</li>
+  <li><strong>Work Location</strong> &mdash; choose one of the branch addresses, or tick <em>Other location</em> to type one manually.</li>
+  <li><strong>Letter Date</strong> &mdash; defaults to today; change if needed.</li>
+  <li><strong>Reporting Officer's Name</strong> and <strong>Job Title</strong>, <strong>Salary in Wording</strong> (auto-generated from the salary figure, editable), and other appointment fields (start date, salary, working hours, etc.).</li>
+  <li><strong>Appendix 1 (Job Description)</strong> &mdash; automatically fills in with the standard job description for the selected Job Title Level. Tick <strong>"Manually fill / edit Appendix 1"</strong> to unlock the box and write or adjust the description yourself; untick to restore the standard wording.</li>
+</ul>
+<div class="tip">A live preview of the full Appointment Letter appears further down the page as you fill these fields in, so you can check the wording before printing. The letterhead shown always matches the company the applicant applied to.</div>
+
+<h2 id="h-actions">E. Saving, Status &amp; Deleting</h2>
+<ul>
+  <li><span class="btn-ex" style="background:#1a7340;color:#fff;border-color:#1a7340">&#128190; Save Changes</span> (top bar) or <span class="btn-ex" style="background:#1a7340;color:#fff;border-color:#1a7340">&#128190; Save Draft</span> (bottom action bar) &mdash; both save your Office Use edits back to the application record. Use whichever is more convenient while scrolling.</li>
+  <li><span class="btn-ex" style="background:#e65100;color:#fff;border-color:#e65100">Mark Processed</span> &mdash; flips the status badge; click again (now labelled <em>Reopen</em>) to revert to Pending.</li>
+  <li><span class="btn-ex" style="background:#c62828;color:#fff;border-color:#c62828">&#128465; Delete</span> &mdash; permanently removes the application or draft. Only available to staff with delete permission.
+    <div class="warn" style="margin-top:8px"><strong>Super Admin approval required.</strong> If you are not a Super Admin, clicking Delete opens an approval prompt asking a Super Admin to enter <em>their own</em> email and password to confirm the deletion &mdash; it does not proceed on your confirmation alone. If you <em>are</em> a Super Admin, deletion proceeds immediately as before.</div>
+  </li>
+</ul>
+
+<h2 id="h-summary">F. Application Summary</h2>
+<p>A report-style view summarising applications at a glance &mdash; useful for a quick headcount or overview without opening each record individually. This tab is visible only to staff granted the <strong>"View Application Summary"</strong> permission, which can be given independently of full admin rights (for example, to a payroll or reporting-focused staff member who shouldn't otherwise edit applications).</p>
+
+<h2 id="h-drafts">G. Drafts Tab</h2>
+<p>Shows every applicant's in-progress, unsubmitted form, along with their name, contact details, and a <strong>draft code</strong>. This code is what lets an applicant resume their draft on a different device: if someone calls or messages asking to continue on a new phone, look them up here by name and read them the code shown. Opening a draft here is <strong>read-only</strong> &mdash; it lets you check progress and help the applicant, but doesn't allow editing. Deleting a stale draft follows the same Super Admin approval rule described above.</p>
+
+<h2 id="h-print">H. Printing &amp; PDF Export</h2>
+<ul>
+  <li><span class="btn-ex">&#128438; Print / Save PDF</span> &mdash; prints the complete application form as filled in, including the Office Use section and the full Job Description text. The Appointment Letter preview is intentionally excluded from this printout.</li>
+  <li><span class="btn-ex" style="background:#0d47a1;color:#fff;border-color:#0d47a1">&#128203; Print Appointment Letter</span> &mdash; prints (or saves to PDF, via your browser's print dialog) only the official Appointment Letter, with the correct company's letterhead, the full contract clauses, salient-terms table, and Appendix 1 job description.</li>
+</ul>
+<div class="note">Use your browser's "Save as PDF" destination option in the print dialog if you want a PDF file instead of a physical printout.</div>
+
+<h2 id="h-json">I. Local Backup (Download / Load JSON)</h2>
+<p>Alongside the online record, you can keep or restore a local backup file of whichever application, draft, or file you currently have open:</p>
+<ul>
+  <li><span class="btn-ex">&#128190; Download JSON</span> (in the top detail bar) &mdash; saves the currently open record as a <code>.json</code> file to your computer.</li>
+  <li><span class="btn-ex">&#128194; Load from JSON</span> (at the top of the dashboard) &mdash; opens a file picker to load a previously downloaded backup file. The loaded record displays clearly labelled as <strong>"LOADED FROM FILE (not linked to database)"</strong> &mdash; you can view, print, and generate a letter from it, but Save/Status/Delete are disabled since it isn't connected to any live database record.</li>
+</ul>
+
+<h2 id="h-staff">J. Manage Staff (Admin Only)</h2>
+<p>Administrators see a <strong>Manage Staff</strong> tab listing every staff account, each with tickable permission flags:</p>
+<table>
+  <tr><th>Permission</th><th>Controls</th></tr>
+  <tr><td>View applications</td><td>Whether they can see the Applications inbox at all.</td></tr>
+  <tr><td>Edit Office Use</td><td>Whether they can fill in or change the Office Use section.</td></tr>
+  <tr><td>Generate letters</td><td>Whether the Appointment Letter section and print button are available to them.</td></tr>
+  <tr><td>Change status</td><td>Whether they can mark applications Processed/Pending.</td></tr>
+  <tr><td>Delete records</td><td>Whether they can delete applications or drafts (subject to Super Admin approval &mdash; see below).</td></tr>
+  <tr><td>View Application Summary</td><td>Whether they can see the Application Summary report tab.</td></tr>
+</table>
+<p>Changes take effect immediately &mdash; no need to log the staff member out. Administrators automatically hold every permission, and cannot accidentally remove their own admin rights without an explicit confirmation prompt.</p>
+<div class="tip"><strong>Super Admin</strong> is a separate, higher tier above ordinary Admin. Only a Super Admin can delete an application or draft without needing another Super Admin's approval; every other staff member's delete request &mdash; admin or not &mdash; must be approved live by entering a Super Admin's own login credentials. Super Admin status is granted directly in the database and does not appear as a tickable box in this panel; contact your system administrator if this needs to change.</div>
+
+<h2 id="h-accounts">K. Creating Staff Accounts</h2>
+<p>New staff accounts are created directly in the Supabase project console (not from within the HR Dashboard itself), since this requires administrator-level database access:</p>
+<ol>
+  <li>Sign in to the Supabase project.</li>
+  <li>Go to <strong>Authentication &rarr; Users &rarr; Add user &rarr; Create new user</strong>.</li>
+  <li>Enter the staff member's email and a password, keeping <strong>Auto Confirm User</strong> ticked.</li>
+  <li>The account appears automatically in the Manage Staff panel with safe default permissions, ready for you to adjust.</li>
+</ol>
+
+<h2 id="h-trouble">L. Troubleshooting (HR/Admin)</h2>
+<table>
+  <tr><th>Issue</th><th>What to do</th></tr>
+  <tr><td>"Email not confirmed" error at login</td><td>The account was created without Auto Confirm ticked. In Supabase's SQL Editor, run: <code>update auth.users set email_confirmed_at = now() where email_confirmed_at is null;</code></td></tr>
+  <tr><td>"Send confirmation email" fails in Supabase</td><td>Expected &mdash; sign-ups are intentionally disabled project-wide, which also blocks this email feature. Use the SQL fix above instead.</td></tr>
+  <tr><td>Forgot a staff password</td><td>Reset it directly in Supabase &rarr; Authentication &rarr; Users &rarr; select the user &rarr; Reset Password.</td></tr>
+  <tr><td>Appendix 1 text reverted after reopening</td><td>Make sure "Manually fill / edit Appendix 1" is ticked before typing custom text, and click Save Changes afterwards &mdash; the tick state is now saved together with the text.</td></tr>
+  <tr><td>Printed letter looks cut off or misaligned</td><td>Always judge print layout using your browser's own Print/Save-as-PDF dialog; other PDF viewers or converters may render the page differently.</td></tr>
+  <tr><td>Delete button asks for someone else's login</td><td>Expected if you are not a Super Admin &mdash; ask a Super Admin to enter their own credentials in the approval prompt to complete the deletion.</td></tr>
+</table>
+
+</div>
+
+<h2 id="versioning">Versioning &amp; Change Log Convention</h2>
+<p>Both <code>index.html</code> and <code>hr.html</code> share a single version stamp, shown as <strong>MEG-EAF v.YYYY.MM.DD-HH:MM</strong>, updated together whenever either file changes &mdash; so matching stamps confirm the two files are aligned. This manual is issued against <strong>v2026.08.12-11:30</strong>; if the deployed system shows a later stamp, a newer manual may be available.</p>
+
+<footer>
+  MEG-EAF User Manual (English) &middot; MyEden Group Sdn. Bhd. &middot; v2026.08.12-11:30
+</footer>
+
+
+</div>
+
+<div id="content-zh">
+
+
+<header>
+  <h1>MEG-EAF 使用手册</h1>
+  <div class="sub">MyEden Group 求职申请与聘书系统 &mdash; 简体中文版</div>
+  <span class="ver">MEG-EAF v2026.08.12-11:30</span>
+</header>
+
+<nav class="toc">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#zh-overview">系统概览</a></li>
+    <li><strong>第一部分 &mdash; 求职申请人指南</strong>
+      <ol type="a">
+        <li><a href="#zh-a-access">如何进入申请表格</a></li>
+        <li><a href="#zh-a-filling">填写表格</a></li>
+        <li><a href="#zh-a-photos">照片、身份证件与签名</a></li>
+        <li><a href="#zh-a-draft">保存草稿与稍后继续</a></li>
+        <li><a href="#zh-a-json">本地备份（下载／载入 JSON）</a></li>
+        <li><a href="#zh-a-submit">提交申请</a></li>
+        <li><a href="#zh-a-trouble">常见问题（申请人）</a></li>
+      </ol>
+    </li>
+    <li><strong>第二部分 &mdash; 人力资源／管理员指南</strong>
+      <ol type="a">
+        <li><a href="#zh-h-access">登入系统</a></li>
+        <li><a href="#zh-h-dash">后台总览</a></li>
+        <li><a href="#zh-h-apps">申请列表（Applications）</a></li>
+        <li><a href="#zh-h-office">内部使用栏位与聘书详情</a></li>
+        <li><a href="#zh-h-actions">保存、状态与删除</a></li>
+        <li><a href="#zh-h-summary">申请汇总报告（Application Summary）</a></li>
+        <li><a href="#zh-h-drafts">草稿列表（Drafts）</a></li>
+        <li><a href="#zh-h-print">打印与导出 PDF</a></li>
+        <li><a href="#zh-h-json">本地备份（下载／载入 JSON）</a></li>
+        <li><a href="#zh-h-staff">员工权限管理（仅限管理员）</a></li>
+        <li><a href="#zh-h-accounts">建立员工账户</a></li>
+        <li><a href="#zh-h-trouble">常见问题（人力资源／管理员）</a></li>
+      </ol>
+    </li>
+    <li><a href="#zh-versioning">版本号与更新记录规范</a></li>
+  </ol>
+</nav>
+
+<h2 id="zh-overview">系统概览</h2>
+<p>MEG-EAF 是涵盖 MyEden Group 旗下四家实体公司共用的求职申请与聘书生成系统，分为三个部分：</p>
+<ul>
+  <li><strong>起始页面</strong>（<code>dashboard.html</code>）&mdash; 系统的入口页面，提供两个清楚标示的选项：<em>Apply Now</em>（求职申请）与 <em>HR Staff Login</em>（员工登入）。</li>
+  <li><strong>求职申请表格</strong>（<code>index.html</code>）&mdash; 公开的网页，求职者先选择申请的公司，再填写并提交申请，无需注册或登入账户。</li>
+  <li><strong>人力资源后台</strong>（<code>hr.html</code>）&mdash; 需要登入的页面，供人力资源／管理员查看申请、填写内部资料，并生成正式的聘书 &mdash; 系统会自动套用求职者所申请公司相应的品牌样式。</li>
+</ul>
+<p>系统涵盖四家实体公司 &mdash; <strong>MyEden Group、Happy Dino、Aborne 及 MyEden Edu Hub</strong> &mdash; 各自拥有专属的信头、营业地址与注册地址，系统会根据申请表格上所选的公司自动套用对应资料。</p>
+<p>所有页面共用同一套安全的线上数据库。求职者提交的申请会自动出现在人力资源后台中，无需透过电邮或人手传送文件。</p>
+<div class="tip">两个文件的版本号会始终保持一致（例如 <code>v2026.08.12-11:30</code>），方便您一眼确认两者是否为同一次更新。</div>
+
+<div class="part-banner">第一部分 &mdash; 求职申请人指南</div>
+
+<h2 id="zh-a-access">A. 如何进入申请表格</h2>
+<p>使用任何浏览器（电脑或手机）打开所提供的链接。通常会先进入<strong>起始页面</strong>，显示两个选项 &mdash; 点击 <strong>"Apply Now"</strong> 即可进入申请表格。（若您获得的是直接指向申请表格的链接，则会立即打开表格。）全程无需登入，也无需任何访问码。</p>
+<p>进入表格后，请先在顶部选择您申请的<strong>公司</strong> &mdash; MyEden Group、Happy Dino、Aborne 或 MyEden Edu Hub。表格的信头及公司资料会自动依所选公司更新，此选择也会延续至日后生成的聘书中。</p>
+
+<h2 id="zh-a-filling">B. 填写表格</h2>
+<p>表格分为多个清楚标示的部分。带有红色星号（<span style="color:red">*</span>）的栏位为必填项目。</p>
+<ul>
+  <li><strong>个人资料</strong> &mdash; 姓名（英文及中文，如适用）、身份证或护照号码、出生日期、性别、婚姻状况、种族、宗教、子女人数。</li>
+  <li><strong>地址与联络方式</strong> &mdash; 家庭地址、邮政编码／市镇、州属、电话号码、电邮地址。</li>
+  <li><strong>家庭成员资料</strong> &mdash; 点击 <span class="btn-ex">+ Add family member</span> 逐一添加家庭成员。</li>
+  <li><strong>学历资料</strong> &mdash; 点击 <span class="btn-ex">+ Add qualification</span> 逐一添加学历。</li>
+  <li><strong>工作经验</strong> &mdash; 为每一份previous工作添加一个区块。</li>
+  <li><strong>职位需求</strong> &mdash; 勾选您所申请的职位，分为：
+    <ul>
+      <li><strong>A. 营运类（Operations）</strong> &mdash; 幼儿导师（Childcare Mentor）、幼稚园老师（Kindergarten Teacher）、婴幼儿托育（Infant Childcare）、游戏班导师（Playgroup Mentor），或其他（请注明）。</li>
+      <li><strong>B. 行政类（Office）</strong> &mdash; 管理层（Management）、人力资源（HR）、行政（Admin）、会计（Account）、会计与薪资（Account & Payroll）、内容创作（Content Creator）、市场行销（Marketing），或其他（请注明）。</li>
+    </ul>
+    同时请注明期望的工作时间（全职、兼职、实习、临时，或其他）。
+  </li>
+  <li><strong>其他问题</strong> &mdash; 语言能力、特殊技能，以及一般筛选问题。</li>
+  <li><strong>声明</strong> &mdash; 请阅读声明内容，并勾选确认后方可提交。</li>
+</ul>
+
+<h2 id="zh-a-photos">C. 照片、身份证件与签名</h2>
+<p>系统将要求您提供：</p>
+<ul>
+  <li>一张个人证件照片。</li>
+  <li>身份证正反两面的照片（若勾选 <strong>"Using Passport instead of I/C"</strong>，则改为护照资料页照片）。</li>
+  <li>您的签名 &mdash; 可直接以手指、触控笔或鼠标在屏幕上签署。</li>
+</ul>
+<p>在每个照片框内，点击 <span class="btn-ex">Camera</span> 直接拍照，或点击 <span class="btn-ex">Gallery</span> 从相册上传现有照片。点击 <span class="btn-ex">Clear</span> 可清除并重新拍摄。拍摄时请尽量将身份证对齐框内的引导线，以获得最清晰的效果。</p>
+<div class="tip">照片会以完整比例显示于框内，若照片两侧出现灰色留白，代表原始照片未完全贴合边框裁切，完整照片仍会保留在系统中。</div>
+
+<h2 id="zh-a-draft">D. 保存草稿与稍后继续</h2>
+<p>如果您无法一次填完整份表格：</p>
+<ul>
+  <li>随时点击 <span class="btn-ex">&#128190; Save Draft</span> 保存草稿，系统会短暂显示确认信息（<em>"Draft saved &#10003;"</em>），无需记下任何代码。</li>
+  <li>若您稍后使用<strong>同一部装置及同一浏览器</strong>再次打开同一链接，系统会自动询问：<em>"You have a saved draft &mdash; continue where you left off?"</em>（是否继续先前的草稿？），点击确认即可恢复所有内容，包括您的签名。</li>
+  <li>即使您忘记点击保存草稿，系统也会每隔数秒自动在本机保存进度，因此不小心切换页面或关闭页面时，通常仍可在同一装置上恢复。</li>
+</ul>
+<div class="note">
+  <strong>在其他装置上继续填写。</strong> 由于表格无需注册账户，系统只能在您保存草稿的<strong>同一装置</strong>上自动找到该草稿。若需在其他手机或电脑上继续填写，请点击 <span class="btn-ex">&#128194; Resume Draft</span>，届时会要求输入草稿代码。若您没有此代码，请直接联络 MyEden Group 人力资源部门，他们可根据您的姓名在后台查找草稿并告知您代码。
+</div>
+
+<h2 id="zh-a-json">E. 本地备份（下载／载入 JSON）</h2>
+<p>除了线上草稿系统外，您也可以在自己的装置上保留一份独立备份：</p>
+<ul>
+  <li><span class="btn-ex">&#128190; Download JSON</span> &mdash; 将目前表格中已填写的所有内容保存为一个小型文件（副档名为 <code>.json</code>），下载至您装置的常用下载文件夹。此文件仅供您个人保存，不会传送至任何地方。</li>
+  <li><span class="btn-ex">&#128194; Load from JSON</span> &mdash; 选择先前下载的备份文件，将资料重新载入表格中。此操作会覆盖目前屏幕上的内容，建议在填写开始时使用。</li>
+</ul>
+<p>提交申请后，确认页面也会提供 <strong>"Download a copy (JSON)"</strong> 按钮，方便您保留一份提交内容的个人记录。</p>
+
+<h2 id="zh-a-submit">F. 提交申请</h2>
+<p>所有必填栏位填妥后，点击 <span class="btn-ex" style="background:#1b5e20;color:#fff;border-color:#1b5e20">&#128228; Submit Application</span>。系统会要求您确认，因为申请一旦提交将无法再修改。确认后将显示成功页面，代表您的申请已成功送出，此时可安全关闭页面。</p>
+
+<h2 id="zh-a-trouble">G. 常见问题（申请人）</h2>
+<table>
+  <tr><th>问题</th><th>处理方法</th></tr>
+  <tr><td>提交按钮显示错误、无法继续</td><td>请往上滚动页面，任何未填写的必填栏位会以红色标示，并说明所需资料。</td></tr>
+  <tr><td>草稿遗失，且没有代码</td><td>请联络 MyEden Group 人力资源部门并提供姓名，他们可在后台查找您的草稿代码。</td></tr>
+  <tr><td>照片显示变形或未居中</td><td>点击 Clear 后重新拍摄，拍摄时请将身份证或护照完整置于引导框内。</td></tr>
+  <tr><td>页面无法载入</td><td>请检查网络连接，并确认使用的是 MyEden Group 提供的正确链接。</td></tr>
+</table>
+
+<div class="part-banner staff">第二部分 &mdash; 人力资源／管理员指南</div>
+
+<div class="staff">
+
+<h2 id="zh-h-access">A. 登入系统</h2>
+<p>在起始页面点击 <strong>"HR Staff Login"</strong>（或直接打开人力资源后台链接，通常以 <code>/hr.html</code> 结尾）。使用管理员提供的电邮及密码登入。登入状态会在使用期间自动维持并更新，使用完毕后（尤其是在共用电脑上）请点击 <span class="btn-ex">Sign Out</span> 登出。</p>
+<div class="tip">员工账户由管理员直接建立，系统不开放自行注册。</div>
+
+<h2 id="zh-h-dash">B. 后台总览</h2>
+<p>登入后会先看到公司选择器，接着最多可见四个分页（实际可见数量视您的权限而定）：</p>
+<ul>
+  <li><strong>&#128229; Applications（申请列表）</strong> &mdash; 所有已提交的申请，按最新提交时间排序。</li>
+  <li><strong>&#128221; Drafts（草稿列表）</strong> &mdash; 求职者尚未提交、仍在填写中的表格。</li>
+  <li><strong>&#128202; Application Summary（申请汇总报告）</strong> &mdash; 仅具备"View Application Summary"权限的员工可见。</li>
+  <li><strong>&#128101; Manage Staff（员工权限管理）</strong>（仅限管理员）&mdash; 设定每位员工可执行的操作权限。</li>
+</ul>
+<p>可使用公司选择器切换查看四家实体公司中任一间的申请资料，并随时使用搜索框依申请人姓名筛选目前分页内容。</p>
+
+<h2 id="zh-h-apps">C. 申请列表（Applications）</h2>
+<p>每份申请以卡片形式显示，包含申请人姓名、申请职位、提交日期，以及状态标签（<strong>PENDING</strong> 待处理 或 <strong>PROCESSED</strong> 已处理）。点击卡片即可打开完整申请内容，除申请人所填写的资料外，还包含以下的内部使用栏位。</p>
+
+<h2 id="zh-h-office">D. 内部使用栏位与聘书详情</h2>
+<p>请滚动至绿色的 <strong>"For Office Use Only"（仅供内部使用）</strong> 区块（仅具备相关权限的员工可见）。生成聘书前，请完成以下资料：</p>
+<ul>
+  <li><strong>Approved Job Title（核准职称）</strong> &mdash; 从营运／行政类别列表中选择，或选择 <em>Other</em> 手动输入职称。</li>
+  <li><strong>Job Title Level（职级）</strong> &mdash; 选定职称后，此列表会自动显示该职务的职涯发展等级（例如：幼稚园助理 &rarr; 幼稚园导师 &rarr; 高级幼稚园导师 &rarr; 幼稚园主任 &rarr; 幼稚园总监）。下方的 <strong>Resolved Position（最终职位）</strong> 会确认聘书上实际显示的职称。</li>
+  <li><strong>Work Location（工作地点）</strong> &mdash; 从各分行地址中选择，或勾选 <em>Other location</em> 手动输入地址。</li>
+  <li><strong>Letter Date（聘书日期）</strong> &mdash; 默认为当日日期，可自行更改。</li>
+  <li><strong>Reporting Officer's Name（直属上司姓名）</strong>及<strong>职称</strong>、<strong>Salary in Wording（薪金大写）</strong>（根据薪金数字自动生成，可编辑），以及其他聘任相关栏位（入职日期、薪金、工作时间等）。</li>
+  <li><strong>Appendix 1（附录一：职务说明）</strong> &mdash; 系统会根据所选的职称与职级自动填入标准职务说明。勾选 <strong>"Manually fill / edit Appendix 1"</strong> 可解锁并自行编写或修改内容；取消勾选则会恢复为标准内容。</li>
+</ul>
+<div class="tip">页面下方会即时显示完整聘书预览，随着您填写以上栏位同步更新，方便在打印前先行核对内容。信头将自动配合求职者所申请的公司显示。</div>
+
+<h2 id="zh-h-actions">E. 保存、状态与删除</h2>
+<ul>
+  <li><span class="btn-ex" style="background:#1a7340;color:#fff;border-color:#1a7340">&#128190; Save Changes</span>（页面顶部）或 <span class="btn-ex" style="background:#1a7340;color:#fff;border-color:#1a7340">&#128190; Save Draft</span>（底部操作栏）&mdash; 两者功能相同，都会将内部资料的修改保存至申请记录，可依当前滚动位置选择较方便的按钮使用。</li>
+  <li><span class="btn-ex" style="background:#e65100;color:#fff;border-color:#e65100">Mark Processed（标记为已处理）</span> &mdash; 切换申请状态标签；再次点击（此时按钮显示为 <em>Reopen</em>）即可恢复为待处理状态。</li>
+  <li><span class="btn-ex" style="background:#c62828;color:#fff;border-color:#c62828">&#128465; Delete（删除）</span> &mdash; 永久删除该申请或草稿记录，仅具备删除权限的员工可使用。
+    <div class="warn" style="margin-top:8px"><strong>需经超级管理员批准。</strong> 若您并非超级管理员（Super Admin），点击删除后会弹出批准窗口，要求由一位超级管理员输入<em>其本人</em>的电邮与密码以确认删除 &mdash; 系统不会仅凭您本人的确认而执行删除。若您本身即为超级管理员，删除操作会如常立即执行。</div>
+  </li>
+</ul>
+
+<h2 id="zh-h-summary">F. 申请汇总报告（Application Summary）</h2>
+<p>以报表形式汇总显示申请概况，方便快速掌握人数或整体情况，无需逐一打开每份申请。此分页仅具备 <strong>"View Application Summary"</strong> 权限的员工可见，该权限可独立于完整管理员权限单独授予（例如授予负责薪资或报表工作、但不应编辑申请内容的员工）。</p>
+
+<h2 id="zh-h-drafts">G. 草稿列表（Drafts）</h2>
+<p>此分页显示所有求职者尚未提交的草稿，包括姓名、联络方式，以及一组<strong>草稿代码</strong>。此代码可让求职者在其他装置上继续填写：若有求职者致电或留言表示需在新手机上继续填写，可在此依姓名查找并告知对方代码。此处打开的草稿为<strong>只读</strong>模式，仅供查看进度及协助求职者，无法编辑内容。删除过期草稿同样适用上述超级管理员批准规则。</p>
+
+<h2 id="zh-h-print">H. 打印与导出 PDF</h2>
+<ul>
+  <li><span class="btn-ex">&#128438; Print / Save PDF</span> &mdash; 打印完整的申请表格内容，包括内部使用栏位及完整的职务说明文字。此打印选项刻意不包含聘书预览部分。</li>
+  <li><span class="btn-ex" style="background:#0d47a1;color:#fff;border-color:#0d47a1">&#128203; Print Appointment Letter</span> &mdash; 仅打印（或透过浏览器打印对话框另存为 PDF）正式的聘书内容，采用正确的公司信头，包含完整合约条款、主要条款表格，以及附录一职务说明。</li>
+</ul>
+<div class="note">若需要 PDF 文件而非实体打印，请在打印对话框中选择"另存为 PDF"选项。</div>
+
+<h2 id="zh-h-json">I. 本地备份（下载／载入 JSON）</h2>
+<p>除线上记录外，您也可以针对目前打开的申请、草稿或已载入的文件，保存或还原本地备份：</p>
+<ul>
+  <li><span class="btn-ex">&#128190; Download JSON</span>（位于页面顶部操作栏）&mdash; 将目前打开的记录保存为 <code>.json</code> 文件至您的电脑。</li>
+  <li><span class="btn-ex">&#128194; Load from JSON</span>（位于后台顶端）&mdash; 打开文件选择窗口，载入先前下载的备份文件。载入后的记录会清楚标示为 <strong>"LOADED FROM FILE (not linked to database)"（从文件载入，未连结数据库）</strong> &mdash; 您可以查看、打印及生成聘书，但由于并非连结至实际数据库记录，保存／状态／删除功能将无法使用。</li>
+</ul>
+
+<h2 id="zh-h-staff">J. 员工权限管理（仅限管理员）</h2>
+<p>管理员可见 <strong>Manage Staff（员工权限管理）</strong> 分页，列出所有员工账户，并可逐项勾选权限：</p>
+<table>
+  <tr><th>权限项目</th><th>控制内容</th></tr>
+  <tr><td>View applications（查看申请）</td><td>是否可查看申请列表。</td></tr>
+  <tr><td>Edit Office Use（编辑内部资料）</td><td>是否可填写或修改内部使用栏位。</td></tr>
+  <tr><td>Generate letters（生成聘书）</td><td>是否可使用聘书区块及打印聘书功能。</td></tr>
+  <tr><td>Change status（更改状态）</td><td>是否可将申请标记为已处理／待处理。</td></tr>
+  <tr><td>Delete records（删除记录）</td><td>是否可删除申请或草稿记录（须经超级管理员批准，详见下方说明）。</td></tr>
+  <tr><td>View Application Summary（查看申请汇总报告）</td><td>是否可查看申请汇总报告分页。</td></tr>
+</table>
+<p>权限变更会立即生效，无需该员工重新登入。管理员自动拥有所有权限，且系统会在管理员尝试取消自己的管理员权限时，先弹出确认提示，避免误操作。</p>
+<div class="tip"><strong>超级管理员（Super Admin）</strong>是位于一般管理员之上的更高权限层级。只有超级管理员可以在无需其他超级管理员批准的情况下删除申请或草稿；其余任何员工（无论是否为一般管理员）提出的删除请求，都必须由一位超级管理员现场输入其本人的登入凭证方可完成。超级管理员身份是直接于数据库层级设定，并不会在此面板中以可勾选的选项呈现；如需调整，请联络系统管理员。</div>
+
+<h2 id="zh-h-accounts">K. 建立员工账户</h2>
+<p>新的员工账户须直接在 Supabase 项目控制台中建立（并非在人力资源后台内进行），因为此操作需要管理员级别的数据库权限：</p>
+<ol>
+  <li>登入 Supabase 项目控制台。</li>
+  <li>前往 <strong>Authentication &rarr; Users &rarr; Add user &rarr; Create new user</strong>。</li>
+  <li>输入员工的电邮地址及密码，并保持勾选 <strong>Auto Confirm User</strong>。</li>
+  <li>该账户会自动出现在员工权限管理分页中，并附有安全的默认权限设置，供您进一步调整。</li>
+</ol>
+
+<h2 id="zh-h-trouble">L. 常见问题（人力资源／管理员）</h2>
+<table>
+  <tr><th>问题</th><th>处理方法</th></tr>
+  <tr><td>登入时显示 "Email not confirmed"（电邮未确认）</td><td>该账户建立时未勾选 Auto Confirm。请在 Supabase 的 SQL Editor 中执行：<code>update auth.users set email_confirmed_at = now() where email_confirmed_at is null;</code></td></tr>
+  <tr><td>Supabase 中的 "Send confirmation email" 功能失败</td><td>此为预期情况 &mdash; 系统已刻意关闭自行注册功能，该设置同时也会导致此电邮功能无法使用，请改用上方的 SQL 方法处理。</td></tr>
+  <tr><td>忘记员工账户密码</td><td>可直接在 Supabase 中重设：Authentication &rarr; Users &rarr; 选择该用户 &rarr; Reset Password。</td></tr>
+  <tr><td>重新打开申请后，附录一内容被还原</td><td>请确认在输入自定内容前已勾选 "Manually fill / edit Appendix 1"，并于填写后点击 Save Changes 保存 &mdash; 该勾选状态现已与内容一并保存。</td></tr>
+  <tr><td>打印出的聘书版面错位或显示不完整</td><td>请务必以浏览器本身的打印／另存为 PDF 功能查看排版效果；使用其他 PDF 阅读器或转换工具可能会呈现不同的排版结果。</td></tr>
+  <tr><td>删除时要求输入他人的登入资料</td><td>若您并非超级管理员，此为正常情况 &mdash; 请请一位超级管理员在批准窗口中输入其本人凭证以完成删除。</td></tr>
+</table>
+
+</div>
+
+<h2 id="zh-versioning">版本号与更新记录规范</h2>
+<p><code>index.html</code> 与 <code>hr.html</code> 两个文件始终共用同一组版本号，格式为 <strong>MEG-EAF v.YYYY.MM.DD-HH:MM</strong>，并会在任一文件更新时同步更新 &mdash; 因此两者版本号一致即代表彼此已对齐。本手册对应版本为 <strong>v2026.08.12-11:30</strong>；若系统实际显示的版本号较新，代表可能已有更新版本的手册可供参考。</p>
+
+<footer>
+  MEG-EAF 使用手册（简体中文）&middot; MyEden Group Sdn. Bhd. &middot; v2026.08.12-11:30
+</footer>
+
+
+</div>
+
+<script>
+function showLang(lang){
+  document.getElementById('content-en').style.display = lang==='en' ? 'block' : 'none';
+  document.getElementById('content-zh').style.display = lang==='zh' ? 'block' : 'none';
+  document.getElementById('btnLangEn').classList.toggle('active', lang==='en');
+  document.getElementById('btnLangZh').classList.toggle('active', lang==='zh');
+  document.documentElement.lang = (lang==='en') ? 'en' : 'zh-Hans';
+  try{ localStorage.setItem('meg_manual_lang', lang); }catch(e){}
+}
+(function(){
+  var saved=null;
+  try{ saved=localStorage.getItem('meg_manual_lang'); }catch(e){}
+  if(saved==='zh'){ showLang('zh'); }
+})();
+</script>
+
+</body>
+</html>

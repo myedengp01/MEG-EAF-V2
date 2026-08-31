@@ -1,0 +1,49 @@
+[PASS] index.html: no duplicate IDs
+[PASS] index.html: parsed inline scripts — 1
+[PASS] hr.html: no duplicate IDs
+[PASS] hr.html: parsed inline scripts — 1
+[PASS] jd-manual.html: no duplicate IDs
+[PASS] jd-manual.html: parsed inline scripts — 1
+[PASS] dashboard.html: no duplicate IDs
+[PASS] dashboard.html: parsed inline scripts — 1
+[PASS] Applicant extension included after base page
+[PASS] HR extension included after base page
+[PASS] Build 02 applicant version
+[PASS] Build 02 HR version
+[PASS] Combined LOEC wording retained
+[PASS] Wet-ink only retained
+[PASS] No e-sign contract function wording retained
+[PASS] HDS probation remains unassumed
+[PASS] ABN probation remains unassumed
+[PASS] ABN fallback roles remain empty
+[PASS] Issued UI guard present
+[PASS] Signed upload only after issued
+[PASS] Verify moves to stamp_pending
+[PASS] Signature lock begins at signed PDF path
+[PASS] Not Required can complete after verification
+[PASS] Draft revision supersede blocked
+[PASS] Atomic revision RPC used by frontend
+[PASS] Migration 001 immutable storage has no update/delete policy
+[PASS] Migration 002 active-revision unique index
+[PASS] Migration 002 issued snapshot freeze
+[PASS] Migration 002 signed metadata freeze
+[PASS] Migration 002 lifecycle transition guard
+[PASS] Migration 002 completion invariant
+[PASS] Migration 002 atomic revision function
+[PASS] Migration 002 storage path restriction
+[PASS] Migration 002 still has no storage UPDATE policy
+[PASS] Migration 002 still has no storage DELETE policy
+[PASS] V1/base preserved: hr_ori12082026.html
+[PASS] V1/base preserved: hr_ori11082026.html
+[PASS] V1/base preserved: index_ori12082026.html
+[PASS] V1/base preserved: index_ori11082026.html
+[PASS] V1/base preserved: index_2026.08.12-1830.html
+[PASS] V1/base preserved: hr_2026.08.12-1830.html
+[PASS] V1/base preserved: index-v2026.08.28-0930.html
+[PASS] V1/base preserved: jd-manual-v2026.08.28-0930.html
+[PASS] V1/base preserved: jd-manual.html
+[PASS] V1/base preserved: dashboard.html
+[PASS] V1/base preserved: index.html
+[PASS] V1/base preserved: hr.html
+
+TOTAL: 47/47 passed

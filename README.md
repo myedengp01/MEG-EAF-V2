@@ -1,2 +1,2 @@
-# MEG-EAF-V2
-MEG-EAF-V2 is an extended version of MEG-EAF V1. New Happy Dino Sdn Bhd &amp; Aborne Project Sdn Bhd Letter of Offer &amp; Employment Contract and JDs are inserted.
+# MEG-EAF
+This is a digital Employment Application Form (EAF), fully automated to produce the Letter of Offer &amp; Employment Contract, and can be printed immediately after full  
