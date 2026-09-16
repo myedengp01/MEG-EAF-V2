@@ -1,6 +1,6 @@
 # MEG-Employment & HR System V2
 
-Current reconciled build: **Stage 3B v2026.09.16-11:17**
+Current reconciled build: **Stage 3B v2026.09.16-14:00**
 
 Legacy project/build name: **MEG-EAF V2**. Historical filenames remain unchanged for traceability.
 

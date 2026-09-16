@@ -20,7 +20,7 @@
   'use strict';
 
   var S3 = global.MEG_EAF_V2_STAGE3 = global.MEG_EAF_V2_STAGE3 || {};
-  S3.version = 'MEG-Employment & HR System V2 Stage 3B v2026.09.16-11:17';
+  S3.version = 'MEG-Employment & HR System V2 Stage 3B v2026.09.16-14:00';
   S3.loecVersion = '2.0';
 
   /*
@@ -374,7 +374,7 @@
   };
 
   function refreshVersion(){
-    global.FORM_VERSION='MEG-EAF V2 HR · Stage 3 · v2026.09.10-21:29';
+    global.FORM_VERSION='MEG-Employment & HR System V2 HR · Stage 3B · v2026.09.16-14:00';
     if(byId('formRef')) byId('formRef').textContent=global.FORM_VERSION;
     if(byId('loginVersionStamp')) byId('loginVersionStamp').textContent=global.FORM_VERSION;
   }

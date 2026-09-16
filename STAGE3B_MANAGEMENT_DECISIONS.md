@@ -1,6 +1,6 @@
 # MEG-Employment & HR System V2 — Stage 3B Management Decisions
 
-Effective build: **v2026.09.16-11:17**
+Effective build: **v2026.09.16-14:00**
 
 ## Legal-employer master data
 Management confirmed the currently recorded registration details, business/registered addresses, phone numbers and emails for all four legal employers:

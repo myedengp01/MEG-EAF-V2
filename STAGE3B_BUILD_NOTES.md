@@ -1,6 +1,6 @@
 # MEG-Employment & HR System V2 — Stage 3B Build Notes
 
-Build: **v2026.09.16-11:17**
+Build: **v2026.09.16-14:00**
 Base: Stage 3 `v2026.09.10-21:29` + Stage 3A DB-MEG-FORMS append + GitHub Gateway `v2026.09.04-19:30`
 
 ## Status
@@ -8,7 +8,7 @@ Base: Stage 3 `v2026.09.10-21:29` + Stage 3A DB-MEG-FORMS append + GitHub Gatewa
 - Stage 2: complete
 - Stage 3: complete / 55 PASS, 0 FAIL
 - Stage 3A: dependency append complete
-- Stage 3B: source reconciliation + Management-approved defaults/JD fallback implemented; static acceptance included with this package
+- Stage 3B: source reconciliation + Management-approved defaults/JD fallback implemented; browser acceptance completed for the implemented scope; cleanup patch applied
 
 ## Management decisions incorporated
 - All four legal-employer master records verified.

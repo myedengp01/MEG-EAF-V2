@@ -15,15 +15,15 @@
   'use strict';
 
   var S2 = global.MEG_EAF_V2_STAGE2 = global.MEG_EAF_V2_STAGE2 || {};
-  S2.version = 'MEG-Employment & HR System V2 Stage 3B v2026.09.16-11:17';
+  S2.version = 'MEG-Employment & HR System V2 Stage 3B v2026.09.16-14:00';
   S2.jd = null;
   S2.jdState = 'fallback'; // fallback | loading | connected | unavailable
   S2.pendingRestore = null;
   S2.lastCompanyCode = '';
 
   var ENTITY_TERMS = {
-    meg:{handbook:'MyEden Group Employee Handbook', defaultProbation:'3', defaultNotice:'4', noticeUnit:'weeks', offDay:'Saturday', restDay:'Sunday'},
-    meh:{handbook:'MyEden Group Employee Handbook', defaultProbation:'3', defaultNotice:'4', noticeUnit:'weeks', offDay:'Saturday', restDay:'Sunday'},
+    meg:{handbook:'Myeden Education Group Employee Handbook - v2.0', defaultProbation:'3', defaultNotice:'4', noticeUnit:'weeks', offDay:'Saturday', restDay:'Sunday'},
+    meh:{handbook:'Myeden Education Group Employee Handbook - v2.0', defaultProbation:'3', defaultNotice:'4', noticeUnit:'weeks', offDay:'Saturday', restDay:'Sunday'},
     hds:{handbook:'Happy Dino Employee Handbook', defaultProbation:'3', defaultNotice:'4', noticeUnit:'weeks', offDay:'Saturday', restDay:'Sunday'},
     abn:{handbook:'Aborne Project Employee Handbook', defaultProbation:'3', defaultNotice:'4', noticeUnit:'weeks', offDay:'Saturday', restDay:'Sunday'}
   };
@@ -63,7 +63,7 @@
 
   function insertEmploymentFields(){
     if(byId('v2EmploymentTerms')) return;
-    var title=Array.prototype.find.call(document.querySelectorAll('#officeBox .section-title'),function(x){return x.textContent.indexOf('Appointment Letter Details')>=0;});
+    var title=Array.prototype.find.call(document.querySelectorAll('#officeBox .section-title'),function(x){return x.textContent.indexOf('LOEC Details')>=0;});
     if(!title) return;
     var p=document.createElement('div'); p.id='v2EmploymentTerms'; p.className='v2s2-panel';
     p.innerHTML='<h4>V2 Stage 2 — Employment Terms <span id="v2JdSource" class="v2s2-source warn">JD Master: fallback</span></h4>'
@@ -78,7 +78,7 @@
       +'<div class="form-group"><label>Normal Rest Day</label><input type="text" id="v2RestDay" readonly></div>'
       +'<div class="form-group"><label>JD Reference</label><input type="text" id="v2JdReference" readonly placeholder="Loaded from approved JD Master"></div>'
       +'</div><div id="v2ProbationHint" class="v2s2-warn"></div>'
-      +'<div class="v2s2-note">Stage 2 captures structured HR employment terms for the next contract stage. It does not yet alter the current LOEC wording or issue workflow.</div>';
+      +'<div class="v2s2-note">Structured HR employment terms are bound into the Stage 3B LOEC preview. Final issue remains subject to complete HR data and authorised document-control workflow.</div>';
     title.parentNode.insertBefore(p,title.nextSibling);
 
     var salary=byId('finalSalary');
@@ -263,7 +263,7 @@
       return S2.jd;
     }).catch(function(err){
       S2.jd=null; S2.jdState='unavailable'; updateSourceBadge(); populateJobTitleDropdown();
-      console.warn('MEG-EAF V2 Stage 2 JD Master unavailable; using safe fallback:',err&&err.message?err.message:err);
+      console.warn('MEG-Employment & HR System V2 Stage 2 JD Master unavailable; using safe fallback:',err&&err.message?err.message:err);
       return null;
     });
     return S2.loadingPromise;

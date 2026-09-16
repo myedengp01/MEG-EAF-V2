@@ -1,0 +1,74 @@
+MEG-Employment & HR System V2 — Stage 3B Cleanup Patch Static Validation
+Build: v2026.09.16-14:00
+Result: 70 PASS / 0 FAIL
+
+PASS — required file dashboard.html
+PASS — required file index.html
+PASS — required file hr.html
+PASS — required file jd-manual.html
+PASS — required file employment-act.html
+PASS — required file eaf-gateway.js
+PASS — required file v2-entity-core.js
+PASS — required file v2-stage2-hr.js
+PASS — required file v2-stage3-loec.js
+PASS — required file manifest.json
+PASS — required file 009_STAGE3B_ABORNE_JD_STAGING_PREFLIGHT.sql
+PASS — required file STAGE3B_CLEANUP_PATCH_NOTES.md
+PASS — dashboard UVN
+PASS — gateway UVN
+PASS — applicant Stage3B UVN
+PASS — HR Stage3B UVN
+PASS — entity core UVN
+PASS — stage2 module UVN
+PASS — stage3 module UVN
+PASS — MEG handbook label
+PASS — MEH handbook label
+PASS — HR LOEC Details
+PASS — HR LOEC preview
+PASS — HR Print Save LOEC
+PASS — stage2 anchor follows LOEC label
+PASS — JD Manual current title
+PASS — JD Manual current subbrand
+PASS — JD Manual neutral subtitle
+PASS — Employment Act current title
+PASS — Employment Act current subbrand
+PASS — Employment Act current footer
+PASS — README current UVN
+PASS — build notes current UVN
+PASS — management decisions current UVN
+PASS — PWA full name
+PASS — PWA short name
+PASS — stale active string absent: MEG-EAF V2 Applicant · Stage 2 · v2026.09.10-20:05
+PASS — stale active string absent: MEG-EAF V2 HR · Stage 3 · v2026.09.10-21:29
+PASS — stale active string absent: MyEden Group Employee Handbook
+PASS — stale active string absent: Appointment Letter (Auto-Generated Preview)
+PASS — stale active string absent: Print Appointment Letter
+PASS — stale active string absent: MEG-EAF • Integrated JD Manual
+PASS — stale active string absent: MYEDEN Group Sdn. Bhd. • Happy Dino Sdn. Bhd. • Platinum Expanded Edition v3.0
+PASS — stale active string absent: MEG-EAF V2 • Employment Act Smart Reference
+PASS — stale active string absent: v2026.09.16-11:17
+PASS — technical MEG-EAF filename prefix retained
+PASS — technical gateway prefix retained
+PASS — Aborne preflight retained
+PASS — Aborne fallback Event Admin
+PASS — Aborne fallback Event Executive
+PASS — Aborne fallback Event Manager
+PASS — Aborne fallback Sales Executive
+PASS — Aborne fallback Operations Executive
+PASS — JS syntax eaf-gateway.js
+PASS — JS syntax v2-entity-core.js
+PASS — JS syntax v2-stage2-hr.js
+PASS — JS syntax v2-stage3-loec.js
+PASS — JS syntax service-worker.js
+PASS — inline JS syntax dashboard.html
+PASS — inline JS syntax index.html
+PASS — inline JS syntax hr.html
+PASS — inline JS syntax jd-manual.html
+PASS — inline JS syntax employment-act.html
+PASS — index.html gateway cache key
+PASS — hr.html gateway cache key
+PASS — jd-manual.html gateway cache key
+PASS — employment-act.html gateway cache key
+PASS — HR v2 entity module reference
+PASS — HR stage2 module reference
+PASS — HR stage3 module reference

@@ -1,6 +1,6 @@
 -- MEG-Employment & HR System V2 — Stage 3B
 -- Aborne JD Master staging seed PRE-FLIGHT / TEMPLATE
--- Build: v2026.09.16-11:17
+-- Build: v2026.09.16-14:00
 -- IMPORTANT: DO NOT RUN IN PRODUCTION YET.
 -- The frontend now has the Management-approved Aborne fallback roles.
 -- Before database seeding, inspect the live/staging jd_* schema and constraints, then adapt/approve this template.

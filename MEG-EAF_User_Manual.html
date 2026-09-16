@@ -67,7 +67,7 @@
 
 <header>
   <h1>MEG-EAF User Manual</h1>
-  <div class="sub">MyEden Group Employment Application &amp; Appointment Letter System &mdash; English Edition</div>
+  <div class="sub">MEG-Employment &amp; HR System V2 — Employment Application &amp; LOEC System &mdash; English Edition</div>
   <span class="ver">MEG-EAF v2026.08.12-11:30</span>
 </header>
 
@@ -91,7 +91,7 @@
         <li><a href="#h-access">Signing In</a></li>
         <li><a href="#h-dash">Dashboard Overview</a></li>
         <li><a href="#h-apps">Applications Tab</a></li>
-        <li><a href="#h-office">Office Use &amp; Appointment Letter Details</a></li>
+        <li><a href="#h-office">Office Use &amp; LOEC Details</a></li>
         <li><a href="#h-actions">Saving, Status &amp; Deleting</a></li>
         <li><a href="#h-summary">Application Summary</a></li>
         <li><a href="#h-drafts">Drafts Tab</a></li>
@@ -111,7 +111,7 @@
 <ul>
   <li><strong>Start Page</strong> (<code>dashboard.html</code>) &mdash; the front door of the system, offering two clearly labelled options: <em>Apply Now</em> (for job applicants) and <em>HR Staff Login</em> (for staff).</li>
   <li><strong>Applicant Form</strong> (<code>index.html</code>) &mdash; a public web page where job applicants select the company they're applying to and fill in and submit their application. No login or account is required.</li>
-  <li><strong>HR Dashboard</strong> (<code>hr.html</code>) &mdash; a login-protected page for HR/admin staff to review applications, complete internal Office Use details, and generate the official Appointment Letter &mdash; correctly branded for whichever of the four companies the applicant applied to.</li>
+  <li><strong>HR Dashboard</strong> (<code>hr.html</code>) &mdash; a login-protected page for HR/admin staff to review applications, complete internal Office Use details, and generate the official Letter of Offer &amp; Employment Contract (LOEC) &mdash; correctly branded for whichever of the four companies the applicant applied to.</li>
 </ul>
 <p>All four entities &mdash; <strong>MyEden Group, Happy Dino, Aborne, and MyEden Edu Hub</strong> &mdash; share this one system. Each carries its own letterhead, business address, and registered address, selected automatically based on the company chosen on the application.</p>
 <p>All pages are hosted together and share the same underlying data, stored securely online. Applicant submissions appear in the HR Dashboard automatically &mdash; no email or manual file transfer is needed.</p>
@@ -121,7 +121,7 @@
 
 <h2 id="a-access">A. Accessing the Application Form</h2>
 <p>Open the link provided to you in any web browser (desktop or mobile). You will usually land on the <strong>Start Page</strong>, showing two options &mdash; click <strong>"Apply Now"</strong> to go to the application form. (If you were given a direct link to the application form itself, it will open immediately.) There is no login step and no access code needed.</p>
-<p>At the top of the form, first select which <strong>company</strong> you are applying to &mdash; MyEden Group, Happy Dino, Aborne, or MyEden Edu Hub. The form's letterhead and company details update automatically to match your selection, and this same choice carries through to your Appointment Letter later.</p>
+<p>At the top of the form, first select which <strong>company</strong> you are applying to &mdash; MyEden Group, Happy Dino, Aborne, or MyEden Edu Hub. The form's letterhead and company details update automatically to match your selection, and this same choice carries through to your LOEC later.</p>
 
 <h2 id="a-filling">B. Filling In the Form</h2>
 <p>The form is organised into clearly labelled sections. Fields marked with a red asterisk (<span style="color:red">*</span>) are required.</p>
@@ -204,7 +204,7 @@
 <h2 id="h-apps">C. Applications Tab</h2>
 <p>Each application is shown as a card with the applicant's name, position applied for, submission date, and a status badge (<strong>PENDING</strong> or <strong>PROCESSED</strong>). Click a card to open the full application, exactly as the applicant filled it in, plus the internal Office Use section described next.</p>
 
-<h2 id="h-office">D. Office Use &amp; Appointment Letter Details</h2>
+<h2 id="h-office">D. Office Use &amp; LOEC Details</h2>
 <p>Scroll to the green <strong>"For Office Use Only"</strong> section (visible only to staff with the appropriate permission). Complete the following before generating a letter:</p>
 <ul>
   <li><strong>Approved Job Title</strong> &mdash; choose from the Operations/Office list, or select <em>Other</em> to type a title manually.</li>
@@ -214,7 +214,7 @@
   <li><strong>Reporting Officer's Name</strong> and <strong>Job Title</strong>, <strong>Salary in Wording</strong> (auto-generated from the salary figure, editable), and other appointment fields (start date, salary, working hours, etc.).</li>
   <li><strong>Appendix 1 (Job Description)</strong> &mdash; automatically fills in with the standard job description for the selected Job Title Level. Tick <strong>"Manually fill / edit Appendix 1"</strong> to unlock the box and write or adjust the description yourself; untick to restore the standard wording.</li>
 </ul>
-<div class="tip">A live preview of the full Appointment Letter appears further down the page as you fill these fields in, so you can check the wording before printing. The letterhead shown always matches the company the applicant applied to.</div>
+<div class="tip">A live preview of the full LOEC appears further down the page as you fill these fields in, so you can check the wording before printing. The letterhead shown always matches the company the applicant applied to.</div>
 
 <h2 id="h-actions">E. Saving, Status &amp; Deleting</h2>
 <ul>
@@ -233,8 +233,8 @@
 
 <h2 id="h-print">H. Printing &amp; PDF Export</h2>
 <ul>
-  <li><span class="btn-ex">&#128438; Print / Save PDF</span> &mdash; prints the complete application form as filled in, including the Office Use section and the full Job Description text. The Appointment Letter preview is intentionally excluded from this printout.</li>
-  <li><span class="btn-ex" style="background:#0d47a1;color:#fff;border-color:#0d47a1">&#128203; Print Appointment Letter</span> &mdash; prints (or saves to PDF, via your browser's print dialog) only the official Appointment Letter, with the correct company's letterhead, the full contract clauses, salient-terms table, and Appendix 1 job description.</li>
+  <li><span class="btn-ex">&#128438; Print / Save PDF</span> &mdash; prints the complete application form as filled in, including the Office Use section and the full Job Description text. The LOEC preview is intentionally excluded from this printout.</li>
+  <li><span class="btn-ex" style="background:#0d47a1;color:#fff;border-color:#0d47a1">&#128203; Print / Save LOEC</span> &mdash; prints (or saves to PDF, via your browser's print dialog) only the official Letter of Offer &amp; Employment Contract (LOEC), with the correct company's letterhead, the full contract clauses, salient-terms table, and Appendix 1 job description.</li>
 </ul>
 <div class="note">Use your browser's "Save as PDF" destination option in the print dialog if you want a PDF file instead of a physical printout.</div>
 
@@ -251,7 +251,7 @@
   <tr><th>Permission</th><th>Controls</th></tr>
   <tr><td>View applications</td><td>Whether they can see the Applications inbox at all.</td></tr>
   <tr><td>Edit Office Use</td><td>Whether they can fill in or change the Office Use section.</td></tr>
-  <tr><td>Generate letters</td><td>Whether the Appointment Letter section and print button are available to them.</td></tr>
+  <tr><td>Generate letters</td><td>Whether the LOEC section and print button are available to them.</td></tr>
   <tr><td>Change status</td><td>Whether they can mark applications Processed/Pending.</td></tr>
   <tr><td>Delete records</td><td>Whether they can delete applications or drafts (subject to Super Admin approval &mdash; see below).</td></tr>
   <tr><td>View Application Summary</td><td>Whether they can see the Application Summary report tab.</td></tr>
@@ -463,7 +463,7 @@
 <h2 id="zh-h-print">H. 打印与导出 PDF</h2>
 <ul>
   <li><span class="btn-ex">&#128438; Print / Save PDF</span> &mdash; 打印完整的申请表格内容，包括内部使用栏位及完整的职务说明文字。此打印选项刻意不包含聘书预览部分。</li>
-  <li><span class="btn-ex" style="background:#0d47a1;color:#fff;border-color:#0d47a1">&#128203; Print Appointment Letter</span> &mdash; 仅打印（或透过浏览器打印对话框另存为 PDF）正式的聘书内容，采用正确的公司信头，包含完整合约条款、主要条款表格，以及附录一职务说明。</li>
+  <li><span class="btn-ex" style="background:#0d47a1;color:#fff;border-color:#0d47a1">&#128203; Print / Save LOEC</span> &mdash; 仅打印（或透过浏览器打印对话框另存为 PDF）正式的聘书内容，采用正确的公司信头，包含完整合约条款、主要条款表格，以及附录一职务说明。</li>
 </ul>
 <div class="note">若需要 PDF 文件而非实体打印，请在打印对话框中选择"另存为 PDF"选项。</div>
 
