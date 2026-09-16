@@ -1,0 +1,74 @@
+MEG-EAF V2 — STAGE 3 VALIDATION REPORT
+Build: v2026.09.10-21:29
+Source baseline: Stage 2 v2026.09.10-20:05
+
+PASS — JavaScript syntax: v2-entity-core.js
+PASS — JavaScript syntax: v2-stage2-hr.js
+PASS — JavaScript syntax: v2-stage3-loec.js
+PASS — inline JavaScript syntax: index.html
+PASS — HTML duplicate-ID scan: index.html
+PASS — inline JavaScript syntax: hr.html
+PASS — HTML duplicate-ID scan: hr.html
+PASS — inline JavaScript syntax: dashboard.html
+PASS — HTML duplicate-ID scan: dashboard.html
+PASS — inline JavaScript syntax: jd-manual.html
+PASS — HTML duplicate-ID scan: jd-manual.html
+PASS — local href/src dependency scan
+PASS — HR includes Stage 3 LOEC module after Stage 2
+PASS — Stage 3 HR version marker exists
+PASS — Stage 3 overrides LOEC data gather
+PASS — Stage 3 overrides LOEC Page 1 renderer
+PASS — Stage 3 overrides LOEC clause renderer
+PASS — Stage 3 overrides LOEC signature block
+PASS — Stage 3 overrides Appendix 1 binding
+PASS — Stage 3 overrides letterhead renderer
+PASS — Stage 3 uses entity-specific footer reference
+PASS — Stage 3 fixes filename to resolved LOEC data
+PASS — Stage 2 employment type bound into LOEC
+PASS — Fixed-term end date bound into LOEC
+PASS — Dynamic probation duration bound into LOEC
+PASS — Dynamic probation notice bound into LOEC
+PASS — Fixed remuneration breakdown bound into LOEC
+PASS — OT / Additional Work classification bound into LOEC
+PASS — Applicable handbook bound into LOEC
+PASS — Off day and rest day bound into LOEC
+PASS — JD reference and level bound into LOEC Appendix
+PASS — statutory weekly-hours wording uses 45 hours/week excluding rest periods, subject to lawful exceptions
+PASS — sick leave corrected to 14 / 18 / 22 days + 60 hospitalisation days
+PASS — 2026 stamp-duty clause includes RM10 and 30-day stamping window for Malaysia execution
+PASS — legal-employer master-data review exists for MEG / MEH / HDS / ABN
+PASS — all inherited legal-employer profiles default to review_required
+PASS — Aborne inherited White Feather email is explicitly flagged
+PASS — final print validation blocks unverified legal-employer master data
+PASS — Stage 3 preview watermark exists
+PASS — Stage 3 payload marker added without overwriting Stage 2 schema marker
+PASS — Stage 3 does not implement signed-LOEC upload / immutable storage
+PASS — Stage 3 does not implement stamp-certificate tracking
+PASS — retained byte-for-byte from Stage 2: index.html
+PASS — retained byte-for-byte from Stage 2: dashboard.html
+PASS — retained byte-for-byte from Stage 2: jd-manual.html
+PASS — retained byte-for-byte from Stage 2: manifest.json
+PASS — retained byte-for-byte from Stage 2: service-worker.js
+PASS — retained byte-for-byte from Stage 2: supabase_v2_stage1_company_code.sql
+PASS — retained byte-for-byte from Stage 2: v2-entity-core.js
+PASS — retained byte-for-byte from Stage 2: v2-stage2-hr.js
+PASS — V1-SNAPSHOTS retained byte-for-byte
+PASS — prior handoff retained: V2_STAGE1_BUILD_NOTES.md
+PASS — prior handoff retained: V2_STAGE1_VALIDATION_REPORT.txt
+PASS — prior handoff retained: V2_STAGE2_BUILD_NOTES.md
+PASS — prior handoff retained: V2_STAGE2_VALIDATION_REPORT.txt
+PASS — isolated Stage 3 runtime smoke: dynamic LOEC fields, remuneration calculation, JD metadata, statutory clause output, master-data validation gate, Stage 2+3 payload layering, company switching and entity filename
+
+RESULT — 55 PASS / 0 FAIL
+
+NOT RUN — live authenticated Supabase/RLS integration test (isolated build environment has no authenticated project session)
+NOT APPLIED — supabase_v2_stage1_company_code.sql
+NOT VERIFIED — MEG legal-employer master data
+NOT VERIFIED — MEH legal-employer master data
+NOT VERIFIED — HDS legal-employer master data
+NOT VERIFIED — ABN legal-employer master data; inherited source email requires priority review
+NOT BUILT — Aborne approved JD register / official role architecture
+NOT BUILT — signed LOEC PDF upload / verification / immutable document control
+NOT BUILT — stamp certificate upload / stamp status tracking
+NOT BUILT — handbook assignment / read acknowledgement tracking
+NOT COMPLETED — full Chromium staging DOM run; container Chromium remained non-runnable and timed out, so normal local-browser testing is still required before production cutover

@@ -1,0 +1,27 @@
+MEG-EAF V2 — STAGE 1 VALIDATION REPORT
+Build: v2026.09.10-19:07
+
+PASS — JavaScript syntax check: index.html inline script
+PASS — JavaScript syntax check: hr.html inline script
+PASS — JavaScript syntax check: dashboard.html inline script
+PASS — JavaScript syntax check: jd-manual.html inline script
+PASS — JavaScript syntax check: v2-entity-core.js
+PASS — HTML duplicate-ID scan: index.html
+PASS — HTML duplicate-ID scan: hr.html
+PASS — HTML duplicate-ID scan: dashboard.html
+PASS — HTML duplicate-ID scan: jd-manual.html
+PASS — Local href/src dependency scan: no missing local resources
+PASS — HR Application Summary column count updated from 16 to 17 to include Company
+PASS — HR applications query includes payload for backward-compatible company detection
+PASS — HR drafts query includes payload for backward-compatible company detection
+PASS — Company filter includes MEG / MEH / HDS / ABN
+PASS — Applicant submission confirmation uses selected legal employer
+PASS — Applicant family/relative disclosure label uses selected legal employer
+PASS — Approved JD register lookup has a safe fallback if unavailable
+
+NOT RUN — Live Supabase/RLS integration test (container has no network/DNS access to the project)
+NOT APPLIED — supabase_v2_stage1_company_code.sql
+NOT BUILT — Aborne JD register (requires approved Aborne role architecture)
+NOT BUILT — Multi-entity LOEC profiles (Stage 3)
+NOT BUILT — Manual signed LOEC upload / verification / stamp tracking (later stage)
+NOT BUILT — Handbook assignment/read tracking (later stage)

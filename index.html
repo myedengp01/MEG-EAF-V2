@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<style id="megGatewayPrehide">html{visibility:hidden!important}</style>
+<script src="eaf-gateway.js?v=20260916-1117" data-eaf-app="apply"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -273,7 +275,21 @@ td input,td select{border:none;width:100%;font-size:12px;background:transparent;
 <div class="radio-row">
   <label>Intended Post <span style="color:red">*</span> <span style="font-weight:400;color:#888">(tick any that apply)</span></label>
   <div class="cb-group" id="postGroup">
-    <div style="width:100%;padding:9px;color:#777">Loading company-specific positions…</div>
+    <div style="width:100%;font-weight:700;color:#1b5e20;margin:2px 0 4px">A. Operations</div>
+    <label><input type="checkbox" name="post" value="Childcare Mentor"> Childcare Mentor</label>
+    <label><input type="checkbox" name="post" value="Kindergarten Teacher"> Kindergarten Teacher</label>
+    <label><input type="checkbox" name="post" value="Infant Childcare"> Infant Childcare</label>
+    <label><input type="checkbox" name="post" value="Playgroup Mentor"> Playgroup Mentor</label>
+    <label><input type="checkbox" name="post" value="Others (Operations)"> Others: <input type="text" id="postOtherOps" style="width:110px;border:none;border-bottom:1px solid #555;margin-left:4px"></label>
+    <div style="width:100%;font-weight:700;color:#1565c0;margin:8px 0 4px">B. Office</div>
+    <label><input type="checkbox" name="post" value="Management"> Management</label>
+    <label><input type="checkbox" name="post" value="HR"> HR</label>
+    <label><input type="checkbox" name="post" value="Admin"> Admin</label>
+    <label><input type="checkbox" name="post" value="Account"> Account</label>
+    <label><input type="checkbox" name="post" value="Account & Payroll"> Account &amp; Payroll</label>
+    <label><input type="checkbox" name="post" value="Content Creator"> Content Creator</label>
+    <label><input type="checkbox" name="post" value="Marketing"> Marketing</label>
+    <label><input type="checkbox" name="post" value="Others (Office)"> Others: <input type="text" id="postOther" style="width:110px;border:none;border-bottom:1px solid #555;margin-left:4px"></label>
   </div>
 </div>
 <div class="radio-row">
@@ -344,7 +360,7 @@ td input,td select{border:none;width:100%;font-size:12px;background:transparent;
   <textarea id="yesDetails" placeholder="Provide details here..."></textarea>
 </div>
 <div class="form-group" style="margin-bottom:10px">
-  <label>Do you have any family/relatives/friends currently employed by MyEden Group Sdn Bhd? If yes:</label>
+  <label id="relatedEmployeeLabel">Do you have any family/relatives/friends currently employed by MyEden Group Sdn. Bhd.? If yes:</label>
   <div class="form-row" style="margin-top:6px">
     <div class="form-group"><label>Name</label><input type="text" id="relName"></div>
     <div class="form-group"><label>Relationship</label><input type="text" id="relRelationship"></div>
@@ -367,7 +383,7 @@ td input,td select{border:none;width:100%;font-size:12px;background:transparent;
 <div class="section-title">Declaration</div>
 <div class="declaration-box">
   <p style="font-weight:700;margin-bottom:8px">PLEASE READ CAREFULLY</p>
-  <p>I hereby declare that all information given by me to the foregoing questions and all statements made by me in this application form are correct and to the best of my knowledge and belief. If there is any false declaration made in this application form, Myeden Group Sdn Bhd ("the Company") has the absolute right to terminate my employment immediately.</p><br>
+  <p id="entityDeclarationIntro">I hereby declare that all information given by me to the foregoing questions and all statements made by me in this application form are correct and to the best of my knowledge and belief.</p><br>
   <p>I hereby consent and authorise the Company to make reference and contact all my past employers on my job performance. However, reference to my current employer may only be made with my prior permission so long as I am still in their employment.</p><br>
   <p>In accordance with Personal Data Protection Act 2010, I hereby consent and authorise the Company to collect, use and process my personal data for the purpose in relation to my job application and employment with the Company and use my information given herein to contact me directly.</p><br>
   <p>Additionally, the information provided by you to the Company may become part of our resume database. In this instance, the use of such information by the Company will be subject to the Company's privacy policy. By submitting this employment application form to us, I hereby agree and consent for the Company to collect, use and process my personal data in the manner as identified above.</p>
@@ -467,7 +483,7 @@ td input,td select{border:none;width:100%;font-size:12px;background:transparent;
   <div style="max-width:440px;text-align:center">
     <div style="font-size:52px;margin-bottom:12px">&#9989;</div>
     <h3 style="margin-bottom:10px;color:#1b5e20">Application Submitted</h3>
-    <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:16px">Thank you. Your application has been received by MyEden Group. Our HR team will contact you regarding the next steps. You may now close this page.</p>
+    <p id="entitySuccessText" style="font-size:13px;color:#555;line-height:1.6;margin-bottom:16px">Thank you. Your application has been received. Our HR team will contact you regarding the next steps. You may now close this page.</p>
     <button onclick="downloadJsonBackup()" style="padding:9px 16px;background:#546e7a;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">&#128190; Download a copy (JSON)</button>
   </div>
 </div>
@@ -479,7 +495,7 @@ td input,td select{border:none;width:100%;font-size:12px;background:transparent;
     <label>Draft Code</label>
     <input type="text" id="resumeCodeInput" placeholder="Enter your 12-character draft code" autocapitalize="characters" autocomplete="off" spellcheck="false" style="font-family:monospace;letter-spacing:2px" onkeydown="if(event.key==='Enter') resumeDraft()">
     <div id="resumeErr" style="color:red;font-size:12px;margin-top:-8px;margin-bottom:8px;display:none"></div>
-    <p style="font-size:11px;color:#888;line-height:1.5;margin-bottom:12px">Don't have a code? Contact MyEden Group HR and we will retrieve it for you. Loading a draft will replace anything currently entered on this form.</p>
+    <p id="entityDraftHelp" style="font-size:11px;color:#888;line-height:1.5;margin-bottom:12px">Don't have a code? Contact HR and we will retrieve it for you. Loading a draft will replace anything currently entered on this form.</p>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeResumeModal()">Cancel</button>
       <button class="btn-confirm" onclick="resumeDraft()">Load Draft</button>
@@ -490,12 +506,12 @@ td input,td select{border:none;width:100%;font-size:12px;background:transparent;
 <script>
 
 // ── VERSION (update only via UVN command) ──────────────────────────────────
-var FORM_VERSION = 'MEG-EAF-Applicant V2 v2026.08.31-22:15';
+var FORM_VERSION = 'MEG-EAF V2 Applicant · Stage 2 · v2026.09.10-20:05';
 
 
 // ── CONFIG (Supabase backend) ────────────────────────────────────────────────
 var SUPABASE_URL = 'https://vzngfswtofegimfcoigx.supabase.co';
-var SUPABASE_ANON_KEY = 'sb_publishable_V5o_-Bkz5M7Y75j-eN03rQ_pkQ8Kem9';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6bmdmc3d0b2ZlZ2ltZmNvaWd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUyODA5MzUsImV4cCI6MjEwMDg1NjkzNX0.47rTrOjzNgxarCBYGapqajLw5v_yATbeKitiyP6a2Sg';
 var DRAFT_CODE = '';
 
 var photoData = null;
@@ -545,13 +561,21 @@ const EAF_COMPANIES = {
   }
 };
 
-function onEafCompanyChange(){
+function onEafCompanyChange(selectedPosts, otherValue){
   var code = document.getElementById('companySelect').value;
   var c = EAF_COMPANIES[code];
   document.getElementById('companyLogo').src = c.logo;
   document.getElementById('companyNameDisplay').innerHTML = c.name;
   document.getElementById('companyDetailsDisplay').innerHTML =
     c.address + '<br>Tel: ' + c.phone + ' | Email: ' + c.email + '<br>Company Registration: ' + c.regNo;
+  if(window.V2Entity){
+    V2Entity.setEntityText(EAF_COMPANIES,code);
+    V2Entity.loadCompanyPositions({
+      container:'postGroup', companyCode:code, companies:EAF_COMPANIES,
+      supabaseUrl:SUPABASE_URL, anonKey:SUPABASE_ANON_KEY,
+      selectedPosts:Array.isArray(selectedPosts)?selectedPosts:[], otherValue:otherValue||''
+    });
+  }
 }
 
 function loadLogo(){
@@ -969,7 +993,7 @@ function collectFormData(){
     var el=document.querySelector('input[name="'+n+'"]:checked');
     d['radio_'+n]=el?el.value:'';
   });
-  ['post','workhour','spoken','written','source','doc'].forEach(function(n){
+  ['workhour','spoken','written','source','doc'].forEach(function(n){
     d['cb_'+n]=Array.from(document.querySelectorAll('input[name="'+n+'"]:checked')).map(function(el){return el.value;});
   });
   d['declAgree']=document.getElementById('declAgree').checked;
@@ -998,7 +1022,7 @@ function restoreFormData(d){
   if(d['companyCode'] && document.getElementById('companySelect')){
     document.getElementById('companySelect').value = d['companyCode'];
   }
-  onEafCompanyChange();
+  onEafCompanyChange(d['cb_post']||[], d['postOther']||d['postOtherOps']||'');
   ['appDate','nameChinese','nameEnglish','ic1','ic2','ic3','passport','dob',
    'children','maritalOther','raceOther','religionOther','addr1','addr2','addr3','postcodeTown','addrState','contact','email',
    'postOther','postOtherOps','workHourOther','workFrom','workTo','startDate','salary',
@@ -1010,10 +1034,11 @@ function restoreFormData(d){
    'hrNotes','notedBy','notesDate'].forEach(function(id){
     var el=document.getElementById(id); if(el&&d[id]!==undefined) el.value=d[id];
   });
+  var _po=document.getElementById('postOther'); if(_po && !_po.value) _po.value=d['postOther']||d['postOtherOps']||'';
   ['gender','marital','race','religion','q1','q2','q3','q4'].forEach(function(n){
     if(d['radio_'+n]){ var el=document.querySelector('input[name="'+n+'"][value="'+d['radio_'+n]+'"]'); if(el) el.checked=true; }
   });
-  ['post','workhour','spoken','written','source','doc'].forEach(function(n){
+  ['workhour','spoken','written','source','doc'].forEach(function(n){
     if(d['cb_'+n]) d['cb_'+n].forEach(function(v){ var el=document.querySelector('input[name="'+n+'"][value="'+v+'"]'); if(el) el.checked=true; });
   });
   if(d['declAgree']) document.getElementById('declAgree').checked=true;
@@ -1075,7 +1100,7 @@ function scheduleAutoSave(){
 // ═══════════════════════════════════════════════════════════════════════
 
 function sbHeaders(){
-  return {'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY};
+  return {'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY};
 }
 
 function sbRpc(fn, args){
@@ -1202,7 +1227,7 @@ function resumeDraft(){
     })
     .catch(function(err){
       if(String(err.message).indexOf('DRAFT_NOT_FOUND')>-1){
-        errEl.textContent='No draft found for this code. It may have expired (drafts are kept 14 days) or the code was mistyped. Contact MyEden Group HR if you need help.';
+        errEl.textContent='No draft found for this code. It may have expired (drafts are kept 14 days) or the code was mistyped. Contact HR if you need help.';
       }else{
         errEl.textContent='Could not load draft: '+err.message;
       }
@@ -1215,7 +1240,8 @@ function submitApplication(){
   var errs=validateDraft();
   if(errs.length>0){ showErrors(errs); return; }
   clearErrors();
-  if(!confirm('Submit your application to MyEden Group?\n\nPlease make sure all information is correct — the application cannot be changed after submission.')) return;
+  var _cc=document.getElementById('companySelect').value; var _cn=EAF_COMPANIES[_cc]?EAF_COMPANIES[_cc].name:'the selected company';
+  if(!confirm('Submit your application to '+_cn+'?\n\nPlease make sure all information is correct — the application cannot be changed after submission.')) return;
   var btn=document.getElementById('btnSubmit');
   btn.disabled=true; btn.textContent='Submitting...';
   fetch(SUPABASE_URL+'/rest/v1/eaf_applications',{
@@ -1228,7 +1254,7 @@ function submitApplication(){
         var body=null; try{ body=JSON.parse(txt); }catch(e){}
         var msg=(body&&(body.message||body.hint))||('HTTP '+r.status);
         if(r.status===401||r.status===403||String(msg).toLowerCase().indexOf('policy')>-1){
-          msg='your access link may have expired — please contact MyEden Group HR';
+          msg='your access link may have expired — please contact HR';
         }
         throw new Error(msg);
       });
@@ -1500,6 +1526,6 @@ window.onload=function(){
   setTimeout(tryAutoResume, 400);
 };
 </script>
-<script src="v2-applicant-extension.js"></script>
+<script src="v2-entity-core.js"></script>
 </body>
 </html>

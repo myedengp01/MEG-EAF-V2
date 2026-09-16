@@ -1,6 +1,6 @@
 /*
  * MEG-Employment & HR System V2 — Page Access Guard
- * Dashboard UVN: v2026.09.04-19:30
+ * Dashboard / Stage3B UVN: v2026.09.16-11:17
  * This file controls gateway entry only. It does NOT rename MEG-EAF V2 forms/LOEC.
  */
 (function(){
@@ -11,7 +11,7 @@
   var SUPABASE_URL = 'https://vzngfswtofegimfcoigx.supabase.co';
   var SUPABASE_ANON_KEY = 'sb_publishable_V5o_-Bkz5M7Y75j-eN03rQ_pkQ8Kem9';
   var SESSION_KEY = 'meg_hr_session';
-  var CLIENT_INFO = 'MEG-EAF-V2-GATEWAY/v2026.09.04-19:30';
+  var CLIENT_INFO = 'MEG-EAF-V2-GATEWAY/v2026.09.16-11:17';
   var DASHBOARD_URL = 'dashboard.html';
   var session = null;
   var invitationToken = null;

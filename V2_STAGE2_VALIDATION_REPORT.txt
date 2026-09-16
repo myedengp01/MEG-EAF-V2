@@ -1,0 +1,47 @@
+MEG-EAF V2 — STAGE 2 VALIDATION REPORT
+Build: v2026.09.10-20:05
+Source baseline: Stage 1 v2026.09.10-19:07
+
+PASS — JavaScript syntax: v2-entity-core.js
+PASS — JavaScript syntax: v2-stage2-hr.js
+PASS — inline JavaScript syntax: index.html (1 block(s))
+PASS — HTML duplicate-ID scan: index.html
+PASS — inline JavaScript syntax: hr.html (1 block(s))
+PASS — HTML duplicate-ID scan: hr.html
+PASS — inline JavaScript syntax: dashboard.html (1 block(s))
+PASS — HTML duplicate-ID scan: dashboard.html
+PASS — inline JavaScript syntax: jd-manual.html (1 block(s))
+PASS — HTML duplicate-ID scan: jd-manual.html
+PASS — local href/src dependency scan
+PASS — HR includes Stage 2 module after entity core
+PASS — HR form version advanced to Stage 2
+PASS — Applicant form version advanced to Stage 2
+PASS — Stage 2 employment type captured
+PASS — Stage 2 probation + notice captured
+PASS — Stage 2 OT classification captured
+PASS — Stage 2 remuneration breakdown captured
+PASS — Stage 2 approved JD Master load uses authenticated HR API
+PASS — Stage 2 restricts JD binding to approved records
+PASS — Happy Dino fallback has all L1-L5 mapped
+PASS — Aborne safe no-approved-JD state exists
+PASS — Stage 2 payload schema marker exists
+PASS — Stage 2 JD identity persisted
+PASS — Stage 3 LOEC renderer not overridden by Stage 2 module
+PASS — Stage 1 company-code migration file retained
+PASS — retained byte-for-byte from Stage 1: dashboard.html
+PASS — retained byte-for-byte from Stage 1: jd-manual.html
+PASS — retained byte-for-byte from Stage 1: manifest.json
+PASS — retained byte-for-byte from Stage 1: service-worker.js
+PASS — retained byte-for-byte from Stage 1: supabase_v2_stage1_company_code.sql
+PASS — V1-SNAPSHOTS retained byte-for-byte
+PASS — Stage 2 generated dynamic IDs are unique and do not collide with existing HR HTML IDs
+
+RESULT — 33 PASS / 0 FAIL
+
+NOT RUN — Live Supabase/RLS integration test (isolated build environment has no authenticated project session)
+NOT APPLIED — supabase_v2_stage1_company_code.sql
+NOT BUILT — Aborne JD register / official role architecture
+NOT BUILT — Multi-entity LOEC clause/profile refactor (Stage 3)
+NOT BUILT — Manual signed LOEC upload / verification / stamp tracking (later stage)
+NOT BUILT — Handbook assignment/read tracking (later stage)
+NOT COMPLETED — Full headless-browser runtime harness; container Chromium did not produce DOM output, so local staging browser verification is still required

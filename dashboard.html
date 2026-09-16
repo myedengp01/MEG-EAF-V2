@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#0a0e1a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="MEG-EAF">
+<meta name="apple-mobile-web-app-title" content="MEG-HR V2">
 <style>
 :root{
   --bg-0:#0a0e1a;--bg-1:#0f1526;--card:#151d35;--card-hover:#1b2440;
@@ -90,7 +90,7 @@ button,input,select{font:inherit}.hidden{display:none!important}
     <div class="user-strip" id="welcomeLine"></div>
     <div class="cards" id="appCards"></div>
   </div>
-  <div class="footer-note">MEG-Employment &amp; HR Dashboard v2026.09.04-19:30</div>
+  <div class="footer-note">MEG-Employment &amp; HR Dashboard v2026.09.16-11:17</div>
 </div>
 
 <div class="modal-bg" id="adminModal" onclick="if(event.target===this) closeAdminControl()">
@@ -107,7 +107,7 @@ button,input,select{font:inherit}.hidden{display:none!important}
 var SUPABASE_URL='https://vzngfswtofegimfcoigx.supabase.co';
 var SUPABASE_ANON_KEY='sb_publishable_V5o_-Bkz5M7Y75j-eN03rQ_pkQ8Kem9';
 var SESSION_KEY='meg_hr_session';
-var CLIENT_INFO='MEG-EAF-V2-GATEWAY/v2026.09.04-19:30';
+var CLIENT_INFO='MEG-EAF-V2-GATEWAY/v2026.09.16-11:17';
 var HR_APP_URL='https://myedengp01.github.io/MEG-EAF-V2/hr.html';
 var SESSION=null,BOOT=null,CURRENT_ADMIN_TAB='apps';
 var APP_ORDER=['apply','hr','jd_manual','hr_law'];
@@ -138,7 +138,7 @@ function showSignup(){document.getElementById('loginBox').classList.add('hidden'
 
 function signInDashboard(){var email=document.getElementById('loginEmail').value.trim(),pw=document.getElementById('loginPassword').value;setError('authError','');setInfo('authInfo','');if(!email||!pw){setError('authError','Please enter your email and password.');return;}var btn=document.getElementById('loginBtn');btn.disabled=true;btn.textContent='Signing in...';fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'X-Client-Info':CLIENT_INFO},body:JSON.stringify({email:email,password:pw})}).then(function(r){return r.json().then(function(b){return {ok:r.ok,b:b};});}).then(function(x){if(!x.ok)throw new Error((x.b&&(x.b.error_description||x.b.msg||x.b.message))||'Sign-in failed.');SESSION={access_token:x.b.access_token,refresh_token:x.b.refresh_token};storeSession();return loadGateway(true);}).catch(function(e){clearSession();setError('authError',/invalid/i.test(e.message)?'Incorrect email or password.':e.message);}).finally(function(){btn.disabled=false;btn.textContent='Sign In';});}
 function signUpDashboard(){var n=document.getElementById('signupName').value.trim(),email=document.getElementById('signupEmail').value.trim(),p1=document.getElementById('signupPw1').value,p2=document.getElementById('signupPw2').value;setError('signupError','');setInfo('signupInfo','');if(!n||!email||!p1||!p2){setError('signupError','Please complete all account fields.');return;}if(p1.length<6){setError('signupError','Password must be at least 6 characters.');return;}if(p1!==p2){setError('signupError','Passwords do not match.');return;}var b=document.getElementById('signupBtn');b.disabled=true;b.textContent='Creating account...';fetch(SUPABASE_URL+'/auth/v1/signup',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'X-Client-Info':CLIENT_INFO},body:JSON.stringify({email:email,password:p1,data:{full_name:n}})}).then(function(r){return r.json().then(function(x){return {ok:r.ok,b:x};});}).then(function(x){if(!x.ok)throw new Error((x.b&&(x.b.error_description||x.b.msg||x.b.message))||'Could not create account.');document.getElementById('signupPw1').value='';document.getElementById('signupPw2').value='';setInfo('signupInfo',x.b&&x.b.access_token?'Account created. Please sign in. An administrator must still assign application access.':'Account request received. Verify your email if prompted, then sign in. An administrator must assign application access.');}).catch(function(e){setError('signupError',e.message);}).finally(function(){b.disabled=false;b.textContent='Create Account';});}
-function forgotPassword(){var email=document.getElementById('loginEmail').value.trim();setError('authError','');if(!email){setError('authError','Enter your email first, then click Forgot Password.');return;}fetch(SUPABASE_URL+'/auth/v1/recover?redirect_to='+encodeURIComponent(HR_APP_URL),{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'X-Client-Info':CLIENT_INFO},body:JSON.stringify({email:email})}).then(function(r){if(!r.ok)throw new Error('Could not send reset email.');setInfo('authInfo','Password reset email sent. The reset link will open the existing MEG-EAF V2 password-reset page.');}).catch(function(e){setError('authError',e.message);});}
+function forgotPassword(){var email=document.getElementById('loginEmail').value.trim();setError('authError','');if(!email){setError('authError','Enter your email first, then click Forgot Password.');return;}fetch(SUPABASE_URL+'/auth/v1/recover?redirect_to='+encodeURIComponent(HR_APP_URL),{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'X-Client-Info':CLIENT_INFO},body:JSON.stringify({email:email})}).then(function(r){if(!r.ok)throw new Error('Could not send reset email.');setInfo('authInfo','Password reset email sent. The reset link will open the MEG-Employment & HR System V2 password-reset page.');}).catch(function(e){setError('authError',e.message);});}
 function signOutDashboard(){var tok=SESSION&&SESSION.access_token;clearSession();BOOT=null;if(tok){fetch(SUPABASE_URL+'/auth/v1/logout',{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+tok}}).catch(function(){});}location.href='dashboard.html';}
 
 function modeLabel(m){return ({restricted:'Restricted',invitation_only:'Invitation Only',admin_only:'Admin Only',disabled:'Disabled'})[m]||m||'Restricted';}

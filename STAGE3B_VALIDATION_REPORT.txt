@@ -1,0 +1,72 @@
+MEG-Employment & HR System V2 — Stage 3B Static Validation
+Build: v2026.09.16-11:17
+Result: 68 PASS / 0 FAIL
+
+PASS — required file dashboard.html
+PASS — required file index.html
+PASS — required file hr.html
+PASS — required file jd-manual.html
+PASS — required file employment-act.html
+PASS — required file eaf-gateway.js
+PASS — required file v2-entity-core.js
+PASS — required file v2-stage2-hr.js
+PASS — required file v2-stage3-loec.js
+PASS — required file supabase_v2_stage1_company_code.sql
+PASS — required file 008_dashboard_gateway_access_control.sql
+PASS — Stage3A DB-MEG-FORMS dependency retained
+PASS — dashboard official name
+PASS — dashboard Stage3B footer
+PASS — gateway technical client prefix preserved
+PASS — dashboard Admin Control
+PASS — dashboard invitation flow
+PASS — index.html gateway prehide
+PASS — index.html gateway code
+PASS — index.html current gateway cache key
+PASS — hr.html gateway prehide
+PASS — hr.html gateway code
+PASS — hr.html current gateway cache key
+PASS — jd-manual.html gateway prehide
+PASS — jd-manual.html gateway code
+PASS — jd-manual.html current gateway cache key
+PASS — employment-act.html gateway prehide
+PASS — employment-act.html gateway code
+PASS — employment-act.html current gateway cache key
+PASS — index Stage1 module ref
+PASS — hr dependency v2-entity-core.js
+PASS — hr dependency v2-stage2-hr.js
+PASS — hr dependency v2-stage3-loec.js
+PASS — HDS probation 3 months
+PASS — ABN probation 3 months
+PASS — old HDS/ABN management-input blocker removed
+PASS — Aborne applicant fallback Event Admin
+PASS — Aborne HR fallback Event Admin
+PASS — Aborne applicant fallback Event Executive
+PASS — Aborne HR fallback Event Executive
+PASS — Aborne applicant fallback Event Manager
+PASS — Aborne HR fallback Event Manager
+PASS — Aborne applicant fallback Sales Executive
+PASS — Aborne HR fallback Sales Executive
+PASS — Aborne applicant fallback Operations Executive
+PASS — Aborne HR fallback Operations Executive
+PASS — Aborne fallback resolver
+PASS — Aborne responsibilities available
+PASS — MEG employer verified
+PASS — MEH employer verified
+PASS — HDS employer verified
+PASS — ABN employer verified
+PASS — Stage3B version in LOEC
+PASS — stale blocker absent: No approved Aborne JD role is published yet
+PASS — stale blocker absent: Priority verification required.
+PASS — new official build notes
+PASS — GitHub reconciliation record
+PASS — management decisions record
+PASS — staging preflight only
+PASS — JS syntax eaf-gateway.js
+PASS — JS syntax v2-entity-core.js
+PASS — JS syntax v2-stage2-hr.js
+PASS — JS syntax v2-stage3-loec.js
+PASS — inline JS syntax dashboard.html
+PASS — inline JS syntax index.html
+PASS — inline JS syntax hr.html
+PASS — inline JS syntax jd-manual.html
+PASS — inline JS syntax employment-act.html

@@ -1,0 +1,267 @@
+{
+  "build": "v2026.09.16-11:17",
+  "package": "MEG-Employment-HR-System-V2-Stage3B-v2026.09.16-1117",
+  "file_count_excluding_manifest": 52,
+  "files": [
+    {
+      "path": "008_dashboard_gateway_access_control.sql",
+      "size": 21868,
+      "sha256": "17c43546bfa40d9aa6a6e7f21b7494f53a168081184e63de80d72389d552572b"
+    },
+    {
+      "path": "009_STAGE3B_ABORNE_JD_STAGING_PREFLIGHT.sql",
+      "size": 1226,
+      "sha256": "03132cc1ddd26ffd91d1f9f29dd70fbd82f15dc43abc0294d030e308ab98f369"
+    },
+    {
+      "path": "DASHBO~1.HTM",
+      "size": 25060,
+      "sha256": "336aa30492117e5e5bfc31986acbfe303e89543604c9314441a64e5fe7bf3586"
+    },
+    {
+      "path": "DB-MEG-FORMS/DB-MEG-FORMS_Build_Generator_v2026.09.10-11-45.html",
+      "size": 58147,
+      "sha256": "15efc4b30e567fc117f5105272886d8edb161db9c15e2a676ea7ddf2e6b5ec94"
+    },
+    {
+      "path": "MANIFE~1.JSO",
+      "size": 682,
+      "sha256": "b570d5d8bc9b2502f3d83de90c72f57274f0010f9f015faef8383147057cb2e5"
+    },
+    {
+      "path": "MEG-EAF_User_Manual.html",
+      "size": 49022,
+      "sha256": "1011fcced6cde44694d6d9e8947cabd3c899bdfffd3fa7a30ac5e05acc2ec967"
+    },
+    {
+      "path": "MEG-EA~1.HTM",
+      "size": 49022,
+      "sha256": "1011fcced6cde44694d6d9e8947cabd3c899bdfffd3fa7a30ac5e05acc2ec967"
+    },
+    {
+      "path": "README.md",
+      "size": 486,
+      "sha256": "c7ef16e60e82f1df33d6ab67fb3b803960b4ef5e3c35bd4d502abf22bae94e5b"
+    },
+    {
+      "path": "SERVIC~1.JS",
+      "size": 831,
+      "sha256": "7026905b9714f87a360b43e42df5df633d792325db4f5781630c9b51c452afc8"
+    },
+    {
+      "path": "STAGE3B_BUILD_NOTES.md",
+      "size": 1014,
+      "sha256": "032a40218b8e44a611b89778a1912cc86bbba735160cab1d5ee69736c6894e78"
+    },
+    {
+      "path": "STAGE3B_GITHUB_RECONCILIATION.md",
+      "size": 2224,
+      "sha256": "c0b5379841793e997e1c125580d82f662ddcc5b9b18b193b556bc564b9383427"
+    },
+    {
+      "path": "STAGE3B_MANAGEMENT_DECISIONS.md",
+      "size": 1127,
+      "sha256": "015c36f9505083d7df3d0376c2cf86d661f10f17c31dd16ea73817b18315075d"
+    },
+    {
+      "path": "STAGE3B_VALIDATION_REPORT.txt",
+      "size": 2904,
+      "sha256": "3b12a9d9e4fe92dff927dd06f5a1fe2bd83a8dbc3b308e15ac66110afc8c405c"
+    },
+    {
+      "path": "V1-SNAPSHOTS/dashboard.V1-snapshot.html",
+      "size": 25060,
+      "sha256": "336aa30492117e5e5bfc31986acbfe303e89543604c9314441a64e5fe7bf3586"
+    },
+    {
+      "path": "V1-SNAPSHOTS/hr.V1-snapshot.html",
+      "size": 979517,
+      "sha256": "8ecc3368d3073f4d3180fe4a75c518d6bdd12e124b7a026f41c815cac4ec95fc"
+    },
+    {
+      "path": "V1-SNAPSHOTS/index.V1-snapshot.html",
+      "size": 224144,
+      "sha256": "7a2db9755ab3bda009116f79286f4f4ffe2ac53e5b305877f46f542b6a9ef8a5"
+    },
+    {
+      "path": "V1-SNAPSHOTS/jd-manual.V1-snapshot.html",
+      "size": 26361,
+      "sha256": "9e10335610e8f195aa0aa45d57a5d3e65e1aa4b0e74477a142689e6e789d40c6"
+    },
+    {
+      "path": "V2_STAGE1_BUILD_NOTES.md",
+      "size": 1655,
+      "sha256": "085002959eeed9508cb2acf8c166764fd0e3f67d9da5292c431a8f94ae220867"
+    },
+    {
+      "path": "V2_STAGE1_FILE_MANIFEST.json",
+      "size": 4898,
+      "sha256": "3868a30cea8b65871513852469649b85ef10b8b86dd976684e9bad43a8d51947"
+    },
+    {
+      "path": "V2_STAGE1_VALIDATION_REPORT.txt",
+      "size": 1579,
+      "sha256": "505b6db90c027778ae3098f1ae70998dbcc0d3ab2f87233fe10e34200e73ef9b"
+    },
+    {
+      "path": "V2_STAGE2_BUILD_NOTES.md",
+      "size": 4630,
+      "sha256": "0371a0cc852d1067ed31453ee2e786b8fd284da2063c1eb7b4ea17f42c5d01bd"
+    },
+    {
+      "path": "V2_STAGE2_FILE_MANIFEST.json",
+      "size": 5840,
+      "sha256": "6d174cc2c29b4e1d538fc9c385e196b97b1bb86b8c77744806e7ad0fac4779f9"
+    },
+    {
+      "path": "V2_STAGE2_VALIDATION_REPORT.txt",
+      "size": 2519,
+      "sha256": "32d00554fbf05ad8fc19a32c13d764b2d1d9b63a49488b5895ed794270c27ac1"
+    },
+    {
+      "path": "V2_STAGE3A_DB_MEG_FORMS_APPEND_NOTES.md",
+      "size": 873,
+      "sha256": "c6e856417eee178ffa804cc958ccb564fdbf78f8a9efe7b7df1cec515e5b3fca"
+    },
+    {
+      "path": "V2_STAGE3_BUILD_NOTES.md",
+      "size": 4708,
+      "sha256": "298ef1e01d3ffb14f4973ab3b7e197edbec905876a39e8d1227e24f5f94b60ce"
+    },
+    {
+      "path": "V2_STAGE3_FILE_MANIFEST.json",
+      "size": 6382,
+      "sha256": "2be38e874e310d9be4f24a77af320eba847bae8c1fd74f625af725fa6836e09a"
+    },
+    {
+      "path": "V2_STAGE3_MASTER_DATA_CHECKLIST.md",
+      "size": 2663,
+      "sha256": "7c5ba9f947d5d5ddbce17d32a65009109e3e61d6fca5727e299002fe5a277976"
+    },
+    {
+      "path": "V2_STAGE3_VALIDATION_REPORT.txt",
+      "size": 4377,
+      "sha256": "d7f928d15f0fc21a241767bb8ccc6f0b1d484b0b6935078ae30a9f822e77d8ca"
+    },
+    {
+      "path": "dashboard.html",
+      "size": 35888,
+      "sha256": "57cec941e516c67c6961d9ad45cd2928271c64cafebfd32b1591e72833edf5de"
+    },
+    {
+      "path": "eaf-gateway.js",
+      "size": 10075,
+      "sha256": "fb7cc038d68d80f626e5d43817ec089774c3c625de1686cba3450938faa1f802"
+    },
+    {
+      "path": "employment-act.html",
+      "size": 73313,
+      "sha256": "243a77dcf2d1c4d05c0081d58af82c8938a06bf432cb1990e1c1ed96a723b8d7"
+    },
+    {
+      "path": "favicon-32.png",
+      "size": 1804,
+      "sha256": "71ec879f2097fe7982f3c434d8368c47f817289b73ceab313f2ef057801e0aba"
+    },
+    {
+      "path": "hr.html",
+      "size": 982456,
+      "sha256": "cfefecb97665553c966925bba708c473a4974e75ff301535106a0c8e0b24a683"
+    },
+    {
+      "path": "hr_2026.08.12-1830.html",
+      "size": 965665,
+      "sha256": "05866ac3dbff0fc9139f73db5748a31467bf668c8dc80b4ec5907af4ea0dcf6a"
+    },
+    {
+      "path": "hr_ori11082026.html",
+      "size": 451997,
+      "sha256": "5e8ae6af8345e199b8e42e6094d2b876ccf43fb7a038a420ac6f2bfbcd9a6ecb"
+    },
+    {
+      "path": "hr_ori12082026.html",
+      "size": 960489,
+      "sha256": "6449e9bf3491f020b4544314df3e7d753f2c5232201c10ac2ef79cce58fab998"
+    },
+    {
+      "path": "icon-180.png",
+      "size": 21069,
+      "sha256": "c3debda83eefe6a4ac7087220348607253cde3fea3340b50ab39ebef426c487a"
+    },
+    {
+      "path": "icon-192.png",
+      "size": 22941,
+      "sha256": "3de70a42caa5c5087b25d978b1bd336503f39a55276799f5fb70c9bacd57e087"
+    },
+    {
+      "path": "icon-512.png",
+      "size": 88255,
+      "sha256": "7f0669d646f0ed9cc4743f96d06c33860a4a6dfd3564f663839e5ebc0b14ce93"
+    },
+    {
+      "path": "index-v2026.08.28-0930.html",
+      "size": 223909,
+      "sha256": "814265cc2af912fb1dd7a1163522d9217d2c7b2feec593df5d30a5ac2c5626cf"
+    },
+    {
+      "path": "index.html",
+      "size": 224895,
+      "sha256": "8d9bd0ab2fc3c3b44be3d7f2a6cdda84230a4b58cc4a3d22e1b0a96a36ceed3a"
+    },
+    {
+      "path": "index_2026.08.12-1830.html",
+      "size": 217244,
+      "sha256": "16dff5762eb3e6e20aef123ee4f5c64a4c33816b7dd5d1d6a584abdd141589f9"
+    },
+    {
+      "path": "index_ori11082026.html",
+      "size": 191581,
+      "sha256": "0454dcb9dca85734383378c635740cd8c2fe690ec67a10a93b9330630706db3b"
+    },
+    {
+      "path": "index_ori12082026.html",
+      "size": 217244,
+      "sha256": "5f6e3e343d843d69e1d5fc6d0947bb9c3e2988341476cd48a587c39e3b5c3c36"
+    },
+    {
+      "path": "jd-manual-v2026.08.28-0930.html",
+      "size": 25193,
+      "sha256": "965ec18ecac681633cc9293f3ae45e45809a54191137ec6b03d84c220280a244"
+    },
+    {
+      "path": "jd-manual.html",
+      "size": 26526,
+      "sha256": "a9dee867a17e56175acadd1b3412d52cf94bc17b06f4dfa2000bc9d21b2f2ef4"
+    },
+    {
+      "path": "manifest.json",
+      "size": 800,
+      "sha256": "c826fd3e99614c1dcd9b19ac9cc37505b8b72eccfb4098568b3f2ee7fb6b5361"
+    },
+    {
+      "path": "service-worker.js",
+      "size": 831,
+      "sha256": "7026905b9714f87a360b43e42df5df633d792325db4f5781630c9b51c452afc8"
+    },
+    {
+      "path": "supabase_v2_stage1_company_code.sql",
+      "size": 1819,
+      "sha256": "740382181ae96cda723858c412599b0db9dd9cbb299c783ad8e8b6ecacbb08e1"
+    },
+    {
+      "path": "v2-entity-core.js",
+      "size": 9241,
+      "sha256": "ac38043a7ccf953bbb521e522323dcd2cbdf4a62442fa6e0d704aa2971e984ac"
+    },
+    {
+      "path": "v2-stage2-hr.js",
+      "size": 35147,
+      "sha256": "ae8167b5ee2408040169d7e34daaace38007db23fcbbcb423ad82ba90abca83e"
+    },
+    {
+      "path": "v2-stage3-loec.js",
+      "size": 31060,
+      "sha256": "a85f5f05ba0a5e3c96dc4a349f128421a3a53c402931e9846fcf4b1675d68945"
+    }
+  ]
+}
