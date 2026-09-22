@@ -10,7 +10,7 @@ Read-only inspection of Supabase project `vzngfswtofegimfcoigx` found:
 - One administrator exists and is also the sole super administrator. No account was selected or assigned.
 - `eaf_v2_gateway_staff_directory` already returns both role flags and account status. The gateway bootstrap combines the flags into `is_admin`, so the new UI checks the current user's directory entry for the actual super-admin flag.
 - `eaf_v2_set_staff_permissions` previously allowed any ordinary administrator to change another user's `is_admin`. The new table trigger guards this older RPC too. Existing ordinary-permission updates and gateway access updates remain available under their current authorization.
-- Permissions have SELECT-only RLS policies; gateway audit entries have RLS with no direct client policies. Audit access is through the existing admin RPC.
+- Permissions have SELECT-only RLS policies and no authenticated table UPDATE privilege; gateway audit entries have RLS with no direct client policies. Audit access is through the existing admin RPC. The isolated fixture deliberately grants broader table privileges to test RLS as an additional barrier.
 - HR Letters permits ordinary administrators to prepare/submit drafts. Approval and issuance require a different super administrator. This feature preserves those rules; it does not grant approval authority to the new ordinary administrator.
 
 ## Change
@@ -32,6 +32,20 @@ Every actual administrator change, including through the old RPC, writes actor, 
 - UI checks passed for role visibility, escaped names, confirmation/cancellation, grant/revoke arguments, protected/inactive accounts, errors/refresh and tab guards.
 - Local browser DOM and screenshot verified the Users-tab layout with dummy rows. Native confirmation interaction hit a browser-control timeout; confirmation logic is covered by the automated UI test. Production sign-in and production mutation were not tested.
 - JavaScript syntax and Git whitespace checks passed.
+
+### Supabase rollback integration check
+
+On 2026-09-22, the migration was tested inside a single rolled-back transaction against `vzngfswtofegimfcoigx`. There was no persistent deployment. No existing staging branch was available. Account-creation/profile triggers were inspected first: the dummy inserts create database profile rows, without outbound email or notification calls. Only three reserved test UUIDs with `example.invalid` addresses were inserted; their initial roles were bootstrapped before installing the guard inside the same transaction.
+
+The test used actual `authenticated` and `anon` database roles and request user IDs. It verified user and ordinary-admin denial, denial through the legacy staff RPC, direct-table-write denial, self/super-admin protection, grant/revoke, stale-state rejection, preservation of ordinary permissions, continued ordinary permission-management RPCs, and both audit events through `eaf_v2_gateway_get_access_log`. A snapshot comparison confirmed that every pre-existing permission row remained unchanged before rollback.
+
+The first run stopped because production denies UPDATE at the table privilege layer, which is stricter than the isolated fixture's RLS-only denial. Rollback was confirmed, and the test was corrected to accept either legitimate denial mechanism. The complete second run passed and returned:
+
+```json
+{"result":"Rollback completed; all preceding assertions passed","migration_absent":true,"dummy_users_absent":true,"dummy_permissions_absent":true,"dummy_audits_absent":true}
+```
+
+`node tests/build-admin-role-rollback.mjs` emits the reproducible rollback-only SQL batch; it does not connect to a database. Review project triggers before running it elsewhere. The batch uses a 2-second lock timeout and a 15-second statement timeout and refuses to run if the migration or dummy IDs already exist. PostgreSQL audit sequence allocations can leave harmless ID gaps after rollback. This validates the actual database schema and RPC execution, but not a signed-in browser/PostgREST request across the network.
 
 Run reproducible tests with `npm ci --prefix tests` then `npm test --prefix tests` (Node.js required). PGlite is pinned to 0.3.14. Auth/profile tables in the fixture are minimal test doubles; this does not replace a staging Supabase/PostgREST integration check.
 
