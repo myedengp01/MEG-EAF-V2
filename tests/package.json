@@ -1,0 +1,11 @@
+{
+  "name": "meg-eaf-admin-role-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node admin-roles-db.mjs && node admin-roles-ui.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.3.14"
+  }
+}
