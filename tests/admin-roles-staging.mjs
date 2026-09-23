@@ -57,6 +57,7 @@ export async function verifyStaging(config,fetchImpl=fetch) {
   }
   let mutationAttempted=false,success=false,primaryError;
   try {
+    await denied(rpc('eaf_v2_gateway_staff_directory',config.userToken),'non-admin directory denial before grant');
     // Negative mutation tests also need cleanup if an authorization regression lets one through.
     mutationAttempted=true;
     await denied(change(null,targetId,true,false),'anonymous denial');
@@ -70,11 +71,16 @@ export async function verifyStaging(config,fetchImpl=fetch) {
     check(grant.ok && grant.data===true,'grant response');
     const granted=(await directory()).find(x=>x.id===targetId);
     check(granted?.is_admin===true && !granted.is_super_admin && flags(granted)===originalFlags,'grant persisted with app flags preserved');
+    // Reuse the original session: authorization must reflect the stored role, not stale JWT claims.
+    const targetDirectory=await rpc('eaf_v2_gateway_staff_directory',config.userToken);
+    check(targetDirectory.ok && Array.isArray(targetDirectory.data) && targetDirectory.data.some(x=>x.id===targetId && x.is_admin===true),'existing session gains administrator directory access');
+    await denied(change(config.userToken,targetId,false,true),'new administrator cannot assign roles');
     await denied(change(config.superToken,targetId,false,false),'stale state rejected','PT409');
     const revoke=await change(config.superToken,targetId,false,true);
     check(revoke.ok && revoke.data===false,'revoke response');
     const restored=(await directory()).find(x=>x.id===targetId);
     check(restored && !restored.is_admin && !restored.is_super_admin && flags(restored)===originalFlags,'revocation persisted with app flags preserved');
+    await denied(rpc('eaf_v2_gateway_staff_directory',config.userToken),'existing session loses administrator directory access');
     const afterAudit=await auditCounts();
     check(afterAudit[0]===beforeAudit[0]+1 && afterAudit[1]===beforeAudit[1]+1,'new grant and revoke audit events');
     success=true;

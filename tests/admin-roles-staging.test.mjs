@@ -8,7 +8,7 @@ assert.throws(()=>configuration({}),/Missing/);
 assert.throws(()=>configuration({...env,EDP_STAGING_KEY:'sb_secret_bad'}),/publishable/);
 const config=configuration(env);
 function server(options={}) {
-  let targetAdmin=false,grantTimedOut=false; const events=[],calls=[];
+  let targetAdmin=false,grantTimedOut=false,everGranted=false; const events=[],calls=[];
   const row=(id,isAdmin,isSuper)=>({id,email:`edp-test-${id}@example.invalid`,is_admin:isAdmin,is_super_admin:isSuper,account_status:'active',can_access_apply:false,can_access_hr:true,can_access_jd_manual:false,can_access_hr_law:false});
   function result(ok,data,status=ok?200:403) {return {ok,status,json:async()=>structuredClone(data)};}
   function audit(enabled) {events.push({event_code:'administrator_role_change',details:{target_user_id:'user',action:enabled?'grant':'revoke',previous_is_admin:!enabled,is_admin:enabled}});}
@@ -20,6 +20,7 @@ function server(options={}) {
     if(path==='/auth/v1/user') return result(true,{id:actor,email:options.realUser && actor==='user'?'someone@company.test':`edp-test-${actor}@example.invalid`});
     if(path.endsWith('eaf_v2_gateway_staff_directory')) {
       if(options.cleanupFails && grantTimedOut) throw Error('Simulated network outage');
+      if(actor==='user' && (!targetAdmin || options.staleGrant) && !(options.staleRevoke && everGranted)) return result(false,{code:'42501'});
       return result(true,[row('super',true,true),row('admin',true,false),row('user',targetAdmin,false)]);
     }
     if(path.endsWith('eaf_v2_gateway_get_access_log')) return result(true,events);
@@ -32,6 +33,7 @@ function server(options={}) {
       if(actor!=='super' || args.p_user_id==='super') return result(false,{code:'42501'});
       if(targetAdmin!==args.p_expected_is_admin) return result(false,{code:'PT409'},409);
       targetAdmin=args.p_enabled; audit(targetAdmin);
+      if(targetAdmin) everGranted=true;
       if(options.timeoutAfterGrant && targetAdmin && !grantTimedOut) {grantTimedOut=true;throw Error('Simulated timeout after commit');}
       return result(true,targetAdmin);
     }
@@ -46,4 +48,6 @@ const timeout=server({timeoutAfterGrant:true}); await assert.rejects(()=>verifyS
 const broken=server({legacyBroken:true}); await assert.rejects(()=>verifyStaging(config,broken.fetchImpl),/legacy role assignment denial/); assert.equal(broken.role(),false);
 const missing=server({missingRPC:true}); await assert.rejects(()=>verifyStaging(config,missing.fetchImpl),/anonymous denial/); assert.equal(missing.role(),false);
 const lost=server({timeoutAfterGrant:true,cleanupFails:true}); await assert.rejects(()=>verifyStaging(config,lost.fetchImpl),/CLEANUP NOT CONFIRMED/);
+const staleGrant=server({staleGrant:true}); await assert.rejects(()=>verifyStaging(config,staleGrant.fetchImpl),/existing session gains/); assert.equal(staleGrant.role(),false);
+const staleRevoke=server({staleRevoke:true}); await assert.rejects(()=>verifyStaging(config,staleRevoke.fetchImpl),/existing session loses/); assert.equal(staleRevoke.role(),false);
 console.log('PASS: staging harness endpoint/account guards, HTTP contract, new audits, timeout cleanup, authorization-regression cleanup and explicit cleanup failure.');
