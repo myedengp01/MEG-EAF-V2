@@ -1,6 +1,14 @@
 # EDP signed-in staging verification
 
-**Status: prepared, not run against a staging service.** There is no existing staging branch in the connected project. The actual-schema rollback test passed, but does not test a browser or PostgREST authentication over HTTP. Do not merge or deploy production based solely on the local or rollback tests.
+**Status: prepared, not run against a staging service.** Account-wide discovery found the separate project `MEG-EAF-V2-STAGING` (`fjesgcsumbuniatyaeee`). Earlier discovery checked only branches under production and therefore missed it. Read-only inspection found eight JD Manual tables and one existing Auth account, with no EAF permission/gateway tables or RPCs. No staging changes have been applied. The actual-schema rollback test passed, but does not test a browser or PostgREST authentication over HTTP. Do not merge or deploy production based solely on the local or rollback tests.
+
+## Prepared staging setup
+
+`tests/fixtures/staging-admin-role-bootstrap.sql` is a review-only, atomic setup package for the separate staging project. It creates three EAF tables and the permission/directory/Access Log RPCs needed by the HTTP test, installs the reviewed administrator-role guard and audit migration, and seeds permission rows only for the three explicitly named disposable test accounts. It copies schema/function definitions, not production user or employee records. Existing JD Manual tables and existing unrelated Auth accounts are untouched.
+
+The package refuses to overwrite an existing EAF schema and requires the three active dummy Auth accounts to exist before it runs. It does not create those Auth accounts, change their passwords, send invitations, or bootstrap a full dashboard/HR Letters app. It is a test fixture, not a general production migration. Apply only to `fjesgcsumbuniatyaeee` after staging setup is authorized; never apply to production.
+
+`node tests/staging-bootstrap.test.mjs` passes locally: missing dummy accounts are refused; only dummy permission rows are seeded; existing JD data and unrelated Auth users are preserved; directory, grant/revoke and audit reads work; anonymous access and overwrite attempts are refused. Staging account creation and applying this package remain pending under the no-deploy hold.
 
 ## Required staging environment
 
