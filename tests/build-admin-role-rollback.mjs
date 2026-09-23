@@ -47,7 +47,7 @@ select set_config('request.jwt.claim.sub','${superId}',true);
 do $$ declare n integer; begin
  begin perform public.eaf_v2_set_administrator('${superId}',false,true); raise exception 'FAIL: own/super role changed'; exception when insufficient_privilege then null; end;
  if public.eaf_v2_set_administrator('${targetId}',true,false) is distinct from true then raise exception 'FAIL: grant'; end if;
- begin perform public.eaf_v2_set_administrator('${targetId}',false,false); raise exception 'FAIL: stale role accepted'; exception when serialization_failure then null; end;
+ begin perform public.eaf_v2_set_administrator('${targetId}',false,false); raise exception 'FAIL: stale role accepted'; exception when sqlstate 'PT409' then null; end;
  if not exists(select 1 from public.eaf_v2_staff_permissions where user_id='${targetId}' and is_admin and not is_super_admin and can_access_hr and not can_view_summary) then raise exception 'FAIL: role/permissions'; end if;
  select count(*) into n from public.eaf_v2_gateway_get_access_log(500) where event_code='administrator_role_change' and details->>'target_user_id'='${targetId}' and details->>'action'='grant' and email='edp-super@example.invalid';
  if n<>1 then raise exception 'FAIL: grant audit not visible in existing Access Log reader'; end if;

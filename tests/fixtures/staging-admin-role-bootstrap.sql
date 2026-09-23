@@ -1,4 +1,4 @@
--- REVIEW ONLY: EDP HTTP-test prerequisites for MEG-EAF-V2-STAGING (fjesgcsumbuniatyaeee).
+-- EDP HTTP-test prerequisites for MEG-EAF-V2-STAGING (fjesgcsumbuniatyaeee).
 -- Never apply to production. No production rows or JD Manual objects are copied/changed.
 -- Requires pre-created active dummy Auth accounts edp-test-{super,admin,user}@example.invalid.
 -- This is a test fixture, not a production migration or full app bootstrap.
@@ -412,7 +412,8 @@ begin
     raise exception 'Super administrator role is protected' using errcode='42501';
   end if;
   if coalesce(v_target.is_admin,false) <> p_expected_is_admin then
-    raise exception 'Role changed since loading. Refresh Users and confirm again.' using errcode='40001';
+      -- HTTP conflict, not serialization_failure (40001), which PostgREST may retry.
+      raise exception 'Role changed since loading. Refresh Users and confirm again.' using errcode='PT409';
   end if;
   if coalesce(v_target.is_admin,false) <> p_enabled then
     update public.eaf_v2_staff_permissions set is_admin=p_enabled where user_id=p_user_id;

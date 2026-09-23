@@ -38,7 +38,7 @@ await denied(()=>assign(missingProfileId,true,false),'22023');
 await denied(()=>assign(bannedId,true,false),'22023');
 await denied(()=>assign(pendingId,true,false),'22023');
 assert.equal((await assign(targetId,true,false)).rows[0].value,true); checks++;
-await denied(()=>assign(targetId,false,false),'40001');
+await denied(()=>assign(targetId,false,false),'PT409');
 await db.exec('reset role');
 assert.deepEqual(await snapshot(targetId),before); checks++;
 let audit=(await db.query("select * from eaf_v2_gateway_access_log where event_code='administrator_role_change'")).rows;

@@ -70,7 +70,7 @@ export async function verifyStaging(config,fetchImpl=fetch) {
     check(grant.ok && grant.data===true,'grant response');
     const granted=(await directory()).find(x=>x.id===targetId);
     check(granted?.is_admin===true && !granted.is_super_admin && flags(granted)===originalFlags,'grant persisted with app flags preserved');
-    await denied(change(config.superToken,targetId,false,false),'stale state rejected','40001');
+    await denied(change(config.superToken,targetId,false,false),'stale state rejected','PT409');
     const revoke=await change(config.superToken,targetId,false,true);
     check(revoke.ok && revoke.data===false,'revoke response');
     const restored=(await directory()).find(x=>x.id===targetId);

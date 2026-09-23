@@ -30,7 +30,7 @@ function server(options={}) {
     if(path.endsWith('eaf_v2_set_administrator')) {
       if(options.missingRPC) return result(false,{code:'PGRST202'},404);
       if(actor!=='super' || args.p_user_id==='super') return result(false,{code:'42501'});
-      if(targetAdmin!==args.p_expected_is_admin) return result(false,{code:'40001'},409);
+      if(targetAdmin!==args.p_expected_is_admin) return result(false,{code:'PT409'},409);
       targetAdmin=args.p_enabled; audit(targetAdmin);
       if(options.timeoutAfterGrant && targetAdmin && !grantTimedOut) {grantTimedOut=true;throw Error('Simulated timeout after commit');}
       return result(true,targetAdmin);
