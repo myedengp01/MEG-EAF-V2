@@ -22,7 +22,7 @@
 
 window.MEG_EAF_V2 = window.MEG_EAF_V2 || {};
 var V2=window.MEG_EAF_V2;
-V2.version='MEG-EAF-HR V2 v2026.09.24-12:30';
+V2.version='MEG-EAF-HR V2 v2026.09.24-18:30';
 V2.jd=null;
 V2.pendingRestore=null;
 V2.loecRecord=null;
@@ -865,35 +865,156 @@ function b16AppendixCard(n){
     +'<div class="form-group"><label>Appendix '+n+' Title</label><input type="text" id="v2Appendix'+n+'Title" value="'+e2(d.title)+'"></div>'
     +'<div class="form-group"><label>Introductory / Explanatory Text</label><textarea id="v2Appendix'+n+'Intro" style="min-height:70px" placeholder="Optional paragraph before the table / terms"></textarea></div>'
     +'<label class="b16-table-toggle"><input type="checkbox" id="v2Appendix'+n+'TableEnabled" '+(d.tableEnabled?'checked':'')+'> Include editable table</label>'
-    +'<div id="v2Appendix'+n+'TableTools" class="b16-table-tools"><button type="button" onclick="b16AddAppendixColumn('+n+')">+ Column</button><button type="button" onclick="b16RemoveAppendixColumn('+n+')">− Column</button><button type="button" onclick="b16AddAppendixRow('+n+')">+ Row</button><button type="button" onclick="b16RemoveAppendixRow('+n+')">− Row</button></div>'
+    +'<div id="v2Appendix'+n+'TableTools" class="b16-table-tools">'
+    +'<button type="button" onclick="b16AddAppendixColumn('+n+')">+ Column</button><button type="button" onclick="b16RemoveAppendixColumn('+n+')">− Column</button>'
+    +'<button type="button" onclick="b16AddAppendixRow('+n+')">+ Row</button><button type="button" onclick="b16RemoveAppendixRow('+n+')">− Row</button>'
+    +'<span style="width:1px;background:#bbb;margin:0 2px"></span>'
+    +'<button type="button" onclick="b16MergeAppendixRight('+n+')" title="Select a cell, then merge it with the cell to the right">Merge →</button>'
+    +'<button type="button" onclick="b16MergeAppendixDown('+n+')" title="Select a cell, then merge it with the cell below">Merge ↓</button>'
+    +'<button type="button" onclick="b16UnmergeAppendixCell('+n+')">Unmerge</button>'
+    +'</div>'
+    +'<div style="font-size:10px;color:#666;margin:5px 0 7px">Column alignment can be set to Left / Center / Right. For cell merging, click a table cell first; repeat Merge → or Merge ↓ to span more than two cells.</div>'
     +'<div id="v2Appendix'+n+'TableHost" class="b16-table-host"></div>'
     +'<div class="form-group"><label>Acknowledgement / Closing Note</label><textarea id="v2Appendix'+n+'Closing" style="min-height:70px" placeholder="Optional acknowledgement or closing paragraph"></textarea></div>'
     +'</div></div>';
 }
+
+function b16NormaliseTableState(data){
+  data=data||{};
+  var cols=(data.columns&&data.columns.length?data.columns:['Column 1','Column 2']).slice(0,8);
+  var rows=(data.rows&&data.rows.length?data.rows:[cols.map(function(){return '';})]).slice(0,30).map(function(r){
+    var x=(Array.isArray(r)?r.slice(0,cols.length):[]);while(x.length<cols.length)x.push('');return x;
+  });
+  var aligns=(Array.isArray(data.columnAlignments)?data.columnAlignments.slice(0,cols.length):[]);
+  while(aligns.length<cols.length)aligns.push('left');
+  aligns=aligns.map(function(a){return ['left','center','right'].indexOf(a)>=0?a:'left';});
+  var merges=(Array.isArray(data.merges)?data.merges:[]).map(function(m){
+    return {row:Math.max(0,Number(m.row)||0),col:Math.max(0,Number(m.col)||0),rowspan:Math.max(1,Number(m.rowspan)||1),colspan:Math.max(1,Number(m.colspan)||1)};
+  }).filter(function(m){return m.row<rows.length&&m.col<cols.length&&m.row+m.rowspan<=rows.length&&m.col+m.colspan<=cols.length;});
+  return {columns:cols,rows:rows,columnAlignments:aligns,merges:merges};
+}
+function b16MergeAt(state,r,c){
+  return (state.merges||[]).find(function(m){return r>=m.row&&r<m.row+m.rowspan&&c>=m.col&&c<m.col+m.colspan;})||null;
+}
+function b16AnchorMergeAt(state,r,c){
+  return (state.merges||[]).find(function(m){return m.row===r&&m.col===c;})||null;
+}
+function b16SyncAppendixState(n){
+  var host=byId('v2Appendix'+n+'TableHost');if(!host)return null;
+  var state=host._b16TableState||b16NormaliseTableState({});
+  host.querySelectorAll('[data-b16-col]').forEach(function(x){var i=Number(x.dataset.b16Col);if(i>=0&&i<state.columns.length)state.columns[i]=x.value||'';});
+  host.querySelectorAll('[data-b16-align]').forEach(function(x){var i=Number(x.dataset.b16Align);if(i>=0&&i<state.columnAlignments.length)state.columnAlignments[i]=x.value||'left';});
+  host.querySelectorAll('textarea[data-b16-row][data-b16-cell]').forEach(function(x){var r=Number(x.dataset.b16Row),c=Number(x.dataset.b16Cell);if(state.rows[r]&&c<state.columns.length)state.rows[r][c]=x.value||'';});
+  return state;
+}
+function b16SelectAppendixCell(n,r,c,td){
+  var host=byId('v2Appendix'+n+'TableHost');if(!host)return;
+  host.dataset.selectedRow=String(r);host.dataset.selectedCol=String(c);
+  host.querySelectorAll('td[data-b16-td]').forEach(function(x){x.style.outline='';x.style.outlineOffset='';});
+  if(td){td.style.outline='2px solid #1565c0';td.style.outlineOffset='-2px';}
+}
+function b16SelectedAppendixCell(n){
+  var host=byId('v2Appendix'+n+'TableHost');if(!host)return null;
+  if(host.dataset.selectedRow===undefined||host.dataset.selectedCol===undefined)return null;
+  return {row:Number(host.dataset.selectedRow),col:Number(host.dataset.selectedCol)};
+}
 function b16RenderAppendixTable(n,data){
   var host=byId('v2Appendix'+n+'TableHost');if(!host)return;
-  data=data||BUILD16_DEFAULT_APPENDICES[n];
-  var cols=(data.columns&&data.columns.length?data.columns:['Column 1','Column 2']).slice(0,8),rows=(data.rows&&data.rows.length?data.rows:[cols.map(function(){return '';})]).slice(0,30);
-  host.innerHTML='<table class="b16-edit-table"><thead><tr>'+cols.map(function(c,i){return '<th><input type="text" data-b16-col="'+i+'" value="'+e2(c)+'" aria-label="Column '+(i+1)+'"></th>';}).join('')+'</tr></thead><tbody>'
-    +rows.map(function(row,ri){return '<tr>'+cols.map(function(c,ci){return '<td><textarea data-b16-row="'+ri+'" data-b16-cell="'+ci+'" aria-label="Row '+(ri+1)+' column '+(ci+1)+'">'+e2(row&&row[ci]||'')+'</textarea></td>';}).join('')+'</tr>';}).join('')+'</tbody></table>';
+  var state=b16NormaliseTableState(data||BUILD16_DEFAULT_APPENDICES[n]);
+  host._b16TableState=state;
+  var selected=b16SelectedAppendixCell(n);
+  var head=state.columns.map(function(c,i){
+    return '<th style="vertical-align:top"><input type="text" data-b16-col="'+i+'" value="'+e2(c)+'" aria-label="Column '+(i+1)+'">'
+      +'<select data-b16-align="'+i+'" aria-label="Column '+(i+1)+' alignment" style="width:100%;margin-top:3px;font-size:10px;padding:2px">'
+      +'<option value="left" '+(state.columnAlignments[i]==='left'?'selected':'')+'>Left</option>'
+      +'<option value="center" '+(state.columnAlignments[i]==='center'?'selected':'')+'>Center</option>'
+      +'<option value="right" '+(state.columnAlignments[i]==='right'?'selected':'')+'>Right</option></select></th>';
+  }).join('');
+  var body='';
+  for(var r=0;r<state.rows.length;r++){
+    body+='<tr>';
+    for(var c=0;c<state.columns.length;c++){
+      var covering=b16MergeAt(state,r,c),anchor=covering&&covering.row===r&&covering.col===c;
+      if(covering&&!anchor)continue;
+      var rs=anchor?covering.rowspan:1,cs=anchor?covering.colspan:1,sel=selected&&selected.row===r&&selected.col===c;
+      body+='<td data-b16-td="1" data-b16-td-row="'+r+'" data-b16-td-col="'+c+'"'
+        +(rs>1?' rowspan="'+rs+'"':'')+(cs>1?' colspan="'+cs+'"':'')
+        +' style="vertical-align:middle;'+(sel?'outline:2px solid #1565c0;outline-offset:-2px;':'')+'"'
+        +' onclick="b16SelectAppendixCell('+n+','+r+','+c+',this)">'
+        +'<textarea data-b16-row="'+r+'" data-b16-cell="'+c+'" aria-label="Row '+(r+1)+' column '+(c+1)+'" style="text-align:'+state.columnAlignments[c]+'">'+e2(state.rows[r][c]||'')+'</textarea></td>';
+    }
+    body+='</tr>';
+  }
+  host.innerHTML='<table class="b16-edit-table"><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table>';
+  host.querySelectorAll('[data-b16-col],[data-b16-align],textarea[data-b16-row]').forEach(function(el){
+    el.addEventListener('input',function(){b16SyncAppendixState(n);b16TermsChanged();});
+    el.addEventListener('change',function(){b16SyncAppendixState(n);if(el.hasAttribute('data-b16-align'))b16RenderAppendixTable(n,host._b16TableState);b16TermsChanged();});
+  });
 }
 function b16ReadAppendixTable(n){
-  var host=byId('v2Appendix'+n+'TableHost'),columns=[],rows=[];if(!host)return {columns:[],rows:[]};
-  host.querySelectorAll('[data-b16-col]').forEach(function(x){columns.push(x.value||'');});
-  host.querySelectorAll('tbody tr').forEach(function(tr){rows.push(Array.prototype.map.call(tr.querySelectorAll('textarea'),function(x){return x.value||'';}));});
-  return {columns:columns,rows:rows};
+  var state=b16SyncAppendixState(n);
+  if(!state)return {columns:[],rows:[],columnAlignments:[],merges:[]};
+  return {columns:state.columns.slice(),rows:state.rows.map(function(r){return r.slice();}),columnAlignments:state.columnAlignments.slice(),merges:(state.merges||[]).map(function(m){return {row:m.row,col:m.col,rowspan:m.rowspan,colspan:m.colspan};})};
 }
 function b16MutateAppendixTable(n,kind){
-  var d=b16ReadAppendixTable(n),cols=d.columns.length?d.columns:['Column 1','Column 2'],rows=d.rows.length?d.rows:[['','']];
-  if(kind==='addCol'&&cols.length<8){cols.push('Column '+(cols.length+1));rows.forEach(function(r){r.push('');});}
-  if(kind==='removeCol'&&cols.length>1){cols.pop();rows.forEach(function(r){r.pop();});}
+  var d=b16ReadAppendixTable(n),cols=d.columns.length?d.columns:['Column 1','Column 2'],rows=d.rows.length?d.rows:[['','']],aligns=d.columnAlignments||[],merges=d.merges||[];
+  if(kind==='addCol'&&cols.length<8){cols.push('Column '+(cols.length+1));aligns.push('left');rows.forEach(function(r){r.push('');});}
+  if(kind==='removeCol'&&cols.length>1){
+    var last=cols.length-1;
+    if(merges.some(function(m){return m.col+m.colspan-1>=last;})){alert('Unmerge cells touching the last column before removing it.');return;}
+    cols.pop();aligns.pop();rows.forEach(function(r){r.pop();});
+  }
   if(kind==='addRow'&&rows.length<30)rows.push(cols.map(function(){return '';}));
-  if(kind==='removeRow'&&rows.length>1)rows.pop();
-  b16RenderAppendixTable(n,{columns:cols,rows:rows});b16TermsChanged();
+  if(kind==='removeRow'&&rows.length>1){
+    var lastRow=rows.length-1;
+    if(merges.some(function(m){return m.row+m.rowspan-1>=lastRow;})){alert('Unmerge cells touching the last row before removing it.');return;}
+    rows.pop();
+  }
+  b16RenderAppendixTable(n,{columns:cols,rows:rows,columnAlignments:aligns,merges:merges});b16TermsChanged();
 }
+
+window.b16SelectAppendixCell=b16SelectAppendixCell;
+function b16MergeAppendix(n,dir){
+  var state=b16SyncAppendixState(n),sel=b16SelectedAppendixCell(n);
+  if(!state||!sel){alert('Select a table cell first.');return;}
+  var existing=b16AnchorMergeAt(state,sel.row,sel.col)||{row:sel.row,col:sel.col,rowspan:1,colspan:1};
+  if(dir==='right'){
+    if(existing.rowspan>1){alert('Horizontal merge is available for cells that are not already vertically merged. Unmerge first if needed.');return;}
+    var tc=existing.col+existing.colspan;if(tc>=state.columns.length){alert('There is no cell to the right to merge.');return;}
+    if(b16MergeAt(state,existing.row,tc)){alert('The cell to the right is already part of another merged area.');return;}
+    if(!b16AnchorMergeAt(state,sel.row,sel.col))state.merges.push(existing);
+    existing.colspan++;
+  }else{
+    if(existing.colspan>1){alert('Vertical merge is available for cells that are not already horizontally merged. Unmerge first if needed.');return;}
+    var tr=existing.row+existing.rowspan;if(tr>=state.rows.length){alert('There is no cell below to merge.');return;}
+    if(b16MergeAt(state,tr,existing.col)){alert('The cell below is already part of another merged area.');return;}
+    if(!b16AnchorMergeAt(state,sel.row,sel.col))state.merges.push(existing);
+    existing.rowspan++;
+  }
+  b16RenderAppendixTable(n,state);b16TermsChanged();
+}
+window.b16MergeAppendixRight=function(n){b16MergeAppendix(n,'right');};
+window.b16MergeAppendixDown=function(n){b16MergeAppendix(n,'down');};
+window.b16UnmergeAppendixCell=function(n){
+  var state=b16SyncAppendixState(n),sel=b16SelectedAppendixCell(n);
+  if(!state||!sel){alert('Select a merged table cell first.');return;}
+  var m=b16MergeAt(state,sel.row,sel.col);
+  if(!m){alert('The selected cell is not merged.');return;}
+  state.merges=state.merges.filter(function(x){return x!==m;});
+  b16RenderAppendixTable(n,state);b16TermsChanged();
+};
+
 window.b16AddAppendixColumn=function(n){b16MutateAppendixTable(n,'addCol');};window.b16RemoveAppendixColumn=function(n){b16MutateAppendixTable(n,'removeCol');};window.b16AddAppendixRow=function(n){b16MutateAppendixTable(n,'addRow');};window.b16RemoveAppendixRow=function(n){b16MutateAppendixTable(n,'removeRow');};
 function b16CollectAppendices(){
-  return [2,3,4].map(function(n){var t=b16ReadAppendixTable(n);return {number:n,enabled:!!((byId('v2Appendix'+n+'Enabled')||{}).checked),title:(byId('v2Appendix'+n+'Title')||{}).value||'',intro:(byId('v2Appendix'+n+'Intro')||{}).value||'',closing:(byId('v2Appendix'+n+'Closing')||{}).value||'',tableEnabled:!!((byId('v2Appendix'+n+'TableEnabled')||{}).checked),columns:t.columns,rows:t.rows};});
+  return [2,3,4].map(function(n){var t=b16ReadAppendixTable(n);return {
+    number:n,
+    enabled:!!((byId('v2Appendix'+n+'Enabled')||{}).checked),
+    title:(byId('v2Appendix'+n+'Title')||{}).value||'',
+    intro:(byId('v2Appendix'+n+'Intro')||{}).value||'',
+    closing:(byId('v2Appendix'+n+'Closing')||{}).value||'',
+    tableEnabled:!!((byId('v2Appendix'+n+'TableEnabled')||{}).checked),
+    columns:t.columns,rows:t.rows,columnAlignments:t.columnAlignments,merges:t.merges
+  };});
 }
 function b16RestoreAppendices(items){
   var map={};(Array.isArray(items)?items:[]).forEach(function(x){if(x&&x.number)map[Number(x.number)]=x;});
@@ -963,10 +1084,41 @@ var b15BuildClauses=window.buildLoceClauseBlocks;
 window.buildLoceClauseBlocks=function(d){var blocks=b15BuildClauses(d),schedule=(d.workingHoursText||'the agreed working schedule'),days=d.workingDays?(' on '+d.workingDays):'',note=d.workingScheduleNote?(' '+d.workingScheduleNote):'';blocks.forEach(function(b){if(!b||!b.html)return;if(b.html.indexOf('<div class="l-num">5.1</div>')>=0)b.html=C('5.1','The Employee’s normal working schedule is '+schedule+days+', subject to the statutory working-time framework and genuine meal/rest periods during which the Employee is free from duties.'+note).html;if(b.html.indexOf('<div class="l-num">6.1</div>')>=0){b.html=C('6.1',d.payBasis==='hourly'?'The Employee is paid a basic hourly rate of '+d.basicSalaryFmt+' per hour ('+d.salaryWords+'). Wages are calculated from authorised recorded working time and paid within the statutory deadline through an approved financial institution, less lawful deductions. Fixed contractual allowances, if any, are monthly amounts stated in the salient terms.':'The Employee is paid a basic salary of '+d.basicSalaryFmt+' ('+d.salaryWords+') per month. Fixed contractual allowance(s), if any, are stated in the salient terms. Wages are paid within the statutory deadline through an approved financial institution, less lawful deductions.').html;}if(b.html.indexOf('<div class="l-num">18.1</div>')>=0)b.html=C('18.1','This combined Letter of Offer & Contract of Employment, Appendix 1 Job Description, every additional Appendix expressly included in this agreement, the applicable Employee Handbook and incorporated written policies form the employment documentation.').html;});return blocks;};
 window.buildLoceSignatureBlocks=function(d){return [BA('<p style="font-weight:700;margin-top:16px">ACCEPTANCE AND MANUAL SIGNING</p><p>By signing below, the Employee confirms that the complete Letter of Offer &amp; Contract of Employment and all included Appendices have been reviewed, the offer is accepted, and the employment contract is agreed at the same time.</p><table class="l-sigtable" style="border:none"><tr style="border:none"><td style="border:none;width:50%;vertical-align:top;text-align:left">For and on behalf of the Employer<br><br><br><br><br>.....................................................<br>Name:<br>Designation:<br>Date:</td><td style="border:none;width:50%;vertical-align:top;text-align:left">Accepted and Signed by the Employee<br><br><br><br><br>.....................................................<br>Name:<br>NRIC/Passport No.:<br>Date:</td></tr></table>')];};
 function b16AppendixBlocks(a){
-  var n=Number(a.number||0),blocks=[BH('<h3>APPENDIX '+n+' — '+e2((a.title||'ADDITIONAL TERMS & CONDITIONS').toUpperCase())+'</h3>')];
+  var n=Number(a.number||0),heading=BH('<h3>APPENDIX '+n+' — '+e2((a.title||'ADDITIONAL TERMS & CONDITIONS').toUpperCase())+'</h3>');
+  heading.breakBefore=true;
+  var blocks=[heading];
   String(a.intro||'').split(/\n\s*\n/).forEach(function(p){if(p.trim())blocks.push(B('<p>'+e2(p.trim()).replace(/\n/g,'<br>')+'</p>'));});
-  if(a.tableEnabled&&Array.isArray(a.columns)&&a.columns.length){var rows=(a.rows||[]).filter(function(r){return Array.isArray(r)&&r.some(function(x){return String(x||'').trim();});});var chunkSize=7;if(!rows.length)rows=[a.columns.map(function(){return '';})];for(var start=0;start<rows.length;start+=chunkSize){var chunk=rows.slice(start,start+chunkSize),thead='<tr>'+a.columns.map(function(c){return '<th>'+e2(c||'')+'</th>';}).join('')+'</tr>',tbody=chunk.map(function(r){return '<tr>'+a.columns.map(function(c,i){return '<td>'+e2((r&&r[i])||'').replace(/\n/g,'<br>')+'</td>';}).join('')+'</tr>';}).join('');blocks.push(BA('<table class="b16-contract-table">'+thead+tbody+'</table>'));}}
-  String(a.closing||'').split(/\n\s*\n/).forEach(function(p){if(p.trim())blocks.push(B('<p>'+e2(p.trim()).replace(/\n/g,'<br>')+'</p>'));});return blocks;
+  if(a.tableEnabled&&Array.isArray(a.columns)&&a.columns.length){
+    var cols=a.columns,aligns=Array.isArray(a.columnAlignments)?a.columnAlignments:cols.map(function(){return 'left';});
+    while(aligns.length<cols.length)aligns.push('left');
+    var rows=Array.isArray(a.rows)?a.rows:[],merges=Array.isArray(a.merges)?a.merges:[];
+    if(!rows.length)rows=[cols.map(function(){return '';})];
+
+    function mergeAt(r,c){return merges.find(function(m){return r>=Number(m.row)&&r<Number(m.row)+Number(m.rowspan||1)&&c>=Number(m.col)&&c<Number(m.col)+Number(m.colspan||1);})||null;}
+    function boundaryEnd(start,maxRows){
+      var end=Math.min(rows.length,start+maxRows),changed=true;
+      while(changed){changed=false;merges.forEach(function(m){var mr=Number(m.row)||0,mend=mr+(Number(m.rowspan)||1);if(mr<end&&mend>end){end=Math.min(rows.length,mend);changed=true;}});}
+      return end;
+    }
+    var start=0;
+    while(start<rows.length){
+      var end=boundaryEnd(start,7),thead='<tr>'+cols.map(function(c,i){var al=['left','center','right'].indexOf(aligns[i])>=0?aligns[i]:'left';return '<th style="text-align:'+al+'">'+e2(c||'')+'</th>';}).join('')+'</tr>',tbody='';
+      for(var r=start;r<end;r++){
+        tbody+='<tr>';
+        for(var c=0;c<cols.length;c++){
+          var m=mergeAt(r,c),anchor=m&&Number(m.row)===r&&Number(m.col)===c;
+          if(m&&!anchor)continue;
+          var rs=anchor?Number(m.rowspan||1):1,cs=anchor?Number(m.colspan||1):1,al=['left','center','right'].indexOf(aligns[c])>=0?aligns[c]:'left';
+          tbody+='<td'+(rs>1?' rowspan="'+rs+'"':'')+(cs>1?' colspan="'+cs+'"':'')+' style="text-align:'+al+';vertical-align:middle">'+e2((rows[r]&&rows[r][c])||'').replace(/\n/g,'<br>')+'</td>';
+        }
+        tbody+='</tr>';
+      }
+      blocks.push(BA('<table class="b16-contract-table">'+thead+tbody+'</table>'));
+      start=end;
+    }
+  }
+  String(a.closing||'').split(/\n\s*\n/).forEach(function(p){if(p.trim())blocks.push(B('<p>'+e2(p.trim()).replace(/\n/g,'<br>')+'</p>'));});
+  return blocks;
 }
 var b15BuildAppendices=window.buildLoceAppendixBlocks;
 window.buildLoceAppendixBlocks=function(d){var blocks=b15BuildAppendices(d);(d.appendices||[]).filter(function(a){return a&&a.enabled;}).sort(function(a,b){return Number(a.number)-Number(b.number);}).forEach(function(a){blocks=blocks.concat(b16AppendixBlocks(a));});return blocks;};
@@ -979,6 +1131,6 @@ window.validatePrint=function(){var errs=b15ValidatePrint();if(b16PayBasis()==='
 
 // Initialise V2 after V1 page setup.
 var oldLoad=window.onload;
-window.onload=function(){if(typeof oldLoad==='function')oldLoad();try{window.FORM_VERSION=V2.version;var f=byId('formRef');if(f)f.textContent=V2.version;var l=byId('loginVersionStamp');if(l)l.textContent=V2.version;addV2Styles();installDashboardCompanyFilter();insertV2EmploymentFields();installLoecRecordPanel();applyProfileDefaults(false);ensureSummaryCompanyColumn();}catch(e){console.error('MEG-EAF V2 HR extension:',e);}};
+window.onload=function(){if(typeof oldLoad==='function')oldLoad();try{window.FORM_VERSION=V2.version;var f=byId('formRef');if(f)f.textContent=V2.version;var l=byId('loginVersionStamp');if(l)l.textContent=V2.version;addV2Styles();installDashboardCompanyFilter();insertV2EmploymentFields();installLoecRecordPanel();applyProfileDefaults(false);ensureSummaryColumns();}catch(e){console.error('MEG-EAF V2 HR extension:',e);}};
 
 })();
