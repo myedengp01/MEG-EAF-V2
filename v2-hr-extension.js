@@ -22,7 +22,7 @@
 
 window.MEG_EAF_V2 = window.MEG_EAF_V2 || {};
 var V2=window.MEG_EAF_V2;
-V2.version='MEG-EAF-HR V2 v2026.09.24-11:30';
+V2.version='MEG-EAF-HR V2 v2026.09.24-12:30';
 V2.jd=null;
 V2.pendingRestore=null;
 V2.loecRecord=null;
@@ -144,10 +144,13 @@ window.renderLists=function(){
   appsCache=original;
 };
 
-function ensureSummaryCompanyColumn(){
-  var tr=document.querySelector('#summaryTable thead tr'); if(!tr||tr.querySelector('[data-v2-company]'))return;
-  var th=document.createElement('th'); th.setAttribute('data-v2-company','1'); th.style.cssText='border:1px solid #ccc;padding:5px 8px;text-align:left;'; th.textContent='Legal Employer';
-  var first=tr.children[0]; if(first&&first.nextSibling)tr.insertBefore(th,first.nextSibling);else tr.appendChild(th);
+function ensureSummaryColumns(){
+  var tr=document.querySelector('#summaryTable thead tr');if(!tr)return;
+  var headers=['Name (EN)','Legal Employer','Employment Type','Name (ZH)','IC / Passport','Age','Email','Contact','Gender','Race','Address','Start Date','Approved Salary','Approved Job Title','Working Hours','Department','Decision','Status'];
+  tr.innerHTML=headers.map(function(h,i){
+    var extra=i===1?' data-v2-company="1"':(i===2?' data-v2-employment-type="1"':'');
+    return '<th'+extra+' style="border:1px solid #ccc;padding:5px 8px;text-align:left;">'+e2(h)+'</th>';
+  }).join('');
 }
 
 function summaryFinalJobTitle(p){
@@ -157,16 +160,157 @@ function summaryFinalJobTitle(p){
   if(av.indexOf('jd:')===0&&V2.jd){var jp=exactJdById(av.slice(3));if(jp)return jp.job_title||av;}
   return summaryField(p,'v2ApprovedFamilyName')||av;
 }
+
+function summaryEmploymentType(p){
+  var direct=summaryField(p,'v2EmploymentType')||summaryField(p,'employmentType');
+  if(direct)return normalizeEmploymentType(direct);
+  if(V2.jd&&p&&p.v2JdId){var jd=exactJdById(p.v2JdId);if(jd&&jd.employment_type)return normalizeEmploymentType(jd.employment_type);}
+  return '';
+}
+
+function installSummaryFilters(){
+  var panel=byId('summaryPanel');if(!panel)return;
+  var bar=byId('summaryFilters');
+  if(!bar){
+    bar=document.createElement('div');bar.id='summaryFilters';
+    bar.style.cssText='display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin:0 0 12px;padding:10px;background:#f7f9fb;border:1px solid #d7dde5;border-radius:7px;';
+    bar.innerHTML=
+      '<div style="min-width:170px"><label style="display:block;font-size:10px;font-weight:700;color:#666;margin-bottom:3px">Search</label><input id="summarySearch" type="text" placeholder="Name / email / contact" style="width:100%;padding:7px;border:1px solid #bbb;border-radius:5px"></div>'+
+      '<div style="min-width:170px"><label style="display:block;font-size:10px;font-weight:700;color:#666;margin-bottom:3px">Company</label><select id="summaryCompany" style="width:100%;padding:7px;border:1px solid #bbb;border-radius:5px"><option value="">All Companies</option></select></div>'+
+      '<div style="min-width:115px"><label style="display:block;font-size:10px;font-weight:700;color:#666;margin-bottom:3px">Gender</label><select id="summaryGenderFilter" style="width:100%;padding:7px;border:1px solid #bbb;border-radius:5px"><option value="">All</option><option>Male</option><option>Female</option></select></div>'+
+      '<div style="min-width:125px"><label style="display:block;font-size:10px;font-weight:700;color:#666;margin-bottom:3px">Status</label><select id="summaryStatusFilter" style="width:100%;padding:7px;border:1px solid #bbb;border-radius:5px"><option value="">All Statuses</option></select></div>'+
+      '<div style="min-width:175px"><label style="display:block;font-size:10px;font-weight:700;color:#666;margin-bottom:3px">Employment Type</label><select id="summaryEmploymentTypeFilter" style="width:100%;padding:7px;border:1px solid #bbb;border-radius:5px"><option value="">All Types</option><option>Permanent Full-Time</option><option>Fixed-Term Full-Time</option><option>Part-Time</option><option>Temporary</option><option>Internship</option></select></div>'+
+      '<div><label style="display:block;font-size:10px;font-weight:700;color:#666;margin-bottom:3px">Start Date From</label><input id="summaryStartFrom" type="date" style="padding:6px;border:1px solid #bbb;border-radius:5px"></div>'+
+      '<div><label style="display:block;font-size:10px;font-weight:700;color:#666;margin-bottom:3px">Start Date To</label><input id="summaryStartTo" type="date" style="padding:6px;border:1px solid #bbb;border-radius:5px"></div>'+
+      '<div style="min-width:145px"><label style="display:block;font-size:10px;font-weight:700;color:#666;margin-bottom:3px">Sort By</label><select id="summarySortBy" style="width:100%;padding:7px;border:1px solid #bbb;border-radius:5px"><option value="submitted">Submitted Date</option><option value="company">Company</option><option value="start">Start Date</option><option value="name">Name</option><option value="status">Status</option><option value="employment">Employment Type</option></select></div>'+
+      '<div style="min-width:115px"><label style="display:block;font-size:10px;font-weight:700;color:#666;margin-bottom:3px">Order</label><select id="summarySortOrder" style="width:100%;padding:7px;border:1px solid #bbb;border-radius:5px"><option value="desc">Descending</option><option value="asc">Ascending</option></select></div>'+
+      '<button id="summaryResetFilters" type="button" style="padding:8px 12px;border:0;border-radius:5px;background:#546e7a;color:#fff;font-weight:700;cursor:pointer">Reset</button>'+
+      '<span id="summaryFilterCount" style="font-size:11px;color:#666;margin-left:auto;padding:8px 2px"></span>';
+    var tableWrap=panel.querySelector('.summary-table-wrap');
+    panel.insertBefore(bar,tableWrap||null);
+
+    Object.keys(companies()).forEach(function(k){
+      var o=document.createElement('option');o.value=k;o.textContent=companies()[k].name||k;byId('summaryCompany').appendChild(o);
+    });
+    ['summarySearch','summaryCompany','summaryGenderFilter','summaryStatusFilter','summaryEmploymentTypeFilter','summaryStartFrom','summaryStartTo','summarySortBy','summarySortOrder'].forEach(function(id){
+      var el=byId(id);if(!el)return;
+      el.addEventListener(id==='summarySearch'?'input':'change',renderSummaryRows);
+    });
+    byId('summaryResetFilters').addEventListener('click',function(){
+      ['summarySearch','summaryCompany','summaryGenderFilter','summaryStatusFilter','summaryEmploymentTypeFilter','summaryStartFrom','summaryStartTo'].forEach(function(id){if(byId(id))byId(id).value='';});
+      if(byId('summarySortBy'))byId('summarySortBy').value='submitted';
+      if(byId('summarySortOrder'))byId('summarySortOrder').value='desc';
+      renderSummaryRows();
+    });
+  }
+}
+
+function refreshSummaryStatusOptions(){
+  var sel=byId('summaryStatusFilter');if(!sel)return;
+  var current=sel.value,statuses={};
+  (V2.summaryRows||[]).forEach(function(r){if(r&&r.status)statuses[String(r.status)]=1;});
+  sel.innerHTML='<option value="">All Statuses</option>'+Object.keys(statuses).sort().map(function(s){return '<option value="'+e2(s)+'">'+e2(s.charAt(0).toUpperCase()+s.slice(1))+'</option>';}).join('');
+  if(current&&statuses[current])sel.value=current;
+}
+
+function summaryCompanyCode(r){
+  var p=(r&&r.payload)||{};return p.companyCode||r.company_code||'meg';
+}
+function summaryCompanyName(r){
+  var c=companies()[summaryCompanyCode(r)]||{};return c.name||summaryCompanyCode(r);
+}
+function summaryDateValue(v){
+  var s=String(v||'').trim();return /^\d{4}-\d{2}-\d{2}$/.test(s)?s:'';
+}
+
+function renderSummaryRows(){
+  var tbody=byId('summaryTbody');if(!tbody)return;
+  var rows=(V2.summaryRows||[]).slice();
+  var q=((byId('summarySearch')||{}).value||'').trim().toLowerCase();
+  var company=((byId('summaryCompany')||{}).value||'');
+  var gender=((byId('summaryGenderFilter')||{}).value||'');
+  var status=((byId('summaryStatusFilter')||{}).value||'');
+  var employment=((byId('summaryEmploymentTypeFilter')||{}).value||'');
+  var startFrom=((byId('summaryStartFrom')||{}).value||'');
+  var startTo=((byId('summaryStartTo')||{}).value||'');
+
+  rows=rows.filter(function(r){
+    var p=r.payload||{},start=summaryDateValue(summaryField(p,'finalStart')),emp=summaryEmploymentType(p),g=summaryGender(p),code=summaryCompanyCode(r);
+    if(company&&code!==company)return false;
+    if(gender&&g!==gender)return false;
+    if(status&&String(r.status||'')!==status)return false;
+    if(employment&&emp!==employment)return false;
+    if(startFrom&&(!start||start<startFrom))return false;
+    if(startTo&&(!start||start>startTo))return false;
+    if(q){
+      var hay=[summaryField(p,'nameEnglish'),summaryField(p,'nameChinese'),summaryField(p,'email'),summaryField(p,'contact'),summaryIcOrPassport(p),summaryCompanyName(r),summaryFinalJobTitle(p),emp].join(' ').toLowerCase();
+      if(hay.indexOf(q)<0)return false;
+    }
+    return true;
+  });
+
+  var sortBy=((byId('summarySortBy')||{}).value||'submitted'),order=((byId('summarySortOrder')||{}).value||'desc'),dir=order==='asc'?1:-1;
+  rows.sort(function(a,b){
+    var pa=a.payload||{},pb=b.payload||{},av='',bv='';
+    if(sortBy==='company'){av=summaryCompanyName(a);bv=summaryCompanyName(b);}
+    else if(sortBy==='start'){av=summaryDateValue(summaryField(pa,'finalStart'));bv=summaryDateValue(summaryField(pb,'finalStart'));}
+    else if(sortBy==='name'){av=summaryField(pa,'nameEnglish');bv=summaryField(pb,'nameEnglish');}
+    else if(sortBy==='status'){av=String(a.status||'');bv=String(b.status||'');}
+    else if(sortBy==='employment'){av=summaryEmploymentType(pa);bv=summaryEmploymentType(pb);}
+    else{av=String(a.submitted_at||'');bv=String(b.submitted_at||'');}
+    if(!av&&!bv)return 0;if(!av)return 1;if(!bv)return -1;
+    return String(av).localeCompare(String(bv),undefined,{numeric:true,sensitivity:'base'})*dir;
+  });
+
+  if(byId('summaryFilterCount'))byId('summaryFilterCount').textContent='Showing '+rows.length+' of '+(V2.summaryRows||[]).length;
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="18" style="padding:12px;color:#777;text-align:center;">No applications match the selected filters.</td></tr>';return;}
+
+  tbody.innerHTML=rows.map(function(r){
+    var p=r.payload||{},cells=[
+      summaryField(p,'nameEnglish'),
+      summaryCompanyName(r),
+      summaryEmploymentType(p),
+      summaryField(p,'nameChinese'),
+      summaryIcOrPassport(p),
+      calcAge(summaryField(p,'dob')),
+      summaryField(p,'email'),
+      summaryField(p,'contact'),
+      summaryGender(p),
+      summaryRace(p),
+      summaryAddress(p),
+      summaryField(p,'finalStart'),
+      summarySalary(p),
+      summaryFinalJobTitle(p),
+      summaryWorkingHours(p),
+      summaryField(p,'finalDept'),
+      summaryField(p,'decision'),
+      r.status
+    ];
+    return '<tr>'+cells.map(function(x){return '<td style="border:1px solid #ccc;padding:5px 8px;">'+e2(x||'—')+'</td>';}).join('')+'</tr>';
+  }).join('');
+}
+window.renderSummaryRows=renderSummaryRows;
+
 window.loadSummary=function(){
-  ensureSummaryCompanyColumn();
+  ensureSummaryColumns();
+  installSummaryFilters();
   var tbody=byId('summaryTbody');
-  tbody.innerHTML='<tr><td colspan="17" style="padding:10px;color:#777;">Loading...</td></tr>';
-  apiFetch('/rest/v1/eaf_applications?select=id,status,payload,submitted_at&order=submitted_at.desc').then(function(rows){
-    if(!rows||!rows.length){tbody.innerHTML='<tr><td colspan="17" style="padding:10px;color:#777;">No applications yet.</td></tr>';return;}
-    tbody.innerHTML=rows.map(function(r){var p=r.payload||{},code=p.companyCode||'meg',c=companies()[code]||{};var cells=[
-      summaryField(p,'nameEnglish'),c.name||code,summaryField(p,'nameChinese'),summaryIcOrPassport(p),calcAge(summaryField(p,'dob')),summaryField(p,'email'),summaryField(p,'contact'),summaryGender(p),summaryRace(p),summaryAddress(p),summaryField(p,'finalStart'),summarySalary(p),summaryFinalJobTitle(p),summaryWorkingHours(p),summaryField(p,'finalDept'),summaryField(p,'decision'),r.status
-    ];return '<tr>'+cells.map(function(x){return '<td style="border:1px solid #ccc;padding:5px 8px;">'+e2(x||'—')+'</td>';}).join('')+'</tr>';}).join('');
-  }).catch(function(err){tbody.innerHTML='<tr><td colspan="17" style="padding:10px;color:#c62828;">Failed to load: '+e2(err.message)+'</td></tr>';});
+  tbody.innerHTML='<tr><td colspan="18" style="padding:10px;color:#777;">Loading...</td></tr>';
+  apiFetch('/rest/v1/eaf_applications?select=id,status,company_code,payload,submitted_at&order=submitted_at.desc').then(function(rows){
+    V2.summaryRows=rows||[];
+    refreshSummaryStatusOptions();
+    renderSummaryRows();
+  }).catch(function(err){
+    tbody.innerHTML='<tr><td colspan="18" style="padding:10px;color:#c62828;">Failed to load: '+e2(err.message)+'</td></tr>';
+  });
+};
+
+// The normal Applications tab already has its own company filter.
+// Hide that control on Application Summary so the summary-specific filter bar is the single source of truth.
+var v2OldSwitchTab=window.switchTab;
+window.switchTab=function(tab){
+  v2OldSwitchTab(tab);
+  var cf=byId('v2CompanyFilter');if(cf)cf.style.display=tab==='summary'?'none':'';
 };
 
 function insertV2EmploymentFields(){
