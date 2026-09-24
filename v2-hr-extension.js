@@ -22,7 +22,7 @@
 
 window.MEG_EAF_V2 = window.MEG_EAF_V2 || {};
 var V2=window.MEG_EAF_V2;
-V2.version='MEG-EAF-HR V2 v2026.09.24-18:40';
+V2.version='MEG-EAF-HR V2 v2026.09.24-18:50';
 V2.jd=null;
 V2.pendingRestore=null;
 V2.loecRecord=null;
@@ -103,7 +103,7 @@ function canonicalLegacyFamily(value,families){
 
 function addV2Styles(){
   var st=document.createElement('style');
-  st.textContent='\n.v2-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:#eef5fc;color:#1565c0;font-size:10px;font-weight:700}.v2-panel{border:1.5px solid #90caf9;background:#f7fbff;border-radius:7px;padding:12px;margin:12px 0}.v2-panel h4{margin:0 0 8px;color:#0d47a1}.v2-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}.v2-grid .form-group{min-width:0}.v2-status{font-weight:800;padding:4px 8px;border-radius:5px;background:#eceff1}.v2-warn{padding:8px 10px;background:#fff8e1;border:1px solid #ffe082;border-radius:5px;color:#6d4c41;font-size:11px}.v2-ok{padding:8px 10px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:5px;color:#1b5e20;font-size:11px}.v2-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.v2-actions button{border:0;border-radius:5px;padding:7px 10px;color:#fff;background:#1565c0;cursor:pointer}.v2-actions button.secondary{background:#546e7a}.v2-actions button.good{background:#2e7d32}.v2-actions button.warn{background:#ef6c00}.v2-actions button.danger{background:#c62828}.b16-app-card{border:1px solid #d4e2ef;border-radius:6px;background:#fff;margin:8px 0;padding:10px}.b16-app-enable{font-weight:800;color:#174a7a;display:flex;align-items:center;gap:7px;cursor:pointer}.b16-app-body{margin-top:9px}.b16-table-toggle{display:flex;align-items:center;gap:6px;margin:8px 0;font-size:12px;font-weight:700}.b16-table-tools{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.b16-table-tools button{font-size:11px;padding:4px 8px;border:1px solid #8aa6bf;background:#f5f9fc;border-radius:4px;cursor:pointer}.b16-table-host{overflow:auto}.b16-edit-table{min-width:560px}.b16-edit-table th,.b16-edit-table td{padding:3px}.b16-edit-table th input{font-weight:700}.b16-edit-table textarea{width:100%;min-height:46px;border:0;resize:vertical;padding:4px;font:inherit}.b16-contract-table th,.b16-contract-table td{vertical-align:middle!important}.rec-code{color:#173b2a!important;font-weight:800!important;background:#eef8f0!important}@media(max-width:700px){.v2-grid{grid-template-columns:1fr}}\n';
+  st.textContent='\n.v2-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:#eef5fc;color:#1565c0;font-size:10px;font-weight:700}.v2-panel{border:1.5px solid #90caf9;background:#f7fbff;border-radius:7px;padding:12px;margin:12px 0}.v2-panel h4{margin:0 0 8px;color:#0d47a1}.v2-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}.v2-grid .form-group{min-width:0}.v2-status{font-weight:800;padding:4px 8px;border-radius:5px;background:#eceff1}.v2-warn{padding:8px 10px;background:#fff8e1;border:1px solid #ffe082;border-radius:5px;color:#6d4c41;font-size:11px}.v2-ok{padding:8px 10px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:5px;color:#1b5e20;font-size:11px}.v2-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.v2-actions button{border:0;border-radius:5px;padding:7px 10px;color:#fff;background:#1565c0;cursor:pointer}.v2-actions button.secondary{background:#546e7a}.v2-actions button.good{background:#2e7d32}.v2-actions button.warn{background:#ef6c00}.v2-actions button.danger{background:#c62828}.b16-app-card{border:1px solid #d4e2ef;border-radius:6px;background:#fff;margin:8px 0;padding:10px}.b16-app-enable{font-weight:800;color:#174a7a;display:flex;align-items:center;gap:7px;cursor:pointer}.b16-app-body{margin-top:9px}.b16-table-toggle{display:flex;align-items:center;gap:6px;margin:8px 0;font-size:12px;font-weight:700}.b16-table-tools{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.b16-table-tools button{font-size:11px;padding:4px 8px;border:1px solid #8aa6bf;background:#f5f9fc;border-radius:4px;cursor:pointer}.b16-table-host{overflow:auto}.b16-edit-table{min-width:560px}.b16-edit-table th,.b16-edit-table td{padding:3px}.b16-edit-table th input{font-weight:700}.b16-edit-table textarea{width:100%;min-height:46px;border:0;resize:vertical;padding:4px;font:inherit}.b16-contract-table th,.b16-contract-table td{vertical-align:middle!important}.letter-doc p.b16-appendix-prose{text-align:justify!important;text-justify:inter-word!important;width:100%;margin-bottom:8px}.letter-doc p.b16-appendix-label{text-align:left!important;margin-bottom:4px}.rec-code{color:#173b2a!important;font-weight:800!important;background:#eef8f0!important}@media(max-width:700px){.v2-grid{grid-template-columns:1fr}}\n';
   document.head.appendChild(st);
 }
 
@@ -1083,11 +1083,25 @@ window.buildLocePage1HTML=function(d){
 var b15BuildClauses=window.buildLoceClauseBlocks;
 window.buildLoceClauseBlocks=function(d){var blocks=b15BuildClauses(d),schedule=(d.workingHoursText||'the agreed working schedule'),days=d.workingDays?(' on '+d.workingDays):'',note=d.workingScheduleNote?(' '+d.workingScheduleNote):'';blocks.forEach(function(b){if(!b||!b.html)return;if(b.html.indexOf('<div class="l-num">5.1</div>')>=0)b.html=C('5.1','The Employee’s normal working schedule is '+schedule+days+', subject to the statutory working-time framework and genuine meal/rest periods during which the Employee is free from duties.'+note).html;if(b.html.indexOf('<div class="l-num">6.1</div>')>=0){b.html=C('6.1',d.payBasis==='hourly'?'The Employee is paid a basic hourly rate of '+d.basicSalaryFmt+' per hour ('+d.salaryWords+'). Wages are calculated from authorised recorded working time and paid within the statutory deadline through an approved financial institution, less lawful deductions. Fixed contractual allowances, if any, are monthly amounts stated in the salient terms.':'The Employee is paid a basic salary of '+d.basicSalaryFmt+' ('+d.salaryWords+') per month. Fixed contractual allowance(s), if any, are stated in the salient terms. Wages are paid within the statutory deadline through an approved financial institution, less lawful deductions.').html;}if(b.html.indexOf('<div class="l-num">18.1</div>')>=0)b.html=C('18.1','This combined Letter of Offer & Contract of Employment, Appendix 1 Job Description, every additional Appendix expressly included in this agreement, the applicable Employee Handbook and incorporated written policies form the employment documentation.').html;});return blocks;};
 window.buildLoceSignatureBlocks=function(d){return [BA('<p style="font-weight:700;margin-top:16px">ACCEPTANCE AND MANUAL SIGNING</p><p>By signing below, the Employee confirms that the complete Letter of Offer &amp; Contract of Employment and all included Appendices have been reviewed, the offer is accepted, and the employment contract is agreed at the same time.</p><table class="l-sigtable" style="border:none"><tr style="border:none"><td style="border:none;width:50%;vertical-align:top;text-align:left">For and on behalf of the Employer<br><br><br><br><br>.....................................................<br>Name:<br>Designation:<br>Date:</td><td style="border:none;width:50%;vertical-align:top;text-align:left">Accepted and Signed by the Employee<br><br><br><br><br>.....................................................<br>Name:<br>NRIC/Passport No.:<br>Date:</td></tr></table>')];};
+function b16AppendixTextBlocks(text){
+  var blocks=[];
+  String(text||'').split(/\n\s*\n/).forEach(function(part){
+    var lines=String(part||'').split(/\r?\n/).map(function(x){return x.trim();}).filter(Boolean);
+    if(!lines.length)return;
+    if(lines.length>1 && (/^APPENDIX\s+\d+\b/i.test(lines[0]) || /^(ACKNOWLEDGEMENT|ACKNOWLEDGMENT|CLOSING NOTE)\b/i.test(lines[0]))){
+      blocks.push(B('<p class="b16-appendix-label">'+e2(lines.shift())+'</p>'));
+    }
+    if(lines.length){
+      blocks.push(B('<p class="b16-appendix-prose">'+e2(lines.join(' '))+'</p>'));
+    }
+  });
+  return blocks;
+}
 function b16AppendixBlocks(a){
   var n=Number(a.number||0),heading=BH('<h3>APPENDIX '+n+' — '+e2((a.title||'ADDITIONAL TERMS & CONDITIONS').toUpperCase())+'</h3>');
   heading.breakBefore=true;
   var blocks=[heading];
-  String(a.intro||'').split(/\n\s*\n/).forEach(function(p){if(p.trim())blocks.push(B('<p>'+e2(p.trim()).replace(/\n/g,'<br>')+'</p>'));});
+  blocks=blocks.concat(b16AppendixTextBlocks(a.intro));
   if(a.tableEnabled&&Array.isArray(a.columns)&&a.columns.length){
     var cols=a.columns,aligns=Array.isArray(a.columnAlignments)?a.columnAlignments:cols.map(function(){return 'left';});
     while(aligns.length<cols.length)aligns.push('left');
@@ -1117,7 +1131,7 @@ function b16AppendixBlocks(a){
       start=end;
     }
   }
-  String(a.closing||'').split(/\n\s*\n/).forEach(function(p){if(p.trim())blocks.push(B('<p>'+e2(p.trim()).replace(/\n/g,'<br>')+'</p>'));});
+  blocks=blocks.concat(b16AppendixTextBlocks(a.closing));
   return blocks;
 }
 var b15BuildAppendices=window.buildLoceAppendixBlocks;
