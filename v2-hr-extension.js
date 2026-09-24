@@ -22,7 +22,7 @@
 
 window.MEG_EAF_V2 = window.MEG_EAF_V2 || {};
 var V2=window.MEG_EAF_V2;
-V2.version='MEG-EAF-HR V2 v2026.09.02-15:45';
+V2.version='MEG-EAF-HR V2 v2026.09.24-11:30';
 V2.jd=null;
 V2.pendingRestore=null;
 V2.loecRecord=null;
@@ -48,6 +48,16 @@ function companyCode(){return (document.getElementById('companySelect')||{}).val
 function companies(){return (typeof EAF_COMPANIES!=='undefined' && EAF_COMPANIES) ? EAF_COMPANIES : (window.EAF_COMPANIES||{});}
 function profile(){return ENTITY_PROFILES[companyCode()]||ENTITY_PROFILES.meg;}
 function companyObj(){return companies()[companyCode()]||{};}
+function normalizeEmploymentType(v){
+  var s=String(v||'').trim().toLowerCase().replace(/\s+/g,' ');
+  if(!s)return '';
+  if((s.indexOf('full-time')>=0||s.indexOf('full time')>=0)&&s.indexOf('permanent')>=0)return 'Permanent Full-Time';
+  if((s.indexOf('full-time')>=0||s.indexOf('full time')>=0)&&(s.indexOf('fixed')>=0||s.indexOf('contract')>=0))return 'Fixed-Term Full-Time';
+  if(s.indexOf('part-time')>=0||s.indexOf('part time')>=0)return 'Part-Time';
+  if(s.indexOf('temporary')>=0)return 'Temporary';
+  if(s.indexOf('intern')>=0)return 'Internship';
+  return v;
+}
 function workingHoursSalientText(d){
   var code=(d&&d.companyCode)||companyCode();
   var base='From '+e2((d&&d.timeFrom)||'')+' to '+e2((d&&d.timeTo)||'');
@@ -164,7 +174,7 @@ function insertV2EmploymentFields(){
   var title=Array.prototype.find.call(document.querySelectorAll('#officeBox .section-title'),function(x){return x.textContent.indexOf('Appointment Letter Details')>=0;});
   if(!title)return;
   var p=document.createElement('div');p.id='v2EmploymentTerms';p.className='v2-panel';
-  p.innerHTML='<h4>MEG-EAF V2 — Employment Terms</h4><div class="v2-grid">'
+  p.innerHTML='<h4>MEG-Employment & HR System V2 — Employment Terms</h4><div class="v2-grid">'
   +'<div class="form-group"><label>Employment Type <span style="color:red">*</span></label><select id="v2EmploymentType"><option>Permanent Full-Time</option><option>Fixed-Term Full-Time</option><option>Part-Time</option><option>Temporary</option><option>Internship</option></select></div>'
   +'<div class="form-group"><label>Fixed-Term End Date</label><input type="date" id="v2FixedTermEnd"></div>'
   +'<div class="form-group"><label>Probation Period (months) <span style="color:red">*</span></label><input type="number" min="0" max="24" step="1" id="v2ProbationMonths"></div>'
@@ -187,6 +197,7 @@ function insertV2EmploymentFields(){
     +'</div><div style="font-size:10px;color:#666;margin-top:6px">Event, crew, mileage, meal, travel and accommodation claims remain governed by separate Company policy unless expressly stated as contractual.</div>';row.parentNode.insertBefore(r,row.nextSibling);}
 
   ['v2EmploymentType','v2FixedTermEnd','v2ProbationMonths','v2ProbationNotice','v2ProbationNoticeUnit','v2OtCategory','v2FixedAllowance','v2OtherAllowance'].forEach(function(id){var el=byId(id);if(el){el.addEventListener('input',v2TermsChanged);el.addEventListener('change',v2TermsChanged);}});
+  if(byId('v2EmploymentType'))byId('v2EmploymentType').addEventListener('change',function(){this.dataset.userSet='1';});
   if(salary)salary.addEventListener('input',updateRemuneration);
 }
 
@@ -357,7 +368,7 @@ window.onLevelChange=function(){
   var p=selectedExactJd(),rp=resolvePosition();
   if(byId('v2JdReference'))byId('v2JdReference').value=p?(p.reference||''):'';
   if(p&&byId('reportingTitle')&&!byId('reportingTitle').value&&p.reports_to)byId('reportingTitle').value=p.reports_to;
-  if(p&&byId('v2EmploymentType')&&p.employment_type&&!byId('v2EmploymentType').dataset.userSet)byId('v2EmploymentType').value=p.employment_type;
+  if(p&&byId('v2EmploymentType')&&p.employment_type&&!byId('v2EmploymentType').dataset.userSet)byId('v2EmploymentType').value=normalizeEmploymentType(p.employment_type);
   if(rp&&rp.deptName&&byId('finalDept')&&(!byId('finalDept').value||byId('finalDept').dataset.auto==='1')){byId('finalDept').value=rp.deptName;byId('finalDept').dataset.auto='1';}
 };
 
@@ -431,7 +442,12 @@ var oldRestore=window.restoreFormData;
 window.restoreFormData=function(d){V2.pendingRestore=d||{};oldRestore(d||{});setTimeout(function(){renderHrApplicantPosts();applyPendingRestore();},0);setTimeout(function(){renderHrApplicantPosts();applyPendingRestore();},400);};
 function applyPendingRestore(){var d=V2.pendingRestore||{};[
   'v2EmploymentType','v2FixedTermEnd','v2ProbationMonths','v2ProbationNotice','v2ProbationNoticeUnit','v2OtCategory','v2FixedAllowance','v2OtherAllowance','v2JdReference'
-].forEach(function(id){if(byId(id)&&d[id]!==undefined)byId(id).value=d[id];});
+].forEach(function(id){
+  if(byId(id)&&d[id]!==undefined){
+    byId(id).value=(id==='v2EmploymentType')?normalizeEmploymentType(d[id]):d[id];
+    if(id==='v2EmploymentType'&&String(d[id]||'').trim())byId(id).dataset.userSet='1';
+  }
+});
   var titleSel=byId('approvedJobTitle'),levelSel=byId('jobTitleLevel'),eid=findEntityId(companyCode()),families=approvedFamiliesForEntity(eid),family=null,exact=null;
   if(titleSel&&V2.jd&&eid){
     if(d.v2ApprovedFamilyId)family=familyById(d.v2ApprovedFamilyId);
