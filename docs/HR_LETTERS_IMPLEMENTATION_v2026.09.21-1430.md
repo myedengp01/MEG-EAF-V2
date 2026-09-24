@@ -17,3 +17,9 @@ Target UVN: `v2026.09.21-14:30`. Development branch: `feature/hr-letters-v2026-0
 
 ## Release gates
 Do not issue letters, mutate payroll or expose confidential records until permissions and end-to-end tests pass. No claim of live deployment without confirmed migration, commit, deploy URL and smoke test. Existing `main` stays unchanged until all gates pass.
+
+## Draft preview race fix — 2026-09-24
+
+A pending preview previously checked only employee/template IDs. Editing a field while waiting, or switching employee/template away and back, could let an obsolete response enable Save Draft. The workspace now advances a preview revision whenever inputs/selections are invalidated and before each preview request. Stale successes and errors are discarded; a fresh preview is required before saving. Regeneration also clears an earlier valid preview before the request starts. Outdated template-field errors no longer replace the current selection status.
+
+`tests/hr-letters-preview.mjs` executes the actual workspace script with dummy DOM/HTTP responses and deliberate response delays. It covers field edits, employee/template changes away and back, stale errors, rejected saves without a current preview, current-field saving after a valid preview, and failure while regenerating. The complete `npm test --prefix tests` suite passes. This is a local regression check, not full-app browser or production validation. No letters, employees, permissions or database objects were changed by these tests.
