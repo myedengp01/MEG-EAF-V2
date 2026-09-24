@@ -90,7 +90,7 @@ button,input,select{font:inherit}.hidden{display:none!important}
     <div class="user-strip" id="welcomeLine"></div>
     <div class="cards" id="appCards"></div>
   </div>
-  <div class="footer-note">MEG-Employment &amp; HR Dashboard v2026.09.04-19:30</div>
+  <div class="footer-note">MEG-Employment &amp; HR Dashboard v2026.09.24-EDP</div>
 </div>
 
 <div class="modal-bg" id="adminModal" onclick="if(event.target===this) closeAdminControl()">
@@ -107,11 +107,14 @@ button,input,select{font:inherit}.hidden{display:none!important}
 var SUPABASE_URL='https://vzngfswtofegimfcoigx.supabase.co';
 var SUPABASE_ANON_KEY='sb_publishable_V5o_-Bkz5M7Y75j-eN03rQ_pkQ8Kem9';
 var SESSION_KEY='meg_hr_session';
-var CLIENT_INFO='MEG-EAF-V2-GATEWAY/v2026.09.04-19:30';
+var CLIENT_INFO='MEG-EAF-V2-GATEWAY/v2026.09.24-EDP';
 var HR_APP_URL='https://myedengp01.github.io/MEG-EAF-V2/hr.html';
 var SESSION=null,BOOT=null,CURRENT_ADMIN_TAB='apps';
 var APP_ORDER=['apply','hr','jd_manual','hr_law'];
+// Keep the existing four configurable app permissions separate from admin-only HR Letters.
+var CARD_ORDER=APP_ORDER.concat(['hr_letters']);
 var APP_META={
+  hr_letters:{name:'HR Letters',icon:'✉️',desc:'Prepare letter drafts and submit them for separate administrator review and approval.',path:'hr-letters.html',accent:'#f472b6',bg:'rgba(244,114,182,.15)',arrow:'Open HR Letters →'},
   apply:{name:'Apply Now',icon:'📝',desc:'Employment application access for permitted internal users or authorized applicant invitations.',path:'index.html',accent:'#4fd8c4',bg:'rgba(79,216,196,.15)',arrow:'Open Application →'},
   hr:{name:'HR Staff',icon:'🔐',desc:'Review applications, Office Use, hiring decisions and LOEC workflow according to HR permissions.',path:'hr.html',accent:'#a78bfa',bg:'rgba(167,139,250,.15)',arrow:'Open HR →'},
   jd_manual:{name:'Job Description Manual',icon:'📘',desc:'Search the controlled multi-entity Job Description master.',path:'jd-manual.html',accent:'#f59e0b',bg:'rgba(245,158,11,.15)',arrow:'Open Manual →'},
@@ -142,9 +145,9 @@ function forgotPassword(){var email=document.getElementById('loginEmail').value.
 function signOutDashboard(){var tok=SESSION&&SESSION.access_token;clearSession();BOOT=null;if(tok){fetch(SUPABASE_URL+'/auth/v1/logout',{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+tok}}).catch(function(){});}location.href='dashboard.html';}
 
 function modeLabel(m){return ({restricted:'Restricted',invitation_only:'Invitation Only',admin_only:'Admin Only',disabled:'Disabled'})[m]||m||'Restricted';}
-function renderGateway(){var user=BOOT.user||{},apps=BOOT.apps||{},isAdmin=!!user.is_admin;document.getElementById('authArea').classList.add('hidden');document.getElementById('appArea').classList.remove('hidden');document.getElementById('userBtn').textContent=user.full_name||user.email||'Signed In';document.getElementById('userBtn').classList.remove('hidden');document.getElementById('signOutBtn').classList.remove('hidden');document.getElementById('adminControlBtn').classList.toggle('hidden',!isAdmin);document.getElementById('welcomeLine').innerHTML='Welcome, <b>'+esc(user.full_name||user.email)+'</b>'+(isAdmin?' <span class="admin-chip">ADMIN MODE</span>':'');var visible=APP_ORDER.filter(function(code){return apps[code]&&apps[code].allowed===true;});var box=document.getElementById('appCards');if(!visible.length){box.innerHTML='<div class="empty-apps" style="grid-column:1/-1"><b>No applications are currently assigned to your account.</b><br>Please contact an administrator if you need access.</div>';return;}box.innerHTML=visible.map(function(code){var a=apps[code]||{},m=APP_META[code];return '<a class="card" href="'+esc(a.path||m.path)+'" style="--card-accent:'+m.accent+';--card-icon-bg:'+m.bg+'">'+(isAdmin?'<div class="mode-badge">'+esc(modeLabel(a.mode))+'</div>':'')+'<div class="card-icon">'+m.icon+'</div><div class="card-name">'+esc(m.name)+'</div><div class="card-desc">'+esc(m.desc)+'</div><div class="card-arrow" style="color:'+m.accent+'">'+esc(m.arrow)+'</div></a>';}).join('');}
+function renderGateway(){var user=BOOT.user||{},apps=BOOT.apps||{},isAdmin=!!user.is_admin;document.getElementById('authArea').classList.add('hidden');document.getElementById('appArea').classList.remove('hidden');document.getElementById('userBtn').textContent=user.full_name||user.email||'Signed In';document.getElementById('userBtn').classList.remove('hidden');document.getElementById('signOutBtn').classList.remove('hidden');document.getElementById('adminControlBtn').classList.toggle('hidden',!isAdmin);document.getElementById('welcomeLine').innerHTML='Welcome, <b>'+esc(user.full_name||user.email)+'</b>'+(isAdmin?' <span class="admin-chip">ADMIN MODE</span>':'');var visible=CARD_ORDER.filter(function(code){return apps[code]&&apps[code].allowed===true&&(code!=='hr_letters'||isAdmin);});var box=document.getElementById('appCards');if(!visible.length){box.innerHTML='<div class="empty-apps" style="grid-column:1/-1"><b>No applications are currently assigned to your account.</b><br>Please contact an administrator if you need access.</div>';return;}box.innerHTML=visible.map(function(code){var a=apps[code]||{},m=APP_META[code];return '<a class="card" href="'+esc(a.path||m.path)+'" style="--card-accent:'+m.accent+';--card-icon-bg:'+m.bg+'">'+(isAdmin?'<div class="mode-badge">'+esc(modeLabel(a.mode))+'</div>':'')+'<div class="card-icon">'+m.icon+'</div><div class="card-name">'+esc(m.name)+'</div><div class="card-desc">'+esc(m.desc)+'</div><div class="card-arrow" style="color:'+m.accent+'">'+esc(m.arrow)+'</div></a>';}).join('');}
 function loadGateway(explicitLogin){return api('/auth/v1/user').then(function(){return rpc('eaf_v2_gateway_my_access',{});}).then(function(b){BOOT=b||{};renderGateway();if(explicitLogin)rpc('eaf_v2_gateway_log_login',{}).catch(function(){});handleRequestedApp();}).catch(function(e){if(e.status===401||String(e.message).indexOf('SESSION_EXPIRED')>=0){clearSession();showLogin();return;}clearSession();showLogin();setError('authError','Gateway access control is not initialized or could not be loaded. Ask Admin to deploy SQL 008 first. '+e.message);});}
-function handleRequestedApp(){var p=new URLSearchParams(location.search),next=p.get('next');if(!next||!APP_META[next]||!BOOT)return;var a=BOOT.apps&&BOOT.apps[next];try{history.replaceState(null,'','dashboard.html');}catch(e){}if(a&&a.allowed===true){location.href=a.path||APP_META[next].path;}else{showToast('Your account is signed in, but access to '+APP_META[next].name+' has not been granted.');}}
+function handleRequestedApp(){var p=new URLSearchParams(location.search),next=p.get('next');if(!next||!APP_META[next]||!BOOT)return;var a=BOOT.apps&&BOOT.apps[next];try{history.replaceState(null,'','dashboard.html');}catch(e){}if(a&&a.allowed===true&&(next!=='hr_letters'||!!(BOOT.user&&BOOT.user.is_admin))){location.href=a.path||APP_META[next].path;}else{showToast('Your account is signed in, but access to '+APP_META[next].name+' has not been granted.');}}
 
 function openAdminControl(){if(!BOOT||!BOOT.user||!BOOT.user.is_admin)return;document.getElementById('adminModal').classList.add('active');showAdminTab('apps');}
 function closeAdminControl(){document.getElementById('adminModal').classList.remove('active');}

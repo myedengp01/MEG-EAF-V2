@@ -18,6 +18,14 @@ Target UVN: `v2026.09.21-14:30`. Development branch: `feature/hr-letters-v2026-0
 ## Release gates
 Do not issue letters, mutate payroll or expose confidential records until permissions and end-to-end tests pass. No claim of live deployment without confirmed migration, commit, deploy URL and smoke test. Existing `main` stays unchanged until all gates pass.
 
+## Administrator navigation — 2026-09-24
+
+Read-only inspection confirmed the production registry already contains `hr_letters`, path `hr-letters.html`, mode `admin_only`. The gateway access RPC includes registered applications and delegates permission checks to `eaf_v2_gateway_can_access`; unauthenticated and non-admin HR Letters access is denied. No database changes were made.
+
+The pending dashboard now includes an HR Letters card only when both the gateway allows it and the user is an administrator. Requested-app redirects use the same check. Missing registration/permission hides the card. The four original app-mode controls and user permission flags are unchanged; HR Letters gets no new ordinary-user permission checkbox or mode selector. The draft page links to the existing protected review/issuance page. Gateway client/display version is `v2026.09.24-EDP`.
+
+`tests/hr-letters-navigation.mjs` executes the actual dashboard script with dummy access responses and verifies allowed, denied, missing-registration and non-admin cases, requested-app redirects, preservation of the four app controls and the review link. Full-app browser acceptance is still required before release.
+
 ## Draft preview race fix — 2026-09-24
 
 A pending preview previously checked only employee/template IDs. Editing a field while waiting, or switching employee/template away and back, could let an obsolete response enable Save Draft. The workspace now advances a preview revision whenever inputs/selections are invalidated and before each preview request. Stale successes and errors are discarded; a fresh preview is required before saving. Regeneration also clears an earlier valid preview before the request starts. Outdated template-field errors no longer replace the current selection status.
