@@ -68,3 +68,9 @@ Once a non-production app URL is selected, sign in through that app with each du
 - Confirm no Super Administrator assignment option exists. Check narrow/mobile layout, keyboard focus and confirmation cancellation.
 
 Record the staging project/app URL, commit, test time, HTTP result and browser observations without credentials. Keep PR #1 in draft until the remaining HR Letters release checks also pass. Irene must select a person before any real role assignment.
+
+## HR Letters database setup package — 2026-09-25
+
+`node tests/build-hr-letters-staging.mjs fjesgcsumbuniatyaeee` emits one reviewable transaction without connecting to a database. The generator rejects other project IDs; the SQL itself must still be sent only to the selected staging project. It refuses existing Employee Master or HR Letters objects, creates one clearly named dummy employee, installs the existing HR Letters RPCs and company-name migration, and restores all 15 templates inactive. Existing JD entities, Auth accounts and permissions are not modified. No account is enabled and no real personnel data is copied.
+
+`node tests/hr-letters-staging-setup.mjs` passed locally: staging-only generation, preservation of existing entity/unrelated data, dummy row, 15 inactive bodies, denied direct employee access, and overwrite refusal. The package has NOT been applied to staging or production. It deliberately omits gateway registration because the complete gateway schema is absent; it is not a full staging app deployment. Next: review/apply only to staging, verify database behavior, prepare the full gateway/UI environment, then perform signed-in acceptance with disposable accounts and cleanup.
