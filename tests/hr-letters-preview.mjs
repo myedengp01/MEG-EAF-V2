@@ -25,8 +25,8 @@ const context=vm.createContext({document:{getElementById:el,createElement:()=>ne
     const name=url.split('/').at(-1),args=JSON.parse(options.body);
     if(name==='eaf_v2_gateway_my_access')return response({user:{id:'admin',is_admin:true},apps:{hr_letters:{allowed:true}}});
     if(name==='hr_letters_admin_templates')return response([{code:'LOC',has_body:true},{code:'LOI',has_body:true}]);
-    if(name==='hr_letters_admin_employees')return response([{id:'one',employee_name:'Dummy One'},{id:'two',employee_name:'Dummy Two'}]);
-    if(name==='hr_letters_admin_template_fields')return response({fields:['custom'],title:args.p_code,version:1});
+    if(name==='hr_letters_admin_employees')return response([{id:'one',employee_name:'Dummy One',company_code:'DUMMY',company_name:'Dummy Full Entity'},{id:'two',employee_name:'Dummy Two',company_code:'UNKNOWN'}]);
+    if(name==='hr_letters_admin_template_fields')return response({fields:['custom','company_name'],title:args.p_code,version:1});
     if(name==='hr_letters_admin_list_drafts')return response([]);
     if(name==='hr_letters_admin_preview')return new Promise((resolve,reject)=>pending.push({args,resolve:data=>resolve(response(data)),reject}));
     if(name==='hr_letters_admin_save_draft'){saved.push(args);return response('dummy-draft');}
@@ -34,6 +34,8 @@ const context=vm.createContext({document:{getElementById:el,createElement:()=>ne
   }});
 await vm.runInContext(source,context);
 el('employee').value='one';el('template').value='LOC';await el('template').emit('change');
+assert.equal(fields().find(f=>f.dataset.field==='company_name').value,'Dummy Full Entity');
+assert.equal(fields().find(f=>f.dataset.field==='company_name').disabled,true);
 fields()[0].value='Original';await fields()[0].emit('input');
 let job=el('letterForm').emit('submit');
 assert.equal(pending.at(-1).args.p_fields.custom,'Original');
@@ -46,6 +48,7 @@ await el('saveButton').emit('click');assert.equal(saved.length,0);
 // Returning to the same employee must not resurrect a request from before the change.
 job=el('letterForm').emit('submit');
 el('employee').value='two';await el('employee').emit('change');
+assert.equal(fields().find(f=>f.dataset.field==='company_name').value,'');
 el('employee').value='one';await el('employee').emit('change');
 pending.at(-1).resolve({preview:'STALE employee response',missing_fields:[]});await job;
 assert.equal(el('saveButton').disabled,true);assert.doesNotMatch(el('preview').textContent,/STALE/);

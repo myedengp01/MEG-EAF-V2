@@ -1,6 +1,6 @@
 # HR Letters field mapping audit — 2026-09-24
 
-Status: release blocked pending verified salary semantics and implementation of company-name resolution. Inspection was read-only; no employee values, roles, database definitions or issued letters were changed.
+Status: company-name fix implemented and tested locally on 2026-09-25; release remains blocked pending staging validation and verified salary semantics. Live inspection was read-only; no live employee values, roles, database definitions or issued letters were changed.
 
 ## Company name
 
@@ -34,10 +34,17 @@ This establishes provenance, but does not establish that the amount is monthly b
 
 Irene must confirm whether this field always means monthly basic salary excluding allowances, or identify the verified source and its effective-date rule. Until then, do not mark salary letters ready for release, infer basic salary from final salary, or introduce editable client overrides as a substitute for verification.
 
+## Implemented company fix — 2026-09-25
+
+Pending migration `20260924044224_hr_letters_company_names.sql` uses a private, administrator-gated resolver over `jd_entities`. Exactly one matching, active, nonblank entity name is required; matching normalizes code casing and outer spaces. Missing, inactive, blank or ambiguous matches return no directory name and reject preview generation. Client-supplied company names cannot override the resolved value. The employee directory includes `company_name`, and the UI displays it read-only without a code fallback. Existing company codes remain unchanged for record scoping.
+
+The LOC_LOI template has fixed MEG wording, so previews/submissions using that template are rejected for other entity codes until separately reviewed wording exists. The migration does not rewrite templates or existing letter snapshots. Salary behavior is unchanged and remains unverified; this is not release approval.
+
+Local PGlite tests cover all four company names, normalized codes, directory/preview consistency, spoofed fields, invalid entity cases, MEG-only combined wording, anonymous/non-admin denial, restricted helper ACLs, repeat migration, and preservation of submitted frozen text after the entity name changes. UI tests confirm a full read-only name and no fallback for missing mappings. Run `npm test --prefix tests`. The migration was generated using Supabase CLI 2.81.3; it has not been applied to staging or production. Apply the database change before releasing the matching UI, after review.
+
 ## Remaining work
 
-- Confirm salary semantics/source, then implement and test consistent server/UI mappings.
-- Test all four entity codes, unknown/inactive entities, blank salary, permission denials and malicious client overrides with dummy records.
-- Verify preview → saved draft → submitted frozen text consistency and preservation of issued records.
+- Confirm salary semantics/source, then implement and test that mapping, including blank salary cases.
+- Verify the company-name migration and matching UI against the full staging app.
+- Complete issued-record regression and full-app acceptance before release.
 - Keep PR #1 draft and production unchanged until these and the existing release gates pass.
-
