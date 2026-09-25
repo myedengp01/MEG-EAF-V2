@@ -116,3 +116,8 @@ Rebuilt staging UI copies from 5f8b04a and signed in the disposable ordinary adm
 ## Preview validation explanations — 2026-09-25
 
 The draft workspace maps the two known SQLSTATE 22023 company-validation messages to plain-language explanations: correct missing/inactive/ambiguous company registration, or select a suitable letter instead of MEG-only LOC_LOI wording. Other server errors retain a generic message without exposing raw details. Local actual-script tests pass for both explanations, unknown/mismatched errors, disabled saving after failure and existing delayed-response protections. This UI update is committed for review; production is unchanged.
+
+
+## Live rollback-only workflow — 2026-09-25
+
+Executed `tests/fixtures/staging-hr-workflow-rollback.sql` against staging under authenticated database roles for the existing disposable accounts. Dummy administrator save/submit and distinct super-admin approve/issue passed. Ordinary-admin approval/issuance and super-admin self-approval were rejected. Frozen issued text matched the submitted dummy company/employee text, all four audit events existed, and issued-row update/delete were rejected. Rollback verified zero letters, zero audits, no temporary MEG entity or test template version, 15 inactive templates and all dummy accounts still disabled. No actual sign-in was performed for this transaction; browser workflow/confirmation remains open. Production unchanged.
