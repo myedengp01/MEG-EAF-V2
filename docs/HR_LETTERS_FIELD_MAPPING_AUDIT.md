@@ -1,3 +1,7 @@
+# Current decision — 2026-09-25
+
+Irene confirmed that Final Approved Salary always means monthly basic salary excluding allowances. The existing employee_master.final_salary → current_basic mapping is therefore retained. Local tests verify the source value, ignored client overrides, and blocked submission when the salary is missing. No real salary values or employee records were changed. Earlier uncertainty below is retained as historical audit context and is superseded by this confirmation. Company mapping is now installed and database-tested in staging; production release and remaining browser acceptance are still on hold.
+
 # HR Letters field mapping audit — 2026-09-24
 
 Status: company-name fix implemented and tested locally on 2026-09-25; release remains blocked pending staging validation and verified salary semantics. Live inspection was read-only; no live employee values, roles, database definitions or issued letters were changed.

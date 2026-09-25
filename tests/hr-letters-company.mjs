@@ -20,6 +20,18 @@ await db.exec(migration);
 const actor=async id=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');};
 const preview=()=>db.query("select hr_letters_admin_preview('LOC',$1,'{\"company_name\":\"Spoofed\"}') p",[user]);
 const fail=async(fn,code)=>assert.rejects(fn,e=>e.code===code);
+// Irene confirmed final_salary is monthly basic salary excluding allowances.
+await db.exec("insert into hr_letter_templates(code,title,version,body) values('LOI','Dummy salary','test','{{current_basic}}');");
+await actor(admin);
+let salary=(await db.query("select hr_letters_admin_preview('LOI',$1,'{\"current_basic\":\"999999\"}') p",[user])).rows[0].p;
+assert.equal(salary.preview,'1234');assert.deepEqual(salary.missing_fields,[]);
+await db.exec('reset role; update employee_master set final_salary=null');await actor(admin);
+salary=(await db.query("select hr_letters_admin_preview('LOI',$1,'{\"current_basic\":\"999999\"}') p",[user])).rows[0].p;
+assert.deepEqual(salary.missing_fields,['current_basic']);assert.equal(salary.preview,'{{current_basic}}');
+const missingSalaryDraft=(await db.query("select hr_letters_admin_save_draft($1,'LOI','{}') id",[user])).rows[0].id;
+await fail(()=>db.query('select hr_letters_admin_submit_draft($1)',[missingSalaryDraft]),'22023');
+await db.exec('reset role; update employee_master set final_salary=1234');
+console.log('PASS: confirmed basic-salary source used, client salary override ignored, missing salary blocks submission.');
 for(const [code,name] of companies){
  await db.exec('reset role');await db.query('update employee_master set company_code=$1',[code]);await actor(admin);
  const p=(await preview()).rows[0].p;assert.equal(p.company_name,name);assert.equal(p.preview,name+': Dummy Person');assert.equal(p.company_code,code);
@@ -66,3 +78,4 @@ assert.deepEqual((await db.query('select hr_letters_admin_view($1) v',[letter]))
 console.log('PASS: distinct-person issuance retains submitted company text; issued record, view and audit survive source changes and migration; update/delete denied.');
 console.log('PASS: four company names, normalization, directory/preview consistency, spoof rejection, unknown/inactive/blank/ambiguous denial, MEG-only combined wording, frozen submission and ACLs.');
 } finally {await db.close();}
+
