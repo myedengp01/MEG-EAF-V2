@@ -10,7 +10,9 @@ await db.exec((await read('../sql/009_hr_letters_v1_schema.sql')).replace('creat
 await db.exec(await read('../sql/010_hr_letters_template_registry.sql'));
 await db.exec(await read('../sql/011_hr_letters_loc_loi_source_text.sql'));
 assert.equal((await db.query("select count(*)::int n from hr_letter_templates where length(btrim(body))>0")).rows[0].n,1);
-const sql=await buildTemplateRestore();await db.exec(sql);
+const sql=await read('../supabase/migrations/20260925004232_hr_letters_restore_inactive_templates.sql');
+assert.equal(sql.replaceAll('\r\n','\n'),(await buildTemplateRestore()).replaceAll('\r\n','\n'),'Packaged migration must match the validated snapshot generator');
+await db.exec(sql);
 const snapshot=JSON.parse(await read('../templates/hr-letters.snapshot.json'));
 const actual=(await db.query('select code,title,version,body,active,md5(body) body_md5 from hr_letter_templates order by code')).rows;
 assert.deepEqual(actual,snapshot.templates);
