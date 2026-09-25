@@ -34,3 +34,8 @@ Keep production unchanged until remaining browser acceptance is resolved. Irene 
 ## Mobile/keyboard check — 2026-09-25
 
 Actual Users-tab UI with local dummy-only RPC data passed 390×844 and 320×740 viewport checks: document width did not exceed viewport width (390/390 and 305/320 px respectively); both grant/revoke buttons remained within the horizontal viewport. At 390 px the screenshot confirmed readable cards and visible keyboard focus. Tab moves Users → Access Log → Grant Administrator; Shift+Tab returns from Grant to Access Log. No role action was confirmed and network requests were blocked by the fixture. Viewport reset and tab/server closed afterward. This verifies basic responsive layout and control reachability, not native-dialog focus/cancellation or complete modal focus containment; those remain open.
+
+
+## Admin Control keyboard fix — 2026-09-25
+
+Added dialog role/name, an accessible Close label, initial focus on Close, Tab/Shift+Tab wrapping among visible enabled controls, Escape closing and focus return. Actual dashboard-script keyboard tests and navigation regressions pass. This fixes previously absent focus containment; browser verification of the new behavior remains open, as does native confirmation-dialog acceptance. No production deployment.

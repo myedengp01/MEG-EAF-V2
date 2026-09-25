@@ -93,9 +93,9 @@ button,input,select{font:inherit}.hidden{display:none!important}
   <div class="footer-note">MEG-Employment &amp; HR Dashboard v2026.09.24-EDP</div>
 </div>
 
-<div class="modal-bg" id="adminModal" onclick="if(event.target===this) closeAdminControl()">
-  <div class="admin-modal">
-    <div class="modal-head"><div style="font-size:25px">🛡</div><h2>MEG-Employment &amp; HR System V2 — Admin Control</h2><button class="close-btn" onclick="closeAdminControl()">×</button></div>
+<div class="modal-bg" id="adminModal" onclick="if(event.target===this) closeAdminControl()" onkeydown="adminControlKeydown(event)">
+  <div class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="adminControlTitle">
+    <div class="modal-head"><div style="font-size:25px">🛡</div><h2 id="adminControlTitle">MEG-Employment &amp; HR System V2 — Admin Control</h2><button class="close-btn" id="adminCloseBtn" aria-label="Close Admin Control" onclick="closeAdminControl()">×</button></div>
     <div class="admin-tabs"><button id="tabApps" onclick="showAdminTab('apps')">Apps</button><button id="tabUsers" onclick="showAdminTab('users')">Users</button><button id="tabLog" onclick="showAdminTab('log')">Access Log</button></div>
     <div class="admin-body" id="adminBody"></div>
   </div>
@@ -149,8 +149,10 @@ function renderGateway(){var user=BOOT.user||{},apps=BOOT.apps||{},isAdmin=!!use
 function loadGateway(explicitLogin){return api('/auth/v1/user').then(function(){return rpc('eaf_v2_gateway_my_access',{});}).then(function(b){BOOT=b||{};renderGateway();if(explicitLogin)rpc('eaf_v2_gateway_log_login',{}).catch(function(){});handleRequestedApp();}).catch(function(e){if(e.status===401||String(e.message).indexOf('SESSION_EXPIRED')>=0){clearSession();showLogin();return;}clearSession();showLogin();setError('authError','Gateway access control is not initialized or could not be loaded. Ask Admin to deploy SQL 008 first. '+e.message);});}
 function handleRequestedApp(){var p=new URLSearchParams(location.search),next=p.get('next');if(!next||!APP_META[next]||!BOOT)return;var a=BOOT.apps&&BOOT.apps[next];try{history.replaceState(null,'','dashboard.html');}catch(e){}if(a&&a.allowed===true&&(next!=='hr_letters'||!!(BOOT.user&&BOOT.user.is_admin))){location.href=a.path||APP_META[next].path;}else{showToast('Your account is signed in, but access to '+APP_META[next].name+' has not been granted.');}}
 
-function openAdminControl(){if(!BOOT||!BOOT.user||!BOOT.user.is_admin)return;document.getElementById('adminModal').classList.add('active');showAdminTab('apps');}
-function closeAdminControl(){document.getElementById('adminModal').classList.remove('active');}
+var ADMIN_RETURN_FOCUS=null;
+function openAdminControl(){if(!BOOT||!BOOT.user||!BOOT.user.is_admin)return;ADMIN_RETURN_FOCUS=document.activeElement;document.getElementById('adminModal').classList.add('active');showAdminTab('apps');document.getElementById('adminCloseBtn').focus();}
+function closeAdminControl(){document.getElementById('adminModal').classList.remove('active');var target=ADMIN_RETURN_FOCUS&&ADMIN_RETURN_FOCUS.isConnected?ADMIN_RETURN_FOCUS:document.getElementById('adminControlBtn');if(target)target.focus();ADMIN_RETURN_FOCUS=null;}
+function adminControlKeydown(event){if(event.key==='Escape'){event.preventDefault();closeAdminControl();return;}if(event.key!=='Tab')return;var items=Array.from(document.getElementById('adminModal').querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])')).filter(function(el){return el.tabIndex>=0&&el.getClientRects().length>0;});if(!items.length)return;var first=items[0],last=items[items.length-1];if(event.shiftKey&&(document.activeElement===first||!items.includes(document.activeElement))){event.preventDefault();last.focus();}else if(!event.shiftKey&&(document.activeElement===last||!items.includes(document.activeElement))){event.preventDefault();first.focus();}}
 function showAdminTab(tab){CURRENT_ADMIN_TAB=tab;['Apps','Users','Log'].forEach(function(x){var b=document.getElementById('tab'+x);if(b)b.classList.toggle('active',x.toLowerCase()===tab);});var body=document.getElementById('adminBody');body.innerHTML='<div class="muted">Loading...</div>';if(tab==='apps')renderAppsAdmin();else if(tab==='users')renderUsersAdmin();else renderLogAdmin();}
 
 function modeOptions(code,current){var vals=code==='apply'?['restricted','invitation_only','admin_only','disabled']:['restricted','admin_only','disabled'];return vals.map(function(v){return '<option value="'+v+'" '+(v===current?'selected':'')+'>'+modeLabel(v)+'</option>';}).join('');}
