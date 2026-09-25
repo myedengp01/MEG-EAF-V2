@@ -94,3 +94,10 @@ Set EDP_STAGING_KEY to the staging publishable key and run `node tests/build-sta
 ## Staging gateway navigation — 2026-09-25
 
 Applied `edp_staging_gateway_navigation` to staging only. The fixture captures production definitions of my_access, can_access, log_login and log_app_open read-only, adds a protected app registry containing only admin-only HR Letters, and refuses existing gateway objects. No production data was copied or changed. Local tests verify anonymous/cross-user denial, immediate grant/revoke visibility, allowed-event logging and overwrite refusal. Live rollback-only database-role checks confirmed dummy administrator access and ordinary dummy-user denial. Accounts remain disabled; this does not establish signed-in browser acceptance. Other app pages, invitation/mode administration and the full production gateway are outside this navigation fixture.
+
+
+## Signed-in navigation acceptance — 2026-09-25
+
+The ordinary disposable staging administrator signed in through the actual dashboard against staging, without a gateway adapter. Dashboard → HR Letters → review workspace navigation passed; 15 populated inactive templates and the single dummy employee loaded. Admin Control Users showed no role-assignment buttons for this ordinary administrator. Missing company resolution returned HTTP 400, Save Draft stayed disabled, and no letter was created. The error is generic and needs a useful company-mapping explanation.
+
+Cleanup: sign-out returned to the login screen, but a server session remained. Removed refresh tokens and sessions only for the disposable administrator, verified zero remaining sessions, and disabled the account again. All three dummy accounts are disabled; no actual-user roles or production changes occurred. The local server and browser tab were closed. The dashboard sign-out request is not awaited before navigation; session cleanup needs a regression fix before acceptance. Native role-confirmation, positive draft/approval/issuance browser tests, mobile/keyboard acceptance and salary semantics remain open.
