@@ -46,5 +46,5 @@ Local PGlite tests cover all four company names, normalized codes, directory/pre
 
 - Confirm salary semantics/source, then implement and test that mapping, including blank salary cases.
 - Verify the company-name migration and matching UI against the full staging app.
-- Complete issued-record regression and full-app acceptance before release.
+- Local issued-record regression passed on 2026-09-25: a distinct dummy super administrator approves/issues the frozen submitted text after entity drift. Issued record, rendered view and audit remain unchanged after source edits and migration rerun; update/delete attempts are denied. Full-app staging acceptance remains open.
 - Keep PR #1 draft and production unchanged until these and the existing release gates pass.

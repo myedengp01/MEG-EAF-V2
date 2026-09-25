@@ -6,7 +6,7 @@ try {
 await db.exec(await read('./fixtures/admin-role-baseline.sql'));
 await db.exec('create table employee_master(id uuid primary key,employee_id text,employee_name text,company_code text,department text,approved_job_title text,final_salary numeric); create table jd_entities(code text,name text,is_active boolean);');
 await db.exec((await read('../sql/009_hr_letters_v1_schema.sql')).replace('create extension if not exists pgcrypto;',''));
-for(const f of ['013_hr_letters_admin_employee_and_field_metadata.sql','014_hr_letters_admin_preview.sql','015_hr_letters_admin_draft_workflow.sql','016_hr_letters_employee_position_contract_fix.sql'])await db.exec(await read('../sql/'+f));
+for(const f of ['013_hr_letters_admin_employee_and_field_metadata.sql','014_hr_letters_admin_preview.sql','015_hr_letters_admin_draft_workflow.sql','016_hr_letters_employee_position_contract_fix.sql','017_hr_letters_distinct_approval.sql','018_hr_letters_issuance_and_immutability.sql'])await db.exec(await read('../sql/'+f));
 const admin='00000000-0000-4000-8000-000000000001',user='00000000-0000-4000-8000-000000000002';
 await db.query('insert into auth.users values($1,now(),null),($2,now(),null)',[admin,user]);
 await db.query('insert into eaf_staff_profiles values($1),($2)',[admin,user]);
@@ -44,5 +44,25 @@ await actor(user);await fail(preview,'42501');await fail(()=>db.query('select * 
 await db.exec('reset role; set role anon');await fail(preview,'42501');await db.exec('reset role');
 const acl=(await db.query("select has_function_privilege('authenticated','hr_letters_private.company_name(text)','EXECUTE') helper,has_function_privilege('anon','public.hr_letters_admin_employees()','EXECUTE') anon")).rows[0];assert.deepEqual(acl,{helper:false,anon:false});
 await db.exec(migration);assert.deepEqual((await db.query('select source_snapshot from hr_letter_records where id=$1',[letter])).rows[0].source_snapshot,frozen);
+// A distinct dummy super administrator issues the frozen text even after entity drift.
+await db.query('update eaf_v2_staff_permissions set is_super_admin=true where user_id=$1',[user]);
+await actor(user);
+assert.equal((await db.query('select hr_letters_admin_decide($1,true,null) status',[letter])).rows[0].status,'approved');
+assert.equal((await db.query('select hr_letters_admin_issue($1) status',[letter])).rows[0].status,'issued');
+const issuedView=(await db.query('select hr_letters_admin_view($1) v',[letter])).rows[0].v;
+assert.equal(issuedView.text,frozen.submitted_preview);
+await db.exec('reset role');
+const issued=(await db.query('select * from hr_letter_records where id=$1',[letter])).rows[0];
+assert.equal(issued.issued_snapshot.letter_text,frozen.submitted_preview);
+const audit=(await db.query('select * from hr_letter_audit where letter_id=$1 order by id',[letter])).rows;
+await db.exec("update jd_entities set name='Changed After Issue',is_active=false; update employee_master set employee_name='Changed After Issue'");
+await db.exec(migration);
+assert.deepEqual((await db.query('select * from hr_letter_records where id=$1',[letter])).rows[0],issued);
+assert.deepEqual((await db.query('select * from hr_letter_audit where letter_id=$1 order by id',[letter])).rows,audit);
+await fail(()=>db.query("update hr_letter_records set issued_snapshot='{}' where id=$1",[letter]),'42501');
+await fail(()=>db.query('delete from hr_letter_records where id=$1',[letter]),'42501');
+await actor(admin);
+assert.deepEqual((await db.query('select hr_letters_admin_view($1) v',[letter])).rows[0].v,issuedView);
+console.log('PASS: distinct-person issuance retains submitted company text; issued record, view and audit survive source changes and migration; update/delete denied.');
 console.log('PASS: four company names, normalization, directory/preview consistency, spoof rejection, unknown/inactive/blank/ambiguous denial, MEG-only combined wording, frozen submission and ACLs.');
 } finally {await db.close();}
