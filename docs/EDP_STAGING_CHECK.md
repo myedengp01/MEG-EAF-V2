@@ -106,3 +106,8 @@ Cleanup: sign-out returned to the login screen, but a server session remained. R
 ## Logout acknowledgement fix — 2026-09-25
 
 Dashboard sign-out now awaits a successful Auth logout response before clearing the local session and navigating. It blocks duplicate clicks, aborts after 15 seconds, and displays an explicit retry message on HTTP/network/timeout failure while retaining the current session for retry. Local regression tests execute the dashboard script and verify pending-request behavior, successful cleanup, all three failure modes and successful retry. Existing navigation tests pass. A real staging browser rerun must still verify server-session removal; this change is not deployed to production.
+
+
+## Live logout fix verification — 2026-09-25
+
+Rebuilt staging UI copies from 5f8b04a and signed in the disposable ordinary administrator through the real dashboard. Auth session count was zero before sign-in, one after sign-in, and zero after clicking Sign Out and returning to login. No manual session deletion was needed. The account was disabled again; all three dummy accounts are disabled. The browser tab and local server were closed. This closes the observed logout/session-removal regression; production remains unchanged.
