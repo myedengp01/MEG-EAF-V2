@@ -111,3 +111,8 @@ Dashboard sign-out now awaits a successful Auth logout response before clearing 
 ## Live logout fix verification — 2026-09-25
 
 Rebuilt staging UI copies from 5f8b04a and signed in the disposable ordinary administrator through the real dashboard. Auth session count was zero before sign-in, one after sign-in, and zero after clicking Sign Out and returning to login. No manual session deletion was needed. The account was disabled again; all three dummy accounts are disabled. The browser tab and local server were closed. This closes the observed logout/session-removal regression; production remains unchanged.
+
+
+## Preview validation explanations — 2026-09-25
+
+The draft workspace maps the two known SQLSTATE 22023 company-validation messages to plain-language explanations: correct missing/inactive/ambiguous company registration, or select a suitable letter instead of MEG-only LOC_LOI wording. Other server errors retain a generic message without exposing raw details. Local actual-script tests pass for both explanations, unknown/mismatched errors, disabled saving after failure and existing delayed-response protections. This UI update is committed for review; production is unchanged.

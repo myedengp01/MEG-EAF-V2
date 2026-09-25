@@ -28,7 +28,7 @@ const context=vm.createContext({document:{getElementById:el,createElement:()=>ne
     if(name==='hr_letters_admin_employees')return response([{id:'one',employee_name:'Dummy One',company_code:'DUMMY',company_name:'Dummy Full Entity'},{id:'two',employee_name:'Dummy Two',company_code:'UNKNOWN'}]);
     if(name==='hr_letters_admin_template_fields')return response({fields:['custom','company_name'],title:args.p_code,version:1});
     if(name==='hr_letters_admin_list_drafts')return response([]);
-    if(name==='hr_letters_admin_preview')return new Promise((resolve,reject)=>pending.push({args,resolve:data=>resolve(response(data)),reject}));
+    if(name==='hr_letters_admin_preview')return new Promise((resolve,reject)=>pending.push({args,resolve:data=>resolve(response(data)),httpError:data=>resolve({ok:false,status:400,json:async()=>data}),reject}));
     if(name==='hr_letters_admin_save_draft'){saved.push(args);return response('dummy-draft');}
     throw Error('Unexpected test RPC '+name);
   }});
@@ -78,4 +78,10 @@ job=el('letterForm').emit('submit');assert.equal(el('saveButton').disabled,true)
 pending.at(-1).reject(Error('Current failure'));await job;
 assert.equal(el('saveButton').disabled,true);assert.doesNotMatch(el('preview').textContent,/Valid text/);
 assert.match(el('missing').textContent,/Current failure/);
-console.log('PASS: delayed previews cannot validate edited fields or restored selections; stale errors ignored; only current reviewed fields can be saved.');
+for(const [problem,expected] of [
+ [{code:'22023',message:'Company name is missing, inactive or ambiguous in the entity register'},/correct the company register/],
+ [{code:'22023',message:'Combined confirmation/increment wording is restricted to MEG pending entity-specific review'},/available only for MEG/],
+ [{code:'22023',message:'INTERNAL SECRET <script>'},/Protected request failed/],
+ [{code:'42501',message:'Company name is missing, inactive or ambiguous in the entity register'},/Protected request failed/]
+]){job=el('letterForm').emit('submit');pending.at(-1).httpError(problem);await job;assert.match(el('missing').textContent,expected);assert.doesNotMatch(el('missing').textContent,/INTERNAL SECRET|<script>/);assert.equal(el('saveButton').disabled,true);}
+console.log('PASS: preview races and save restrictions preserved; known company errors explained; unknown server details hidden.');
