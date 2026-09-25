@@ -89,3 +89,8 @@ Security advisor: no ERROR findings; WARN findings for authenticated SECURITY DE
 ## Isolated staging UI copies
 
 Set EDP_STAGING_KEY to the staging publishable key and run `node tests/build-staging-ui.mjs`. It writes only ignored `.staging-ui` copies of the dashboard, role controls, gateway guard and HR Letters pages. Production endpoints/keys are replaced; browser session storage uses a separate staging key. Production/secret keys are rejected. A visible staging banner is added. No server, deployment, account activation or gateway bootstrap is performed. Other application pages/assets are not bundled; these copies are scoped to role and HR Letters testing. `node tests/staging-ui.test.mjs` verifies endpoint/session isolation and rejected keys. A publishable-key format check does not prove project ownership; verify real Auth against the selected staging project before acceptance. Full gateway prerequisites remain required.
+
+
+## Staging gateway navigation — 2026-09-25
+
+Applied `edp_staging_gateway_navigation` to staging only. The fixture captures production definitions of my_access, can_access, log_login and log_app_open read-only, adds a protected app registry containing only admin-only HR Letters, and refuses existing gateway objects. No production data was copied or changed. Local tests verify anonymous/cross-user denial, immediate grant/revoke visibility, allowed-event logging and overwrite refusal. Live rollback-only database-role checks confirmed dummy administrator access and ordinary dummy-user denial. Accounts remain disabled; this does not establish signed-in browser acceptance. Other app pages, invitation/mode administration and the full production gateway are outside this navigation fixture.
