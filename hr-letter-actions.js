@@ -1,14 +1,9 @@
 (function(root){
  'use strict';
  async function print(text,code,status){
-  const brand=root.HRLetterBranding[String(code||'').trim().toUpperCase()];
-  if(!brand)throw Error('Company letterhead unavailable.');
   document.getElementById('letterPrint')?.remove();
-  const sheet=document.createElement('article');sheet.id='letterPrint';sheet.hidden=true;
-  const header=document.createElement('header'),logo=document.createElement('img');logo.src=brand.logo;logo.alt=brand.name;
-  header.append(logo);for(const value of [brand.name,brand.regNo,brand.address,[brand.phone,brand.email].join(' · ')]){const p=document.createElement('div');p.textContent=value;header.append(p);}
-  const mark=document.createElement('h2');mark.textContent=status;const body=document.createElement('pre');body.textContent=text;
-  sheet.append(header,mark,body);document.body.append(sheet);if(logo.decode)await logo.decode();root.print();
+  const sheet=root.HRLetterPrint.render(text,code,status);sheet.hidden=true;document.body.append(sheet);
+  const image=sheet.querySelector('img');if(image.decode)await image.decode();root.print();
  }
  async function share(text){
   if(navigator.share){try{await navigator.share({title:'HR Letter — Private & Confidential',text});}catch(e){if(e.name!=='AbortError')throw e;}return;}

@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node admin-roles-db.mjs && node admin-roles-ui.mjs && node admin-roles-staging.test.mjs && node staging-bootstrap.test.mjs && node hr-letters-preview.mjs && node hr-letters-navigation.mjs && node hr-letter-template-restore.mjs && node hr-letters-company.mjs && node hr-letters-staging-setup.mjs && node staging-ui.test.mjs && node staging-gateway.test.mjs && node dashboard-signout.mjs && node hr-letters-review.mjs && node admin-modal-keyboard.mjs && node hr-letter-basic.mjs && node hr-letter-actions.mjs",
+    "test": "node admin-roles-db.mjs && node admin-roles-ui.mjs && node admin-roles-staging.test.mjs && node staging-bootstrap.test.mjs && node hr-letters-preview.mjs && node hr-letters-navigation.mjs && node hr-letter-template-restore.mjs && node hr-letters-company.mjs && node hr-letters-staging-setup.mjs && node staging-ui.test.mjs && node staging-gateway.test.mjs && node dashboard-signout.mjs && node hr-letters-review.mjs && node admin-modal-keyboard.mjs && node hr-letter-basic.mjs && node hr-letter-actions.mjs && node hr-letter-print.mjs",
     "test:staging": "node admin-roles-staging.mjs"
   },
   "devDependencies": {
