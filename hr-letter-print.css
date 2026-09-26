@@ -1,0 +1,27 @@
+@page { size: A4; margin: 8mm 14mm 14mm; }
+#letterPrint { color:#111; background:#fff; font:11pt/1.35 "Times New Roman",serif; }
+#letterPrint .letterhead { margin:0 0 5mm; padding:0; border:0; }
+#letterPrint .letterhead img { display:block; width:100%; height:auto; max-width:none; max-height:none; }
+#letterPrint .letter-status { font:700 9pt/1.3 Arial,sans-serif; margin:0 0 3mm; }
+#letterPrint h1 { font-size:12pt; line-height:1.3; font-weight:700; margin:0 0 4mm; break-after:avoid; }
+#letterPrint h2 { font-size:11pt; font-weight:700; margin:4mm 0 2mm; break-after:avoid; }
+#letterPrint p { margin:0 0 2.5mm; text-align:justify; orphans:3; widows:3; overflow-wrap:anywhere; }
+#letterPrint .detail { text-align:left; margin:0; }
+#letterPrint .confidential { font-weight:700; margin:2mm 0 4mm; }
+#letterPrint table { width:100%; border-collapse:collapse; margin:4mm 0; table-layout:fixed; break-inside:avoid; font:inherit; }
+#letterPrint th,#letterPrint td { border:1px solid #555; padding:2mm; color:#111; text-align:center; vertical-align:middle; overflow-wrap:anywhere; }
+#letterPrint th { font-weight:700; background:#f0f0f0; }
+#letterPrint th:first-child,#letterPrint td:first-child { text-align:left; width:25%; }
+#letterPrint .signatory,#letterPrint .acknowledgement { break-inside:avoid; margin-top:4mm; }
+#letterPrint .signatory p { text-align:left; margin:0; }
+#letterPrint .signatory .signature-rule { padding-top:10mm; }
+#letterPrint .signatory .signatory-field { margin-top:1.35em; }
+#letterPrint .employee-signature { padding-top:4.05em; text-align:left; margin-bottom:0; }
+#letterPrint .employee-field { margin-top:1.35em; margin-bottom:0; text-align:left; }
+#letterPrint .section-gap { height:2mm; }
+@media print {
+ html,body { margin:0!important; padding:0!important; background:#fff!important; color:#111!important; }
+ body>* { display:none!important; }
+ body>#letterPrint { display:block!important; margin:0!important; padding:0!important; width:auto!important; }
+ #letterPrint { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+}
