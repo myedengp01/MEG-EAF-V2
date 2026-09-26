@@ -13,7 +13,7 @@ export async function buildStagingUI(key){
  // Fixed ignored output directory; caller cannot overwrite repository sources.
  const output=new URL('../.staging-ui/',import.meta.url);
  await mkdir(output,{recursive:true});
- for(const name of ['dashboard.html','hr-letters.html','hr-letters-review.html','eaf-gateway.js','admin-roles.js']){
+ for(const name of ['dashboard.html','hr-letters.html','hr-letters-review.html','eaf-gateway.js','admin-roles.js','hr-letter-fields.js','hr-letter-branding.js','hr-letter-actions.js']){
   let source=stagingCopy(await readFile(new URL('../'+name,import.meta.url),'utf8'),key);
   if(name.endsWith('.html'))source=source.replace(/<body([^>]*)>/i,'<body$1><div style="background:#fff3cd;color:#332701;padding:10px;text-align:center">STAGING — disposable test data only</div>');
   if(source.includes(production)||source.includes(productionKey))throw Error('Production configuration remains');

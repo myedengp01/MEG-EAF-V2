@@ -17,7 +17,7 @@ class Element {
 const elements=new Map();
 const el=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
 const fields=()=>el('fields').children.flatMap(w=>w.children).filter(x=>x.dataset.field);
-const pending=[],saved=[];
+let templateFields=['custom','department'];const pending=[],saved=[];
 const response=data=>({ok:true,json:async()=>data});
 const context=vm.createContext({document:{getElementById:el,createElement:()=>new Element(),querySelectorAll:fields},
   sessionStorage:{getItem:()=>JSON.stringify({access_token:'dummy-only'})},confirm:()=>true,
@@ -25,21 +25,22 @@ const context=vm.createContext({document:{getElementById:el,createElement:()=>ne
     const name=url.split('/').at(-1),args=JSON.parse(options.body);
     if(name==='eaf_v2_gateway_my_access')return response({user:{id:'admin',is_admin:true},apps:{hr_letters:{allowed:true}}});
     if(name==='hr_letters_admin_templates')return response([{code:'LOC',has_body:true},{code:'LOI',has_body:true}]);
-    if(name==='hr_letters_admin_employees')return response([{id:'one',employee_name:'Dummy One',company_code:'DUMMY',company_name:'Dummy Full Entity'},{id:'two',employee_name:'Dummy Two',company_code:'UNKNOWN'}]);
-    if(name==='hr_letters_admin_template_fields')return response({fields:['custom','company_name'],title:args.p_code,version:1});
+    if(name==='hr_letters_admin_employees')return response([{id:'one',employee_name:'Dummy One',company_code:'DUMMY',company_name:'Dummy Full Entity',department:'Dummy Full Entity',current_basic:2300},{id:'two',employee_name:'Dummy Two',company_code:'UNKNOWN'}]);
+    if(name==='hr_letters_admin_template_fields')return response({fields:templateFields,title:args.p_code,version:1});
     if(name==='hr_letters_admin_list_drafts')return response([]);
     if(name==='hr_letters_admin_preview')return new Promise((resolve,reject)=>pending.push({args,resolve:data=>resolve(response(data)),httpError:data=>resolve({ok:false,status:400,json:async()=>data}),reject}));
     if(name==='hr_letters_admin_save_draft'){saved.push(args);return response('dummy-draft');}
     throw Error('Unexpected test RPC '+name);
   }});
+vm.runInContext(await readFile(new URL('../hr-letter-fields.js',import.meta.url),'utf8'),context);context.HRLetterBranding={};
 await vm.runInContext(source,context);
 el('employee').value='one';el('template').value='LOC';await el('template').emit('change');
-assert.equal(fields().find(f=>f.dataset.field==='company_name').value,'Dummy Full Entity');
-assert.equal(fields().find(f=>f.dataset.field==='company_name').disabled,true);
-fields()[0].value='Original';await fields()[0].emit('input');
+assert.equal(fields().find(f=>f.dataset.field==='department').value,'Dummy Full Entity');
+assert.equal(fields().find(f=>f.dataset.field==='department').disabled,true);
+fields().find(f=>f.dataset.field==='custom').value='Original';await fields().find(f=>f.dataset.field==='custom').emit('input');
 let job=el('letterForm').emit('submit');
 assert.equal(pending.at(-1).args.p_fields.custom,'Original');
-fields()[0].value='Edited';await fields()[0].emit('input');
+fields().find(f=>f.dataset.field==='custom').value='Edited';await fields().find(f=>f.dataset.field==='custom').emit('input');
 pending.at(-1).resolve({preview:'STALE original text',missing_fields:[]});await job;
 assert.equal(el('saveButton').disabled,true);
 assert.doesNotMatch(el('preview').textContent,/STALE/);
@@ -48,7 +49,7 @@ await el('saveButton').emit('click');assert.equal(saved.length,0);
 // Returning to the same employee must not resurrect a request from before the change.
 job=el('letterForm').emit('submit');
 el('employee').value='two';await el('employee').emit('change');
-assert.equal(fields().find(f=>f.dataset.field==='company_name').value,'');
+assert.equal(fields().find(f=>f.dataset.field==='department').value,'');
 el('employee').value='one';await el('employee').emit('change');
 pending.at(-1).resolve({preview:'STALE employee response',missing_fields:[]});await job;
 assert.equal(el('saveButton').disabled,true);assert.doesNotMatch(el('preview').textContent,/STALE/);
@@ -61,7 +62,7 @@ pending.at(-1).resolve({preview:'STALE template response',missing_fields:[]});aw
 assert.equal(el('saveButton').disabled,true);assert.doesNotMatch(el('preview').textContent,/STALE/);
 
 // A late error must not replace the current selection's message.
-job=el('letterForm').emit('submit');fields()[0].value='Latest';await fields()[0].emit('input');
+job=el('letterForm').emit('submit');fields().find(f=>f.dataset.field==='custom').value='Latest';await fields().find(f=>f.dataset.field==='custom').emit('input');
 pending.at(-1).reject(Error('STALE failure'));await job;
 assert.equal(el('missing').textContent,'');assert.equal(el('saveButton').disabled,true);
 
@@ -85,3 +86,8 @@ for(const [problem,expected] of [
  [{code:'42501',message:'Company name is missing, inactive or ambiguous in the entity register'},/Protected request failed/]
 ]){job=el('letterForm').emit('submit');pending.at(-1).httpError(problem);await job;assert.match(el('missing').textContent,expected);assert.doesNotMatch(el('missing').textContent,/INTERNAL SECRET|<script>/);assert.equal(el('saveButton').disabled,true);}
 console.log('PASS: preview races and save restrictions preserved; known company errors explained; unknown server details hidden.');
+
+// Actual UI: calculations update on increment input, manual overrides survive preview/save values.
+context.HRLetterBranding={};
+
+templateFields=Array.from(context.HRLetterFields.order);await el('template').emit('change');const field=k=>fields().find(f=>f.dataset.field===k);field('basic_increment').value='200';await field('basic_increment').emit('input');assert.equal(field('current_basic').value,2300);assert.equal(field('revised_basic').value,'2500.00');assert.equal(field('basic_increment_pct').value,'8.70');field('revised_basic').value='2510';await field('revised_basic').emit('input');field('basic_increment_pct').value='9';await field('basic_increment_pct').emit('input');job=el('letterForm').emit('submit');assert.equal(pending.at(-1).args.p_fields.revised_basic,'2510');assert.equal(pending.at(-1).args.p_fields.basic_increment_pct,'9');pending.at(-1).resolve({preview:'Manual',missing_fields:[]});await job;assert.equal(field('revised_basic').value,'2510');console.log('PASS: actual form populates salary, calculates both values, retains manual overrides during preview.');
