@@ -13,6 +13,7 @@
  * - Build 15 dedicated Happy Dino and Aborne Project LOEC operational clauses
  * - Build 16 hourly pay basis, split working sessions, schedule footnote and manual Appendices 2-4
  *
+ * - JD v3.1 (27 Sep 2026): optional Assistant display designations L3-A/L4-A/L5-A while preserving underlying HR L1-L5 levels
  * Requires optional Supabase migration in supabase/migrations/001_meg_eaf_v2_loec.sql
  * Existing V1 records continue to work without the migration; the V2 LOEC record panel
  * simply reports that setup is pending.
@@ -44,6 +45,7 @@ var COMPANY_ALIASES={
 
 function e2(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function norm(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');}
+function jdDisplayLevel(p){return (p&&p.designation_code)||((p&&p.level)||'');}
 function companyCode(){return (document.getElementById('companySelect')||{}).value||'meg';}
 function companies(){return (typeof EAF_COMPANIES!=='undefined' && EAF_COMPANIES) ? EAF_COMPANIES : (window.EAF_COMPANIES||{});}
 function profile(){return ENTITY_PROFILES[companyCode()]||ENTITY_PROFILES.meg;}
@@ -479,7 +481,7 @@ window.resolvePosition=function(){
   var family=selectedFamily(),p=selectedExactJd();
   if(family&&p){
     var resp=(V2.jd.responsibilities||[]).filter(function(r){return String(r.position_id)===String(p.id);}).map(function(r){return {k:r.title||'Responsibility',v:r.description||''};});
-    return {code:null,title:p.job_title||'',lvl:p.level||'',purpose:p.purpose||'',respItems:resp,deptName:family.name||deptName(p.department_id),jdId:p.id,jdReference:p.reference||'',reportsTo:p.reports_to||'',employmentType:p.employment_type||'',location:p.location||'',familyId:family.id,familyName:family.name||''};
+    return {code:null,title:p.job_title||'',lvl:p.level||'',designation:p.designation_code||'',isOptionalAssistant:!!p.is_optional_designation,purpose:p.purpose||'',respItems:resp,deptName:family.name||deptName(p.department_id),jdId:p.id,jdReference:p.reference||'',reportsTo:p.reports_to||'',employmentType:p.employment_type||'',location:p.location||'',familyId:family.id,familyName:family.name||''};
   }
   if(family)return {code:null,title:'',lvl:'',purpose:'',respItems:[],deptName:family.name||'',jdId:'',jdReference:'',familyId:family.id,familyName:family.name||''};
   return oldResolve();
@@ -500,7 +502,7 @@ window.onJobTitleChange=function(){
   var oldId=previous.indexOf('jd:')===0?previous.slice(3):'';
   var rows=approvedPositionsForFamily(family.id,eid);
   if(ls){
-    ls.innerHTML='<option value="">-- Select approved level --</option>'+rows.map(function(p){return '<option value="jd:'+e2(p.id)+'">'+e2((p.level||'')+' — '+(p.job_title||''))+(p.reference?' ['+e2(p.reference)+']':'')+'</option>';}).join('');
+    ls.innerHTML='<option value="">-- Select approved level --</option>'+rows.map(function(p){return '<option value="jd:'+e2(p.id)+'">'+e2(jdDisplayLevel(p)+' — '+(p.job_title||''))+(p.reference?' ['+e2(p.reference)+']':'')+'</option>';}).join('');
     if(oldId&&rows.some(function(p){return String(p.id)===String(oldId);} ))ls.value='jd:'+oldId;
   }
   if(byId('finalDept')){byId('finalDept').value=family.name||'';byId('finalDept').dataset.auto='1';}
@@ -615,7 +617,7 @@ function applyPendingRestore(){var d=V2.pendingRestore||{};[
 }
 
 var oldGather=window.gatherLoceData;
-window.gatherLoceData=function(){var d=oldGather(),rp=resolvePosition(),base=parseFloat((byId('finalSalary')||{}).value||0)||0,fa=parseFloat((byId('v2FixedAllowance')||{}).value||0)||0,oa=parseFloat((byId('v2OtherAllowance')||{}).value||0)||0;d.companyCode=companyCode();d.company=companyObj();d.entityProfile=profile();d.employmentType=(byId('v2EmploymentType')||{}).value||'Permanent Full-Time';d.fixedTermEnd=fmtDateLong((byId('v2FixedTermEnd')||{}).value||'');d.probationMonths=(byId('v2ProbationMonths')||{}).value||'';d.probationNotice=(byId('v2ProbationNotice')||{}).value||'';d.probationNoticeUnit=(byId('v2ProbationNoticeUnit')||{}).value||'weeks';d.otCategory=(byId('v2OtCategory')||{}).value||'';d.basicSalary=base;d.fixedAllowance=fa;d.otherAllowance=oa;d.totalFixed=base+fa+oa;d.basicSalaryFmt=fmtMoney(base);d.fixedAllowanceFmt=fmtMoney(fa);d.otherAllowanceFmt=fmtMoney(oa);d.totalFixedFmt=fmtMoney(d.totalFixed);d.jdId=rp.jdId||'';d.jdReference=rp.jdReference||'';d.jdLevel=rp.lvl||'';return d;};
+window.gatherLoceData=function(){var d=oldGather(),rp=resolvePosition(),base=parseFloat((byId('finalSalary')||{}).value||0)||0,fa=parseFloat((byId('v2FixedAllowance')||{}).value||0)||0,oa=parseFloat((byId('v2OtherAllowance')||{}).value||0)||0;d.companyCode=companyCode();d.company=companyObj();d.entityProfile=profile();d.employmentType=(byId('v2EmploymentType')||{}).value||'Permanent Full-Time';d.fixedTermEnd=fmtDateLong((byId('v2FixedTermEnd')||{}).value||'');d.probationMonths=(byId('v2ProbationMonths')||{}).value||'';d.probationNotice=(byId('v2ProbationNotice')||{}).value||'';d.probationNoticeUnit=(byId('v2ProbationNoticeUnit')||{}).value||'weeks';d.otCategory=(byId('v2OtCategory')||{}).value||'';d.basicSalary=base;d.fixedAllowance=fa;d.otherAllowance=oa;d.totalFixed=base+fa+oa;d.basicSalaryFmt=fmtMoney(base);d.fixedAllowanceFmt=fmtMoney(fa);d.otherAllowanceFmt=fmtMoney(oa);d.totalFixedFmt=fmtMoney(d.totalFixed);d.jdId=rp.jdId||'';d.jdReference=rp.jdReference||'';d.jdLevel=rp.lvl||'';d.jdDesignation=rp.designation||'';return d;};
 
 // V2 combined LOEC -----------------------------------------------------------
 window.buildLocePage1HTML=function(d){var c=d.company||companyObj(),p=d.entityProfile||profile();var fixed=d.employmentType==='Fixed-Term Full-Time'&&d.fixedTermEnd?'<tr><td>Employment Term</td><td>'+e2(d.employmentType)+' until '+e2(d.fixedTermEnd)+'</td></tr>':'<tr><td>Employment Type</td><td>'+e2(d.employmentType)+'</td></tr>';return ''
@@ -624,7 +626,7 @@ window.buildLocePage1HTML=function(d){var c=d.company||companyObj(),p=d.entityPr
   +'<p>This Letter of Offer and Contract of Employment is made on <strong>'+d.letterDateFmt+'</strong> between:</p><p><strong>'+e2(c.name)+'</strong> (Company No.: <strong>'+e2(c.regNo)+'</strong>), a company incorporated in Malaysia with its registered address at <strong>'+e2(c.regAddress)+'</strong> ("the Employer"), and</p>'
   +'<p><strong>'+d.name+'</strong> (NRIC/Passport No.: <strong>'+d.ic+'</strong>), of <strong>'+d.addrInline+'</strong> ("the Employee").</p><p><strong>This is one combined employment agreement.</strong> By signing it after reviewing the complete document and Appendix 1, the Employee accepts the offer of employment and agrees to the Employment Contract at the same time.</p>'
   +'<p>The Employer employs the Employee, and the Employee agrees to serve the Employer, on the following salient terms and conditions:</p><table class="l-salient"><tr><th style="width:42%">Salient Term</th><th>Detail</th></tr>'
-  +'<tr><td>a. Job Title</td><td>'+d.jobTitle+(d.jdReference?'<br><small>JD Ref: '+e2(d.jdReference)+(d.jdLevel?' · '+e2(d.jdLevel):'')+'</small>':'')+'</td></tr><tr><td>b. Commencement Date</td><td>'+d.startDateFmt+'</td></tr>'+fixed
+  +'<tr><td>a. Job Title</td><td>'+d.jobTitle+(d.jdReference?'<br><small>JD Ref: '+e2(d.jdReference)+(d.jdDesignation?' · '+e2(d.jdDesignation)+' (HR Level '+e2(d.jdLevel||'—')+')':(d.jdLevel?' · '+e2(d.jdLevel):''))+'</small>':'')+'</td></tr><tr><td>b. Commencement Date</td><td>'+d.startDateFmt+'</td></tr>'+fixed
   +'<tr><td>Probationary Period</td><td>'+e2(d.probationMonths||'—')+' month(s)</td></tr><tr><td>Basic Salary</td><td>'+d.basicSalaryFmt+' ('+d.salaryWords+')</td></tr>'
   +(d.fixedAllowance?'<tr><td>Fixed Contractual Allowance</td><td>'+d.fixedAllowanceFmt+'</td></tr>':'')+(d.otherAllowance?'<tr><td>Other Contractual Allowance</td><td>'+d.otherAllowanceFmt+'</td></tr>':'')
   +'<tr><td>Total Fixed Monthly Remuneration</td><td>'+d.totalFixedFmt+'</td></tr><tr><td>Working Hours</td><td>'+workingHoursSalientText(d)+'</td></tr><tr><td>Normal Off Day / Rest Day</td><td>'+e2(p.offDay)+' / '+e2(p.restDay)+'</td></tr><tr><td>Place of Work</td><td>'+d.workLocation+'</td></tr><tr><td>Reporting Personnel</td><td>'+d.reportingName+'</td></tr></table>';};
