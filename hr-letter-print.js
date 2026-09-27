@@ -6,8 +6,15 @@
   if(!brand?.letterhead)throw Error('Company letterhead unavailable.');
   const sheet=element('article');sheet.id='letterPrint';
   const header=element('header',undefined,'letterhead'),image=element('img');image.src=brand.letterhead;image.alt=brand.name+' letterhead';header.append(image);sheet.append(header,element('div',status,'letter-status'));
-  const lines=String(text).replaceAll('\r\n','\n').split('\n');let target=sheet,signatory=null,ack=null;
-  const finishSignatory=()=>{if(!signatory)return;const wording=signatory.textContent;if(!/(?:^|\n)Name\s*:/i.test(wording))signatory.append(element('p','Name: __________________________________','signatory-field'));if(!/Designation\s*:/i.test(wording))signatory.append(element('p','Designation: _____________________________','signatory-field'));signatory=null;};
+  const formatted=String(text).replace(/\bRM\s+(-?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?)(?![\d.,])/g,(_,v)=>'RM '+Number(v.replaceAll(',','')).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2})).replace(/(-?\d+(?:\.\d+)?)\s*%/g,(_,v)=>Number(v).toFixed(2)+' %');
+  const lines=formatted.replaceAll('\r\n','\n').split('\n');let target=sheet,signatory=null,ack=null,signatoryLines=[];
+  const finishSignatory=()=>{if(!signatory)return;
+   const lines=signatoryLines.slice();signatory.append(element('p',lines.shift()||'Yours faithfully,'));
+   if(lines[0]?.startsWith('For and on behalf of')){const company=lines.shift();signatory.append(element('p',company));if(company==='For and on behalf of'&&lines.length)signatory.append(element('p',lines.shift()));}
+   const details=lines.filter(l=>!/^_+$/.test(l)&&!/^Authori[sz]ed Signatory$/i.test(l));
+   const designation=details.find(l=>/^Designation:/i.test(l));const name=details.filter(l=>!/^Designation:/i.test(l)).map(l=>l.replace(/^Name:\s*/i,'')).join(' / ');
+   signatory.append(element('p','__________________________________','signature-rule'),element('p','Authorised Signatory'),element('p','Name: '+(name||'__________________________________'),'signatory-field'),element('p',designation||'Designation: _____________________________','signatory-field'));signatory=null;signatoryLines=[];
+  };
   const signatureFields=(signature,date)=>{target.append(element('p',signature,'employee-signature'));target.append(element('p','Name: __________________________________','employee-field'),element('p','NRIC: __________________________________','employee-field'));if(date)target.append(element('p',date,'employee-field'));};
   for(let i=0;i<lines.length;i++){
    const line=lines[i].trim();if(!line){if(target===sheet)sheet.append(element('div',undefined,'section-gap'));continue;}
@@ -19,6 +26,7 @@
      const rest=line.slice(split+1).trim();if(/^Signature:/i.test(rest)){const match=rest.match(/^(Signature:.*?)\s+(Date:.*)$/);signatureFields(match?match[1]:rest,match?.[2]);}else target.append(element('p',rest));
     }continue;}
    if(/^Appendix\b/.test(line)){finishSignatory();target=sheet;ack=null;}
+   if(signatory){signatoryLines.push(line);continue;}
    if(line.includes('|')&&lines[i+1]?.includes('|')){const table=element('table'),thead=element('thead'),tbody=element('tbody');const row=(value,tag)=>{const tr=element('tr');value.split('|').forEach(v=>tr.append(element(tag,v.trim())));return tr;};thead.append(row(line,'th'));while(lines[i+1]?.includes('|'))tbody.append(row(lines[++i],'td'));table.append(thead,tbody);target.append(table);continue;}
    if(ack&&/^(?:Employee )?Signature:/.test(line)){const compact=line.match(/^((?:Employee )?Signature:.*?)\s+(Date:.*)$/);if(compact)signatureFields(compact[1],compact[2]);else target.append(element('p',line,'employee-signature'));continue;}
    if(ack&&/^(Name|NRIC|Date):/.test(line)){target.append(element('p',line,'employee-field'));continue;}
