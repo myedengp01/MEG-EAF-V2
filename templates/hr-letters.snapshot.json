@@ -1,0 +1,127 @@
+{
+  "captured_date": "2026-09-24",
+  "source_project": "vzngfswtofegimfcoigx",
+  "note": "Exact database snapshot, not new wording or evidence of legal approval. Version labels are preserved as data. All templates remain inactive.",
+  "templates": [
+    {
+      "code": "DI",
+      "title": "Domestic Inquiry Letter",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: Notice to Attend Domestic Inquiry\nDear {{employee_name}},\nWe refer to {{show_cause_reference_and_date}} and your written explanation dated {{explanation_date}}, where applicable.\nThe Company has decided to convene a Domestic Inquiry to examine the following allegation(s):\n{{specific_allegations}}\nThe inquiry arrangements are:\nDate: {{inquiry_date}}\nTime: {{inquiry_time}}\nVenue or approved meeting arrangement: {{inquiry_venue}}\nInquiry panel or chairperson: {{panel_details}}\nCoordinating officer: {{coordinator}}\nThe inquiry is intended to examine the available evidence and provide you with an opportunity to respond to the allegation(s), present relevant information and identify relevant witnesses, subject to the applicable inquiry procedure.\n{{documents_and_witness_arrangements}}\nPlease confirm receipt of this notice and direct any procedural questions or reasonable requests for an adjustment to {{coordinator}} by {{confirmation_deadline}}.\nNo finding of misconduct is made by this notice. Any decision will follow consideration of the inquiry proceedings and relevant evidence.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement of Receipt: Signature: ____________________ Date: ____________________",
+      "active": false,
+      "body_md5": "cf4a6e764181729c1e7d4992f4b77976"
+    },
+    {
+      "code": "EL",
+      "title": "Explanation Letter",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: Request for Written Explanation Regarding {{matter_subject}}\nDear {{employee_name}},\nManagement seeks your written explanation regarding the following matter:\nDate and time: {{incident_datetime}}\nLocation or relevant work area: {{incident_location}}\nMatter requiring clarification: {{factual_description}}\nRelevant records or information: {{supporting_information}}\nAt this stage, the Company is seeking clarification and has not reached a disciplinary finding through this letter.\nPlease provide your written explanation, together with any relevant documents or information, to {{response_recipient}} by {{response_deadline}}.\nIf you require clarification or a reasonable extension, please contact {{contact_person}} before the deadline.\nThe Company will consider your response and the available information before determining whether any further action is necessary.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement of Receipt: Signature: ____________________ Date: ____________________",
+      "active": false,
+      "body_md5": "f510385e828203b0cfc8c691a5227b6a"
+    },
+    {
+      "code": "LOC",
+      "title": "Letter of Confirmation",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: Confirmation of Employment\nDear {{employee_name}},\nWe are pleased to inform you that, following the completion of your probationary review, Management has approved the confirmation of your employment with {{company_name}}, effective {{confirmation_date}}.\nYour confirmed position is {{position}}, under the {{department}} department.\nAll other terms and conditions stated in your Letter of Employment, Employee Handbook and applicable Company policies shall remain unchanged unless expressly amended in writing.\nWe congratulate you on your confirmation and look forward to your continued contribution, professionalism and growth with the Company.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement: I acknowledge receipt of this letter.\nSignature: ____________________ Name: {{employee_name}} Date: ____________________",
+      "active": false,
+      "body_md5": "e5aaba7a23b9a20aad6356b4cd5dc8a0"
+    },
+    {
+      "code": "LOC_LOI",
+      "title": "Letter of Confirmation and Increment",
+      "version": "v2026.09.21-14:30-source-no-mvc",
+      "body": "LETTER OF CONFIRMATION OF EMPLOYMENT\nAND SALARY INCREMENT\nDate: {{letter_date}}\nPrivate & Confidential\n\nEmployee Name: {{employee_name}}\nEmployee ID: {{employee_id}}\nPosition: {{position}}\nDepartment: {{department}}\n\nSubject: Confirmation of Employment and Salary Increment\nWe are pleased to inform you that following a review of your overall performance, conduct, attendance, competency and contribution during your probationary period, Management has approved your confirmation as a permanent employee of the Company.\nAccordingly, your employment confirmation and revised remuneration package shall take effect from {{effective_date}}.\n\nDescription | Current | Increment | Increment (%) | Revised\nBasic Salary | RM {{current_basic}} | RM {{basic_increment}} | {{basic_increment_pct}} % | RM {{revised_basic}}\nTotal Gross Monthly Salary | RM {{current_gross}} | RM {{gross_increment}} | {{gross_increment_pct}} % | RM {{revised_gross}}\n\nTerms and Conditions\nYour employment is hereby confirmed effective from the date stated above.\nAll other terms and conditions contained in your Letter of Employment, Employee Handbook and Company Policies remain unchanged.\nFuture salary increments, bonuses, incentives, allowances and other benefits shall remain at the sole discretion of the Company and will be based on performance, appraisal results, operational requirements and business performance.\nYou are expected to continue maintaining satisfactory performance, professionalism, integrity, attendance and compliance with all Company policies.\nThe Management congratulates you on your confirmation and thanks you for your continued dedication and contribution. We look forward to your continued growth and success with the Company.\n\nYours faithfully,\nFor and on behalf of\nMYEDEN GROUP SDN. BHD.\n\n_________________________\nAuthorized Signatory\n\nEmployee Acknowledgement\nI acknowledge receipt of this Letter of Confirmation of Employment and Salary Increment and accept the revised terms stated herein.\n\nEmployee Signature: ____________________\nName: ____________________\nNRIC: ____________________\nDate: ____________________",
+      "active": false,
+      "body_md5": "a0efd89db9ffe419d2be1965151e1361"
+    },
+    {
+      "code": "LOI",
+      "title": "Letter of Increment",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: Revision of Salary\nDear {{employee_name}},\nWe are pleased to inform you that Management has approved a revision to your remuneration, effective {{effective_date}}.\nDescription | Current | Increment | Revised\nBasic monthly salary | RM {{current_basic}} | RM {{basic_increment}} | RM {{revised_basic}}\nGross monthly salary | RM {{current_gross}} | RM {{gross_increment}} | RM {{revised_gross}}\nThe revised remuneration shall be reflected in the applicable payroll period, subject to normal payroll processing and statutory deductions.\nAll other employment terms and conditions remain unchanged unless expressly amended in writing.\nFuture salary reviews, increments, bonuses and other discretionary benefits are subject to applicable Company policies and Management approval.\nWe thank you for your contribution and look forward to your continued performance and commitment.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement: I acknowledge receipt of this letter and the remuneration revision stated above.\nSignature: ____________________ Date: ____________________",
+      "active": false,
+      "body_md5": "92b091e3a6a57b6e500c65d64d97be6a"
+    },
+    {
+      "code": "LOP",
+      "title": "Letter of Promotion",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: Promotion to {{new_position}}\nDear {{employee_name}},\nWe are pleased to inform you that Management has approved your promotion, effective {{effective_date}}, with the following details:\nItem | Current | Revised\nPosition | {{current_position}} | {{new_position}}\nDepartment | {{current_department}} | {{new_department}}\nGrade | {{current_grade}} | {{new_grade}}\nReporting to | {{current_reporting_manager}} | {{new_reporting_manager}}\nBasic salary | RM {{current_basic}} | RM {{revised_basic}}\nYour responsibilities and reporting arrangements shall follow the approved Job Description attached as Appendix A.\nYou are expected to carry out your revised responsibilities with professionalism, accountability and compliance with Company policies.\nAll other terms and conditions of employment remain unchanged unless expressly amended in this letter or another written agreement.\nWe congratulate you on your promotion and look forward to your continued leadership and contribution.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement: I acknowledge receipt of this promotion letter and its attached Job Description.\nSignature: ____________________ Date: ____________________\nAppendix A: Approved Job Description, reference {{jd_reference}}, version {{jd_version}}.",
+      "active": false,
+      "body_md5": "a8ffd45050930760b36aae9bdcfd0aad"
+    },
+    {
+      "code": "PEL",
+      "title": "Probation Extension Letter",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: Extension of Probationary Period\nDear {{employee_name}},\nWe refer to your probationary employment and the review conducted on {{review_date}}.\nFollowing the review, Management has decided to extend your probationary period from {{current_probation_end_date}} to {{revised_probation_end_date}}, subject to the terms of your employment agreement and applicable requirements.\nThe extension is intended to provide an additional period for assessment and improvement in the following areas:\n{{improvement_areas}}\nDuring the extension, you will be expected to meet the following objectives:\n{{performance_objectives}}\nYour progress will be reviewed on {{next_review_date}}. Your reporting manager will provide relevant feedback and support during this period.\nThe extension does not constitute confirmation of employment. Management will communicate the outcome of the subsequent review in writing.\nAll other terms and conditions of employment remain unchanged unless expressly amended in writing.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement: I acknowledge receipt of this letter.\nSignature: ____________________ Date: ____________________",
+      "active": false,
+      "body_md5": "2ad2f294b2e9158b4c0bf59e62179dc9"
+    },
+    {
+      "code": "PIP",
+      "title": "Performance Improvement Plan",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: Performance Improvement Plan\nDear {{employee_name}},\nFollowing the performance discussion held on {{discussion_date}}, the Company is placing you on a Performance Improvement Plan for the period {{pip_start_date}} to {{pip_end_date}}.\nThe purpose of this plan is to identify performance gaps, establish measurable expectations and provide a structured opportunity for improvement.\n1. Areas requiring improvement: {{performance_gaps_with_evidence}}\n2. Required outcomes and measures: {{measurable_targets_and_deadlines}}\n3. Support provided: {{training_coaching_resources_and_support}}\n4. Review schedule: Progress reviews will take place on {{review_dates}}, with a final review scheduled for {{final_review_date}}.\n5. Assessment and possible outcomes: The Company will assess progress against the documented objectives, taking account of the evidence, support provided and your response. Possible outcomes include successful completion, an appropriately documented extension or further action consistent with the employment agreement, Company policies and applicable law.\nYou are encouraged to discuss any obstacles or support requirements with {{review_manager}}.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement of Receipt: Signature: ____________________ Date: ____________________\nAppendix A: PIP objectives, measurements, evidence and review records.",
+      "active": false,
+      "body_md5": "4a9a90e33f3372b918019416afd82159"
+    },
+    {
+      "code": "RL",
+      "title": "Resignation Acceptance Letter",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: Acceptance of Resignation\nDear {{employee_name}},\nWe refer to your resignation submitted on {{resignation_date}} from your position as {{position}} with {{company_name}}.\nThe Company acknowledges and accepts your resignation.\n1. Notice period and last working day\nYour applicable notice requirement is {{notice_period}}, subject to the terms of your employment agreement and applicable law.\nYour agreed last working day is {{last_working_day}}.\n{{notice_adjustment_details}}\n2. Handover\nYou are required to complete the handover of your duties, outstanding assignments, records and relevant access arrangements to {{handover_recipient}} by {{handover_deadline}}.\n3. Company property\nPlease return all Company property, documents, equipment and access items by {{property_return_date}}.\n4. Leave and final settlement\nYour final leave balance and employment payments will be reconciled by HR and Payroll. Any payment in lieu of notice, adjustment or deduction will be assessed separately against the employment agreement and applicable law.\n5. Confidentiality\nYour continuing confidentiality and other valid post-employment obligations remain subject to your employment agreement and applicable law.\nWe thank you for your service and wish you well in your future endeavours.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement of Receipt: Signature: ____________________ Date: ____________________",
+      "active": false,
+      "body_md5": "aba326fcee27ad72960e5581dfdcc64f"
+    },
+    {
+      "code": "SAL",
+      "title": "Suspension / Administrative Leave Letter",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: Notice of {{leave_or_suspension_type}}\nDear {{employee_name}},\nWe refer to {{matter_reference}}.\nThe Company has decided to place you on {{leave_or_suspension_type}} under the following arrangements:\nCommencement: {{start_datetime}}\nExpected end or review date: {{end_or_review_date}}\nRemuneration arrangement: {{verified_pay_arrangement}}\nAttendance and reporting instructions: {{attendance_instructions}}\nContact person: {{contact_person}}\nPurpose and status: {{approved_purpose_and_status}}\nThis arrangement is {{precautionary_or_disciplinary_status}}. Where it is pending investigation or inquiry, no finding of misconduct is made through this letter.\nDuring this period, you are required to remain reasonably contactable through {{contact_method}} and comply with the specific instructions below:\n{{proportionate_and_approved_conditions}}\nAny change to the duration, remuneration or reporting arrangements will be communicated in writing. HR must verify the applicable legal and contractual requirements before this letter is issued.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement of Receipt: Signature: ____________________ Date: ____________________",
+      "active": false,
+      "body_md5": "f66eb889690faccffddc33058d31aaae"
+    },
+    {
+      "code": "SCL",
+      "title": "Show Cause Letter",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: Notice to Show Cause — {{allegation_subject}}\nDear {{employee_name}},\nThe Company is considering the following allegation concerning your conduct:\nAllegation: {{specific_allegation}}\nDate, time and location: {{incident_details}}\nParticulars and supporting information: {{factual_particulars_and_evidence}}\nRelevant contractual or policy provision, where applicable: {{relevant_provision}}\nYou are required to provide a written explanation stating why disciplinary action should not be considered in relation to the allegation.\nPlease submit your response and any supporting information to {{response_recipient}} by {{reasonable_response_deadline}}.\nIf you require clarification, access to relevant information or a reasonable extension, please contact {{contact_person}} promptly.\nNo final disciplinary finding has been made through this notice. Your explanation and the available evidence will be considered before the Company decides whether further investigation, a domestic inquiry or other action is appropriate.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement of Receipt: Signature: ____________________ Date: ____________________",
+      "active": false,
+      "body_md5": "5742372018b397c0ae15f8cd7ac8e1d2"
+    },
+    {
+      "code": "TL",
+      "title": "Termination Letter",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: Notice of Termination of Employment\nDear {{employee_name}},\nWe refer to {{relevant_correspondence_and_process}}.\nFollowing {{documented_decision_basis}}, the Company hereby gives you written notice of termination of your employment in accordance with {{applicable_contractual_or_legal_basis}}.\nThe termination arrangements are as follows:\nNotice issued on: {{letter_date}}\nApplicable notice period or approved payment in lieu: {{notice_arrangement}}\nLast day of employment: {{employment_end_date}}\nLast day required to attend work, if different: {{last_attendance_date}}\nReason and decision record: {{approved_reason_and_decision_details}}\nHandover and Company property: You are required to complete the handover arrangements communicated by {{handover_manager}} and return Company property by {{return_deadline}}.\nFinal payments and benefits: HR and Payroll will calculate all amounts lawfully payable, including applicable salary, leave and other entitlements. Any proposed deduction or recovery will be separately verified for legal and contractual compliance.\n{{appeal_or_review_information_if_applicable}}\nYour confidentiality and other valid continuing obligations remain subject to your employment agreement and applicable law.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement of Receipt: Signature: ____________________ Date: ____________________",
+      "active": false,
+      "body_md5": "c38c55a3bf88eb1c5b6a1116eb7a8f07"
+    },
+    {
+      "code": "TRL",
+      "title": "Transfer Letter",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: Transfer of Employment Assignment\nDear {{employee_name}},\nWe refer to the proposed transfer discussed with you on {{discussion_date}}.\nManagement has approved the following transfer arrangements, effective {{effective_date}}:\nItem | Current | Revised\nWork location | {{current_location}} | {{new_location}}\nDepartment | {{current_department}} | {{new_department}}\nPosition | {{current_position}} | {{new_position}}\nReporting manager | {{current_manager}} | {{new_manager}}\nReason for transfer: {{transfer_reason}}\nTransfer arrangement: {{transfer_type}}\nYour responsibilities, reporting arrangements and any applicable handover requirements will be communicated by Management.\n{{approved_remuneration_or_allowance_changes}}\nAll other employment terms remain unchanged unless expressly amended in writing. Any transfer involving a change of legal employer or contractual terms requiring agreement shall be documented separately and shall not take effect solely through this letter.\nPlease acknowledge receipt of this letter and complete the required handover by {{handover_date}}.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement: Signature: ____________________ Date: ____________________",
+      "active": false,
+      "body_md5": "876ca6887fb43f840a115177d1597074"
+    },
+    {
+      "code": "UAL",
+      "title": "Unpaid Leave Letter",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: {{leave_decision}} — Unpaid Leave Application\nDear {{employee_name}},\nWe refer to your application for unpaid leave submitted on {{application_date}}.\nManagement has {{leave_decision}} your application with the following details:\nLeave period: {{leave_start_date}} to {{leave_end_date}}\nTotal unpaid leave: {{approved_leave_days}} day(s)\nReason recorded: {{leave_reason}}\nExpected return-to-work date: {{return_date}}\n{{decision_specific_conditions}}\nWhere unpaid leave is approved, the relevant payroll adjustments and statutory contribution treatment will be determined by Payroll in accordance with applicable requirements. No deduction amount is authorized solely by this letter.\nYou are required to inform your reporting manager promptly if your circumstances change or you are unable to return on the expected date.\nAll other terms and conditions of employment remain unchanged.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement: Signature: ____________________ Date: ____________________",
+      "active": false,
+      "body_md5": "303d0e0f5db2d15f8bbfc51b55c5ee97"
+    },
+    {
+      "code": "WL",
+      "title": "Warning Letter",
+      "version": "v2026.09.22-director-approved-1",
+      "body": "PRIVATE & CONFIDENTIAL\nSubject: {{warning_level}} Written Warning — {{matter_subject}}\nDear {{employee_name}},\nWe refer to the following matter and the process undertaken:\n{{incident_and_process_summary}}\nAfter considering {{employee_explanation_and_evidence_considered}}, Management has reached the following findings:\n{{approved_findings}}\nThe Company is issuing you a {{warning_level}} written warning in relation to these findings.\nYou are required to: {{corrective_actions_and_expectations}}\nThe expected improvement or compliance date is {{compliance_deadline}}. Your progress will be reviewed by {{review_manager}}.\nAny further incident will be assessed on its own facts and may result in further action consistent with Company policies, your employment agreement and applicable law.\n{{appeal_or_review_process_if_applicable}}\nYou are expected to maintain professional conduct and comply with all applicable Company policies.\nYours faithfully,\nFor and on behalf of {{company_name}}\n{{authorized_signatory}}\nEmployee Acknowledgement of Receipt: Signature: ____________________ Date: ____________________",
+      "active": false,
+      "body_md5": "8f24939c98b1b5d087ee471914525096"
+    }
+  ]
+}

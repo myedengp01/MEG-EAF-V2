@@ -1,0 +1,17 @@
+import vm from 'node:vm';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';
+const html=await readFile(new URL('../dashboard.html',import.meta.url),'utf8');
+const elements=new Map();let document;
+const el=id=>{if(!elements.has(id))elements.set(id,{isConnected:true,tabIndex:0,focus(){document.activeElement=this},getClientRects:()=>[{}],classList:{add(){},remove(){}}});return elements.get(id)};
+document={getElementById:el,activeElement:el('adminControlBtn')};
+const context=vm.createContext({document,window:{addEventListener(){}},setTimeout(){},clearTimeout(){}});
+for(const m of html.matchAll(/<script>([\s\S]*?)<\/script>/g))vm.runInContext(m[1],context);
+context.showAdminTab=()=>{};context.BOOT={user:{is_admin:true}};
+const first=el('adminCloseBtn'),last=el('last'),hidden=el('hidden');hidden.getClientRects=()=>[];
+el('adminModal').querySelectorAll=()=>[first,last,hidden];
+context.openAdminControl();assert.equal(document.activeElement,first);
+let prevented=0;const key=(key,shiftKey=false)=>context.adminControlKeydown({key,shiftKey,preventDefault(){prevented++}});
+key('Tab',true);assert.equal(document.activeElement,last);key('Tab');assert.equal(document.activeElement,first);assert.equal(prevented,2);
+key('Escape');assert.equal(document.activeElement,el('adminControlBtn'));
+context.openAdminControl();el('adminControlBtn').isConnected=false;context.closeAdminControl();assert.equal(document.activeElement,el('adminControlBtn'));
+assert.match(html,/role="dialog" aria-modal="true" aria-labelledby="adminControlTitle"/);
+console.log('PASS: Admin Control focuses close, wraps Tab both ways, skips hidden controls, closes on Escape and restores focus.');
