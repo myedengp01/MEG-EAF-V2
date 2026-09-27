@@ -1,6 +1,6 @@
 (function(root){
  'use strict';
- const element=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
+ const element=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined){const parts=String(text).split(/(\{\{[a-zA-Z0-9_]+\}\})/g);if(parts.length===1)n.textContent=text;else for(const part of parts){const missing=part.match(/^\{\{([a-zA-Z0-9_]+)\}\}$/);const child=document.createElement(missing?'mark':'span');child.textContent=missing?'['+missing[1].replaceAll('_',' ')+']':part;if(missing)child.className='missing-field';n.append(child);}}if(cls)n.className=cls;return n;};
  function render(text,code,status){
   const brand=root.HRLetterBranding[String(code||'').trim().toUpperCase()];
   if(!brand?.letterhead)throw Error('Company letterhead unavailable.');

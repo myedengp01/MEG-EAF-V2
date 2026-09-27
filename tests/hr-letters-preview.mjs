@@ -18,9 +18,10 @@ const elements=new Map();
 const el=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
 const fields=()=>el('fields').children.flatMap(w=>w.children).filter(x=>x.dataset.field);
 let templateFields=['custom','department'];const pending=[],saved=[];
+let confirmed=true,timerCallback;const confirmations=[];
 const response=data=>({ok:true,json:async()=>data});
 const context=vm.createContext({document:{getElementById:el,createElement:()=>new Element(),querySelectorAll:fields},
-  sessionStorage:{getItem:()=>JSON.stringify({access_token:'dummy-only'})},confirm:()=>true,
+  setTimeout:fn=>{timerCallback=fn;return 1},clearTimeout:()=>{},HRLetterPrint:{render:()=>({style:{}})},sessionStorage:{getItem:()=>JSON.stringify({access_token:'dummy-only'})},confirm:message=>{confirmations.push(message);return confirmed},
   fetch:async(url,options)=>{
     const name=url.split('/').at(-1),args=JSON.parse(options.body);
     if(name==='eaf_v2_gateway_my_access')return response({user:{id:'admin',is_admin:true},apps:{hr_letters:{allowed:true}}});
@@ -91,3 +92,9 @@ console.log('PASS: preview races preserve export restrictions; unfinished drafts
 context.HRLetterBranding={};
 
 templateFields=Array.from(context.HRLetterFields.order);await el('template').emit('change');const field=k=>fields().find(f=>f.dataset.field===k);field('basic_increment').value='200';await field('basic_increment').emit('input');assert.equal(field('current_basic').value,2300);assert.equal(field('revised_basic').value,'2500.00');assert.equal(field('basic_increment_pct').value,'8.70');field('revised_basic').value='2510';await field('revised_basic').emit('input');field('basic_increment_pct').value='9';await field('basic_increment_pct').emit('input');job=el('letterForm').emit('submit');assert.equal(pending.at(-1).args.p_fields.revised_basic,'2510');assert.equal(pending.at(-1).args.p_fields.basic_increment_pct,'9');pending.at(-1).resolve({preview:'Manual',missing_fields:[]});await job;assert.equal(field('revised_basic').value,'2510');console.log('PASS: actual form populates salary, calculates both values, retains manual overrides during preview.');
+
+// Incomplete explicit preview warns; cancellation and acceptance do not save.
+const savedBefore=saved.length;confirmed=false;job=el('letterForm').emit('submit');pending.at(-1).resolve({preview:'Missing {{effective_date}}',missing_fields:['effective_date'],company_code:'MEG'});await job;assert.match(confirmations.at(-1),/effective date/);assert.equal(el('workspaceLayout').dataset.view,'form');assert.equal(el('printLetter').disabled,true);assert.equal(saved.length,savedBefore);
+confirmed=true;job=el('letterForm').emit('submit');pending.at(-1).resolve({preview:'Missing {{effective_date}}',missing_fields:['effective_date'],company_code:'MEG'});await job;assert.equal(el('workspaceLayout').dataset.view,'preview');assert.match(el('liveStatus').textContent,/INCOMPLETE/);assert.equal(el('printLetter').disabled,true);assert.equal(el('saveButton').disabled,false);
+// Debounced live refresh uses the automatic employee letterhead and never prompts/saves.
+el('letterhead').value='WRONG';field('basic_increment').value='300';await field('basic_increment').emit('input');const promptCount=confirmations.length;job=timerCallback();assert.equal(pending.at(-1).args.p_fields.letterhead_code,'DUMMY');pending.at(-1).resolve({preview:'Live {{effective_date}}',missing_fields:['effective_date']});await job;assert.equal(confirmations.length,promptCount);assert.equal(saved.length,savedBefore);assert.match(el('liveStatus').textContent,/INCOMPLETE/);console.log('PASS: incomplete preview confirm/cancel, automatic letterhead, live update without repeated warnings or autosave.');
