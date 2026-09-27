@@ -42,9 +42,9 @@ let job=el('letterForm').emit('submit');
 assert.equal(pending.at(-1).args.p_fields.custom,'Original');
 fields().find(f=>f.dataset.field==='custom').value='Edited';await fields().find(f=>f.dataset.field==='custom').emit('input');
 pending.at(-1).resolve({preview:'STALE original text',missing_fields:[]});await job;
-assert.equal(el('saveButton').disabled,true);
+assert.equal(el('printLetter').disabled,true);
 assert.doesNotMatch(el('preview').textContent,/STALE/);
-await el('saveButton').emit('click');assert.equal(saved.length,0);
+await el('saveButton').emit('click');assert.equal(saved.length,1);assert.equal(saved[0].p_fields.custom,'Edited');
 
 // Returning to the same employee must not resurrect a request from before the change.
 job=el('letterForm').emit('submit');
@@ -52,40 +52,40 @@ el('employee').value='two';await el('employee').emit('change');
 assert.equal(fields().find(f=>f.dataset.field==='department').value,'');
 el('employee').value='one';await el('employee').emit('change');
 pending.at(-1).resolve({preview:'STALE employee response',missing_fields:[]});await job;
-assert.equal(el('saveButton').disabled,true);assert.doesNotMatch(el('preview').textContent,/STALE/);
+assert.equal(el('printLetter').disabled,true);assert.doesNotMatch(el('preview').textContent,/STALE/);
 
 // The same applies to template changes away and back.
 job=el('letterForm').emit('submit');
 el('template').value='LOI';await el('template').emit('change');
 el('template').value='LOC';await el('template').emit('change');
 pending.at(-1).resolve({preview:'STALE template response',missing_fields:[]});await job;
-assert.equal(el('saveButton').disabled,true);assert.doesNotMatch(el('preview').textContent,/STALE/);
+assert.equal(el('printLetter').disabled,true);assert.doesNotMatch(el('preview').textContent,/STALE/);
 
 // A late error must not replace the current selection's message.
 job=el('letterForm').emit('submit');fields().find(f=>f.dataset.field==='custom').value='Latest';await fields().find(f=>f.dataset.field==='custom').emit('input');
 pending.at(-1).reject(Error('STALE failure'));await job;
-assert.equal(el('missing').textContent,'');assert.equal(el('saveButton').disabled,true);
+assert.equal(el('missing').textContent,'');assert.equal(el('printLetter').disabled,true);
 
-// A fresh completed preview alone can authorize saving the current fields.
+// A complete preview enables export; saving retains that preview.
 job=el('letterForm').emit('submit');pending.at(-1).resolve({preview:'Latest reviewed text',missing_fields:[]});await job;
 assert.equal(el('saveButton').disabled,false);assert.equal(el('preview').textContent,'Latest reviewed text');
-await el('saveButton').emit('click');assert.equal(saved.length,1);assert.equal(saved[0].p_fields.custom,'Latest');
-assert.equal(el('saveButton').disabled,true);
+await el('saveButton').emit('click');assert.equal(saved.length,2);assert.equal(saved[1].p_fields.custom,'Latest');
+assert.equal(el('printLetter').disabled,false);
 
-// Regenerating a valid preview invalidates its previous approval-to-save even on failure.
+// Regenerating a valid preview invalidates its previous export readiness even on failure.
 job=el('letterForm').emit('submit');pending.at(-1).resolve({preview:'Valid text',missing_fields:[]});await job;
 assert.equal(el('saveButton').disabled,false);
-job=el('letterForm').emit('submit');assert.equal(el('saveButton').disabled,true);
+job=el('letterForm').emit('submit');assert.equal(el('printLetter').disabled,true);
 pending.at(-1).reject(Error('Current failure'));await job;
-assert.equal(el('saveButton').disabled,true);assert.doesNotMatch(el('preview').textContent,/Valid text/);
+assert.equal(el('printLetter').disabled,true);assert.doesNotMatch(el('preview').textContent,/Valid text/);
 assert.match(el('missing').textContent,/Current failure/);
 for(const [problem,expected] of [
  [{code:'22023',message:'Company name is missing, inactive or ambiguous in the entity register'},/correct the company register/],
  [{code:'22023',message:'Combined confirmation/increment wording is restricted to MEG pending entity-specific review'},/available only for MEG/],
  [{code:'22023',message:'INTERNAL SECRET <script>'},/Protected request failed/],
  [{code:'42501',message:'Company name is missing, inactive or ambiguous in the entity register'},/Protected request failed/]
-]){job=el('letterForm').emit('submit');pending.at(-1).httpError(problem);await job;assert.match(el('missing').textContent,expected);assert.doesNotMatch(el('missing').textContent,/INTERNAL SECRET|<script>/);assert.equal(el('saveButton').disabled,true);}
-console.log('PASS: preview races and save restrictions preserved; known company errors explained; unknown server details hidden.');
+]){job=el('letterForm').emit('submit');pending.at(-1).httpError(problem);await job;assert.match(el('missing').textContent,expected);assert.doesNotMatch(el('missing').textContent,/INTERNAL SECRET|<script>/);assert.equal(el('printLetter').disabled,true);}
+console.log('PASS: preview races preserve export restrictions; unfinished drafts can save; known company errors explained; unknown server details hidden.');
 
 // Actual UI: calculations update on increment input, manual overrides survive preview/save values.
 context.HRLetterBranding={};

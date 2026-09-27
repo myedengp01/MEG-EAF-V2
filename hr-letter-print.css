@@ -20,7 +20,7 @@
 #letterPrint .employee-field { margin-top:1.35em; margin-bottom:0; text-align:left; }
 #letterPrint .section-gap { height:2mm; }
 @media print {
- html,body { margin:0!important; padding:0!important; background:#fff!important; color:#111!important; }
+ html,body { height:auto!important; overflow:visible!important; display:block!important; margin:0!important; padding:0!important; background:#fff!important; color:#111!important; }
  body>* { display:none!important; }
  body>#letterPrint { display:block!important; margin:0!important; padding:0!important; width:auto!important; }
  #letterPrint { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
