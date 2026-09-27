@@ -27,3 +27,5 @@
 }
 
 .missing-field{background:#ffe1e1;color:#8b1e1e;padding:0 .15em;border-radius:2px;font-weight:600}
+
+:is(#letterPrint,.letter-preview-page) .acknowledgement { padding-top:2em; }
