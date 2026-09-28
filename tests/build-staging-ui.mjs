@@ -13,14 +13,17 @@ export async function buildStagingUI(key){
  // Fixed ignored output directory; caller cannot overwrite repository sources.
  const output=new URL('../.staging-ui/',import.meta.url);
  await mkdir(output,{recursive:true});
- for(const name of ['dashboard.html','hr-letters.html','hr-letters-review.html','eaf-gateway.js','admin-roles.js','hr-letter-fields.js','hr-letter-branding.js','hr-letter-actions.js','hr-letter-print.js','hr-letter-print.css']){
+ for(const name of ['dashboard.html','hr-letters.html','hr-letters-review.html','eaf-gateway.js','admin-roles.js','hr-letter-fields.js','hr-letter-branding.js','hr-letter-actions.js','hr-letter-print.js','hr-letter-print.css','hr-letters-upload.html','hr-letters-upload-page.js','hr-letter-upload.js']){
   let source=stagingCopy(await readFile(new URL('../'+name,import.meta.url),'utf8'),key);
   if(name.endsWith('.html'))source=source.replace(/<body([^>]*)>/i,'<body$1><div style="background:#fff3cd;color:#332701;padding:10px;text-align:center">STAGING — disposable test data only</div>');
   if(source.includes(production)||source.includes(productionKey))throw Error('Production configuration remains');
   await writeFile(new URL(name,output),source);
  }
+ await mkdir(new URL('vendor/',output),{recursive:true});
+ for(const name of ['jszip.min.js','docx-preview.min.js','pdf-lib.min.js','pdf.mjs','pdf.worker.mjs'])await copyFile(new URL('../vendor/'+name,import.meta.url),new URL('vendor/'+name,output));
  await mkdir(new URL('assets/letterheads/',output),{recursive:true});
  for(const code of ['MEG','HD','ABP','MEH'])await copyFile(new URL('../assets/letterheads/'+code+'.jpg',import.meta.url),new URL('assets/letterheads/'+code+'.jpg',output));
  return resolve(output.pathname);
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){await buildStagingUI(process.env.EDP_STAGING_KEY);console.log('Staging UI copies written to .staging-ui; no deployment performed.');}
+
