@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+<title>MyEden Employee Handbook v2.0 — Authorised Chinese Reference</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Microsoft YaHei","Noto Sans CJK SC",sans-serif;background:#f4f7fb;color:#172033}
+.top{background:#0f172a;color:#fff;padding:10px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:20}
+.top h1{font-size:16px;margin:0;flex:1}.top small{display:block;color:#cbd5e1;font-size:10px;margin-top:2px}
+.top a,.top button{border:0;border-radius:6px;padding:8px 11px;font-weight:800;cursor:pointer;text-decoration:none;background:#fff;color:#111827}
+.wrap{max-width:1180px;margin:0 auto;padding:16px}.notice{background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:12px;line-height:1.55}
+.doc{background:#fff;border:1px solid #d8dee8;border-radius:10px;padding:24px 28px;box-shadow:0 2px 12px rgba(15,23,42,.05)}
+.cover{padding-bottom:18px;border-bottom:3px solid #0f766e;margin-bottom:20px}.cover h2{margin:0;color:#0f4c5c;font-size:23px}.cover p{margin:5px 0 0;color:#64748b;font-size:12px}
+.chapter{margin:26px 0 12px;padding:7px 0;border-bottom:2px solid #0f766e;font-size:19px;color:#064e5a}
+.clause{margin:10px 0 16px}.clause-title{font-size:14px;font-weight:900;color:#1e293b;margin-bottom:6px}.body{font-size:12.5px;line-height:1.7}
+.body p{margin:7px 0;text-align:justify}.body ul,.body ol{margin:6px 0 8px 22px;padding:0}.body li{margin:3px 0}
+.doc-table{width:100%;border-collapse:collapse;margin:9px 0 12px;font-size:11.5px}.doc-table th,.doc-table td{border:1px solid #cbd5e1;padding:7px 8px;text-align:left;vertical-align:top;line-height:1.45}.doc-table th{background:#f1f5f9;font-weight:900}.doc-table tr:nth-child(even) td{background:#fafcff}
+.loading{padding:30px;text-align:center;color:#64748b}
+@media print{.top,.notice{display:none!important}.wrap{padding:0}.doc{border:0;box-shadow:none;padding:0}.clause{break-inside:avoid}.chapter{break-after:avoid}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div><h1>MyEden 集团《员工手册》v2.0</h1><small>授权华文参考版 · v2026.09.28-19:00</small></div>
+  <a href="handbook.html">English Governing Version</a>
+  <button onclick="window.print()">Print / Save PDF</button>
+</div>
+<div class="wrap">
+  <div class="notice"><b>Reference status:</b> This is the authorised Chinese reference edition. The English MyEden Employee Handbook v2.0 remains the governing version. 如中英文内容存在任何歧义，以英文正式版本为准。</div>
+  <div class="doc" id="doc"><div class="loading">Loading authorised Chinese handbook...</div></div>
+</div>
+<script>
+'use strict';
+var SUPABASE_URL='https://vzngfswtofegimfcoigx.supabase.co';
+var SUPABASE_ANON_KEY='sb_publishable_V5o_-Bkz5M7Y75j-eN03rQ_pkQ8Kem9';
+var SESSION_KEY='meg_hr_session';
+var SESSION=null;
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function readSession(){try{return JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null')}catch(e){return null}}
+function headers(){var h={'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY};if(SESSION&&SESSION.access_token)h.Authorization='Bearer '+SESSION.access_token;return h}
+async function rpc(n,a){var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/'+n,{method:'POST',headers:headers(),body:JSON.stringify(a||{})});var t=await r.text(),b=null;try{b=t?JSON.parse(t):null}catch(e){}if(!r.ok)throw new Error((b&&(b.message||b.error_description||b.hint))||('HTTP '+r.status));return b}
+function cell(v){return esc(v).replace(/\n/g,'<br>')}
+function blocksHtml(blocks){
+ var out='',listType=null,list=[];
+ function flush(){if(!list.length)return;var tag=listType==='numbered'?'ol':'ul';out+='<'+tag+'>'+list.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</'+tag+'>';list=[];listType=null}
+ (blocks||[]).forEach(function(b){
+  if(b.type==='bullet'||b.type==='numbered'){if(listType&&listType!==b.type)flush();listType=b.type;list.push(b.text||'');return}
+  flush();
+  if(b.type==='paragraph')out+='<p>'+esc(b.text||'').replace(/\n/g,'<br>')+'</p>';
+  else if(b.type==='table'){
+    var rows=Array.isArray(b.rows)?b.rows:[];
+    out+='<div style="overflow:auto"><table class="doc-table">';
+    rows.forEach(function(row,ri){out+='<tr>';(row||[]).forEach(function(v){var tag=ri===0&&rows.length>1?'th':'td';out+='<'+tag+'>'+cell(v)+'</'+tag+'>'});out+='</tr>'});
+    out+='</table></div>';
+  }
+ });
+ flush();return out;
+}
+function render(raw){
+ var d=raw&&raw.document?raw.document:raw;
+ if(!d||!Array.isArray(d.blocks))throw new Error('Chinese structured handbook source is unavailable.');
+ var out='<div class="cover"><h2>MyEden 集团《员工手册》v2.0</h2><p>授权华文参考版 · 54页 · 生效日期：2026年10月1日</p></div>';
+ var currentClause=null,buf=[];
+ function flushClause(){if(!currentClause)return;out+='<section class="clause"><div class="clause-title">'+esc(currentClause.text)+'</div><div class="body">'+blocksHtml(buf)+'</div></section>';currentClause=null;buf=[]}
+ d.blocks.forEach(function(b){
+   if(b.type==='heading1'){flushClause();out+='<h2 class="chapter">'+esc(b.text)+'</h2>';return}
+   if(b.type==='clause_heading'){flushClause();currentClause=b;return}
+   if(currentClause&&b.clause_id===currentClause.clause_id){buf.push(b);return}
+   flushClause();out+='<div class="body">'+blocksHtml([b])+'</div>';
+ });
+ flushClause();
+ document.getElementById('doc').innerHTML=out;
+}
+async function init(){
+ SESSION=readSession();if(!SESSION||!SESSION.access_token){location.href='dashboard.html?next=handbook';return}
+ try{var zh=await rpc('handbook_get_document',{p_language:'zh'});render(zh)}catch(e){document.getElementById('doc').innerHTML='<div class="loading" style="color:#b42318">'+esc(e.message)+'</div>'}
+}
+init();
+</script>
+</body>
+</html>
