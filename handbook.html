@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>MyEden Employee Handbook v2.0</title>
+<style>
+*{box-sizing:border-box}
+:root{--ink:#172033;--muted:#667085;--line:#d8dee8;--brand:#0f766e;--brand2:#155e75;--bg:#f4f7fb;--card:#fff;--good:#157347;--warn:#a16207;--danger:#b42318}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.top{position:sticky;top:0;z-index:20;background:#0f172a;color:#fff;padding:12px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.top h1{font-size:17px;margin:0;flex:1}.top .sub{font-size:11px;color:#cbd5e1}.top button{border:0;border-radius:6px;padding:8px 11px;font-weight:700;cursor:pointer}
+.btn-light{background:#fff;color:#0f172a}.btn-brand{background:#14b8a6;color:#052e2b}.btn-blue{background:#2563eb;color:#fff}.btn-danger{background:#dc2626;color:#fff}
+.shell{max-width:1450px;margin:0 auto;padding:18px;display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px}
+.side{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 96px);overflow:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 3px 16px rgba(15,23,42,.06);padding:16px;margin-bottom:14px}
+.meta-title{font-weight:800;font-size:15px;margin-bottom:8px}.meta-row{font-size:12px;margin:5px 0;color:#475467}.meta-row b{color:#172033}
+.status{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase}
+.s-assigned{background:#eef2ff;color:#4338ca}.s-viewed{background:#e0f2fe;color:#075985}.s-read{background:#fef3c7;color:#92400e}.s-acknowledged{background:#dcfce7;color:#166534}.s-revoked{background:#fee2e2;color:#991b1b}
+.toc a{display:block;padding:5px 7px;border-radius:5px;color:#334155;text-decoration:none;font-size:11px;line-height:1.35}.toc a:hover{background:#eef6ff}
+.doc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:28px 34px;box-shadow:0 3px 16px rgba(15,23,42,.06);min-height:70vh}
+.doc h2{margin:28px 0 10px;border-bottom:2px solid #0f766e;padding-bottom:6px;font-size:18px;color:#0f4c5c}.doc h3{margin:20px 0 7px;font-size:14px;color:#334155}.doc p{font-size:13px;line-height:1.65;text-align:justify;margin:8px 0}.doc ul{margin:7px 0 12px 22px;padding:0}.doc li{font-size:13px;line-height:1.6;margin:4px 0}.doc .cover{text-align:center;font-size:22px;font-weight:900;color:#0f4c5c;margin:4px 0 16px}.doc .tagline{text-align:center;font-style:italic;color:#667085;margin-bottom:24px}
+.progress-wrap{height:5px;background:#dbe4ef;position:sticky;top:58px;z-index:18}.progress{height:100%;width:0;background:linear-gradient(90deg,#0ea5e9,#14b8a6)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions button{border:0;border-radius:6px;padding:9px 12px;font-weight:800;cursor:pointer}.actions button:disabled{opacity:.45;cursor:not-allowed}
+.ackbox{margin-top:12px;padding:12px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:8px;font-size:12px;line-height:1.55}.ackbox textarea{width:100%;min-height:130px;margin-top:8px;border:1px solid #cbd5e1;border-radius:6px;padding:9px;background:#fff}.ackbox input[type=text]{width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:6px;margin:8px 0}
+.note{font-size:11px;color:#667085;line-height:1.5}.warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;padding:10px;border-radius:7px;font-size:12px}
+.admin{display:none}.admin.active{display:block}.admin-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.admin-toolbar button{border:0;border-radius:6px;padding:8px 11px;font-weight:800;cursor:pointer}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px}.kpi{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px}.kpi b{display:block;font-size:20px}.kpi span{font-size:10px;color:#64748b;text-transform:uppercase}
+.table-wrap{overflow:auto;border:1px solid #e2e8f0;border-radius:8px}.admin table{border-collapse:collapse;width:100%;font-size:11px;min-width:1050px}.admin th,.admin td{border-bottom:1px solid #e5e7eb;padding:7px;text-align:left;vertical-align:top}.admin th{background:#f1f5f9;position:sticky;top:0;z-index:2}.admin select{width:220px;padding:5px}.admin .mini{padding:5px 7px;border:0;border-radius:4px;font-size:10px;font-weight:800;cursor:pointer}
+.loading{padding:40px;text-align:center;color:#64748b}
+.err{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:10px;border-radius:7px}
+.hidden{display:none!important}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.side{position:relative;top:auto;max-height:none}.doc{padding:20px}.kpis{grid-template-columns:repeat(2,1fr)}}
+@media print{.top,.side,.progress-wrap,.actions,.admin,.no-print{display:none!important}.shell{display:block;padding:0}.doc{border:0;box-shadow:none;padding:0}.doc h2{page-break-after:avoid}.doc p,.doc li{orphans:3;widows:3}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div>
+    <h1>📘 MyEden Employee Handbook v2.0</h1>
+    <div class="sub">MEG-Employment &amp; HR System V2 · Employee Handbook Portal</div>
+  </div>
+  <button class="btn-light" onclick="location.href='dashboard.html'">Dashboard</button>
+  <button class="btn-blue hidden" id="adminToggle" onclick="toggleAdmin()">Admin Overview</button>
+  <button class="btn-light" onclick="signOut()">Sign Out</button>
+</div>
+<div class="progress-wrap"><div class="progress" id="scrollProgress"></div></div>
+
+<div class="shell">
+  <aside class="side">
+    <div class="card" id="employeeCard"><div class="loading">Loading assignment...</div></div>
+    <div class="card">
+      <div class="meta-title">Handbook Navigation</div>
+      <div class="toc" id="toc"><div class="note">Loading contents...</div></div>
+    </div>
+    <div class="card">
+      <div class="meta-title">Reading Status</div>
+      <div id="readingStatus" class="note">Loading...</div>
+      <div class="actions">
+        <button class="btn-brand" id="markReadBtn" disabled onclick="markRead()">Mark as Read</button>
+      </div>
+      <div id="ackPanel" class="ackbox hidden"></div>
+    </div>
+  </aside>
+
+  <main>
+    <section class="doc" id="doc"><div class="loading">Loading MyEden Employee Handbook v2.0...</div></section>
+    <section class="card admin" id="adminPanel">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div>
+          <div class="meta-title" style="margin:0">Handbook Administration</div>
+          <div class="note">MEG / MEH · MyEden Employee Handbook v2.0</div>
+        </div>
+        <div style="margin-left:auto" class="admin-toolbar">
+          <button class="btn-brand" onclick="assignAll()">Assign / Refresh Eligible Employees</button>
+          <button class="btn-blue" onclick="loadAdmin()">Refresh</button>
+        </div>
+      </div>
+      <div class="kpis" id="adminKpis"></div>
+      <div class="warn" style="margin-bottom:10px">Employee access is linked to an authenticated account. Because the current Employee Master does not contain employee email addresses, Admin must link each employee assignment to the correct login account before that employee can open the handbook.</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Employee</th><th>Employer</th><th>Department / Job</th><th>Status</th><th>Viewed</th><th>Read</th><th>Acknowledged</th><th>Login Account</th><th>Action</th></tr></thead>
+        <tbody id="adminRows"><tr><td colspan="9" class="loading">Loading...</td></tr></tbody>
+      </table></div>
+    </section>
+  </main>
+</div>
+
+<script>
+'use strict';
+const SUPABASE_URL='https://vzngfswtofegimfcoigx.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_V5o_-Bkz5M7Y75j-eN03rQ_pkQ8Kem9';
+const SESSION_KEY='meg_hr_session';
+const PORTAL_UVN='v2026.09.28-09:00';
+let SESSION=null,BOOT=null,HB=null,SECTIONS=[],SCROLLED_ENOUGH=false,ADMIN_OPEN=false,ADMIN_USERS=[];
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function readSession(){try{return JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null')}catch(e){return null}}
+function storeSession(){try{sessionStorage.setItem(SESSION_KEY,JSON.stringify(SESSION))}catch(e){}}
+function clearSession(){try{sessionStorage.removeItem(SESSION_KEY)}catch(e){}SESSION=null}
+function baseHeaders(){const h={'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'X-Client-Info':'MEG-HANDBOOK/'+PORTAL_UVN};if(SESSION&&SESSION.access_token)h.Authorization='Bearer '+SESSION.access_token;return h}
+async function api(path,opts,retry){opts=opts||{};opts.headers=Object.assign({},opts.headers||{},baseHeaders());let r=await fetch(SUPABASE_URL+path,opts);if(r.status===401&&SESSION&&SESSION.refresh_token&&!retry){await refreshSession();return api(path,opts,true)}let txt=await r.text(),body=null;try{body=txt?JSON.parse(txt):null}catch(e){}if(!r.ok)throw new Error((body&&(body.message||body.msg||body.error_description||body.hint))||('HTTP '+r.status));return body}
+async function rpc(name,args){return api('/rest/v1/rpc/'+name,{method:'POST',body:JSON.stringify(args||{})})}
+async function refreshSession(){let r=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY},body:JSON.stringify({refresh_token:SESSION.refresh_token})});let b=await r.json();if(!r.ok)throw new Error('Session expired');SESSION=b;storeSession()}
+function fmt(v){if(!v)return '—';try{return new Date(v).toLocaleString('en-MY')}catch(e){return v}}
+function statusClass(s){return 'status s-'+(s||'assigned')}
+function companyName(c){return ({MEG:'MyEden Group Sdn. Bhd.',MEH:'MyEden Edu Hub Sdn. Bhd.'})[c]||c||'—'}
+
+async function init(){
+  SESSION=readSession();
+  if(!SESSION||!SESSION.access_token){location.href='dashboard.html?next=handbook';return}
+  try{
+    BOOT=await rpc('eaf_v2_gateway_my_access',{});
+    const a=BOOT&&BOOT.apps&&BOOT.apps.handbook;
+    if(!a||a.allowed!==true){document.getElementById('doc').innerHTML='<div class="err">Your account is signed in, but no MyEden v2.0 handbook assignment is linked to this login yet. Please contact HR/Admin.</div>';return}
+    HB=await rpc('handbook_my_assignment',{});
+    if(HB&&HB.is_admin)document.getElementById('adminToggle').classList.remove('hidden');
+    if(!HB||!HB.handbook){document.getElementById('doc').innerHTML='<div class="err">No issued handbook is available for this account.</div>';return}
+    if(HB.assignment)HB=await rpc('handbook_mark_event',{p_action:'view'});
+    renderMeta();
+    await loadSections();
+    renderStatus();
+    window.addEventListener('scroll',onScroll,{passive:true});
+    onScroll();
+  }catch(e){
+    document.getElementById('doc').innerHTML='<div class="err">'+esc(e.message)+'</div>';
+  }
+}
+
+function renderMeta(){
+  const e=HB.employee,h=HB.handbook,a=HB.assignment;
+  let html='<div class="meta-title">'+esc(h.title)+' <span style="color:#0f766e">'+esc(h.version)+'</span></div>'+
+    '<div class="meta-row"><b>Effective:</b> '+esc(h.effective_date||'—')+'</div>'+
+    '<div class="meta-row"><b>Status:</b> '+esc(h.status)+'</div>';
+  if(e){
+    html+='<hr style="border:0;border-top:1px solid #e5e7eb;margin:10px 0">'+
+      '<div class="meta-row"><b>Employee:</b> '+esc(e.employee_name)+'</div>'+
+      '<div class="meta-row"><b>Employee ID:</b> '+esc(e.employee_id||'—')+'</div>'+
+      '<div class="meta-row"><b>Legal Employer:</b> '+esc(companyName(e.company_code))+'</div>'+
+      '<div class="meta-row"><b>Job Title:</b> '+esc(e.job_title||'—')+'</div>'+
+      '<div class="meta-row"><b>Department:</b> '+esc(e.department||'—')+'</div>'+
+      '<div class="meta-row"><b>Assignment:</b> <span class="'+statusClass(a&&a.status)+'">'+esc(a&&a.status||'assigned')+'</span></div>';
+  }else if(HB.is_admin){
+    html+='<div class="warn" style="margin-top:10px">Admin preview mode. Reading/acknowledgement actions are disabled until an employee assignment is linked to this account.</div>';
+  }
+  document.getElementById('employeeCard').innerHTML=html;
+}
+
+async function loadSections(){
+  const rows=await rpc('handbook_get_sections',{p_handbook_version_id:HB.handbook.id});
+  SECTIONS=rows||[];
+  const txt=SECTIONS.map(x=>x.content_text||'').join('\n\n');
+  renderDocument(txt);
+}
+function isMainHeading(s){
+  return /^(A\. DOCUMENT CONTROL|B\. CONTENTS|(?:[1-9]|1\d|2[0-4])\.\s+[A-Z]|APPENDIX\s+[A-E]\.|CHILD SAFEGUARDING CODE|EMPLOYEE HANDBOOK ACKNOWLEDGEMENT|MISCONDUCT CLASSIFICATION MATRIX|PROCESS MAPS|LEGAL REFERENCE REGISTER)/i.test(s);
+}
+function isSubHeading(s){return /^(?:\d{1,2}\.\d+|[A-E]\.\d+)\s+/.test(s)}
+function renderDocument(text){
+  const lines=String(text||'').split(/\r?\n/),out=[],toc=[],buf=[],bullets=[];
+  let hid=0;
+  function flushP(){if(buf.length){out.push('<p>'+esc(buf.join(' '))+'</p>');buf.length=0}}
+  function flushB(){if(bullets.length){out.push('<ul>'+bullets.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>');bullets.length=0}}
+  lines.forEach(raw=>{
+    const s=raw.trim();
+    if(!s){flushP();flushB();return}
+    if(s==='EMPLOYEE HANDBOOK'){flushP();flushB();out.push('<div class="cover">EMPLOYEE HANDBOOK</div>');return}
+    if(s==='People | Protection | Performance | Professionalism'){flushP();flushB();out.push('<div class="tagline">'+esc(s)+'</div>');return}
+    if(isMainHeading(s)){
+      flushP();flushB();hid++;const id='hb-h-'+hid;out.push('<h2 id="'+id+'">'+esc(s)+'</h2>');toc.push({id,title:s,level:2});return;
+    }
+    if(isSubHeading(s)){
+      flushP();flushB();hid++;const id='hb-h-'+hid;out.push('<h3 id="'+id+'">'+esc(s)+'</h3>');toc.push({id,title:s,level:3});return;
+    }
+    if(/^[•]\s*/.test(s)){flushP();bullets.push(s.replace(/^[•]\s*/,''));return}
+    if(bullets.length){if(/^[A-Z0-9]/.test(s))flushB();else{bullets[bullets.length-1]+=' '+s;return}}
+    buf.push(s);
+  });
+  flushP();flushB();
+  document.getElementById('doc').innerHTML=out.join('');
+  document.getElementById('toc').innerHTML=toc.map(x=>'<a href="#'+x.id+'" style="'+(x.level===3?'padding-left:18px':'font-weight:700')+'">'+esc(x.title)+'</a>').join('')||'<div class="note">Use browser search to find handbook terms.</div>';
+}
+function onScroll(){
+  const d=document.documentElement,max=Math.max(1,d.scrollHeight-d.clientHeight),pct=Math.min(100,Math.round((d.scrollTop/max)*100));
+  document.getElementById('scrollProgress').style.width=pct+'%';
+  if(pct>=90){SCROLLED_ENOUGH=true;const b=document.getElementById('markReadBtn');if(HB&&HB.assignment&&HB.assignment.status!=='acknowledged'&&HB.assignment.status!=='read')b.disabled=false}
+}
+function renderStatus(){
+  const a=HB.assignment,host=document.getElementById('readingStatus'),btn=document.getElementById('markReadBtn'),ack=document.getElementById('ackPanel');
+  if(!a){host.innerHTML='Admin preview only.';btn.classList.add('hidden');ack.classList.add('hidden');return}
+  host.innerHTML='<div><span class="'+statusClass(a.status)+'">'+esc(a.status)+'</span></div>'+
+    '<div class="meta-row"><b>Assigned:</b> '+fmt(a.assigned_at)+'</div>'+
+    '<div class="meta-row"><b>First Viewed:</b> '+fmt(a.first_viewed_at)+'</div>'+
+    '<div class="meta-row"><b>Marked Read:</b> '+fmt(a.read_at)+'</div>'+
+    '<div class="meta-row"><b>Acknowledged:</b> '+fmt(a.acknowledged_at)+'</div>'+
+    '<div class="note">Scroll through at least 90% of the handbook to enable “Mark as Read”.</div>';
+  if(a.status==='read'||a.status==='acknowledged')btn.disabled=true;
+  if(a.status==='acknowledged'){btn.textContent='Read ✓';ack.classList.remove('hidden');ack.innerHTML='<b>✓ Handbook acknowledged</b><div class="meta-row">'+fmt(a.acknowledged_at)+'</div>';return}
+  if(a.read_at){
+    ack.classList.remove('hidden');
+    ack.innerHTML='<b>Employee Handbook Acknowledgement & Undertaking</b>'+
+      '<textarea readonly>'+esc(HB.handbook.acknowledgement_text||'')+'</textarea>'+
+      '<div style="margin-top:8px"><label><input type="checkbox" id="ackCheck"> I have read and understand the acknowledgement above.</label></div>'+
+      '<label style="display:block;margin-top:8px;font-weight:700">Type your full name exactly as shown on your employee record:</label>'+
+      '<input type="text" id="typedName" autocomplete="off" placeholder="'+esc(HB.employee.employee_name||'')+'">'+
+      '<button class="btn-brand" style="border:0;border-radius:6px;padding:9px 12px;font-weight:800;cursor:pointer" onclick="acknowledge()">Acknowledge MyEden v2.0</button>';
+  }else ack.classList.add('hidden');
+}
+async function markRead(){
+  if(!SCROLLED_ENOUGH){alert('Please scroll through the handbook before marking it as read.');return}
+  try{HB=await rpc('handbook_mark_event',{p_action:'read'});renderMeta();renderStatus()}catch(e){alert(e.message)}
+}
+async function acknowledge(){
+  const cb=document.getElementById('ackCheck'),name=document.getElementById('typedName');
+  if(!cb||!cb.checked){alert('Please confirm that you have read and understand the acknowledgement.');return}
+  if(!name||!name.value.trim()){alert('Please type your full name.');return}
+  if(!confirm('Submit your digital acknowledgement for MyEden Employee Handbook v2.0? This acknowledgement will be permanently time-stamped.'))return;
+  try{HB=await rpc('handbook_acknowledge',{p_typed_name:name.value.trim()});renderMeta();renderStatus();alert('✅ MyEden Employee Handbook v2.0 acknowledged successfully.')}catch(e){alert(e.message)}
+}
+
+function toggleAdmin(){ADMIN_OPEN=!ADMIN_OPEN;document.getElementById('adminPanel').classList.toggle('active',ADMIN_OPEN);if(ADMIN_OPEN){loadAdmin();setTimeout(()=>document.getElementById('adminPanel').scrollIntoView({behavior:'smooth'}),50)}}
+async function loadAdmin(){
+  if(!HB||!HB.is_admin)return;
+  try{
+    const [rows,users]=await Promise.all([rpc('handbook_admin_overview',{}),rpc('handbook_admin_user_directory',{})]);
+    ADMIN_USERS=users||[];
+    renderAdmin(rows||[]);
+  }catch(e){document.getElementById('adminRows').innerHTML='<tr><td colspan="9" class="err">'+esc(e.message)+'</td></tr>'}
+}
+function renderAdmin(rows){
+  const counts={total:rows.length,linked:0,viewed:0,read:0,ack:0};
+  rows.forEach(r=>{if(r.auth_user_id)counts.linked++;if(r.first_viewed_at)counts.viewed++;if(r.read_at)counts.read++;if(r.acknowledged_at)counts.ack++});
+  document.getElementById('adminKpis').innerHTML=[
+    ['Assigned',counts.total],['Linked Accounts',counts.linked],['Viewed',counts.viewed],['Read',counts.read],['Acknowledged',counts.ack]
+  ].map(x=>'<div class="kpi"><b>'+x[1]+'</b><span>'+x[0]+'</span></div>').join('');
+  document.getElementById('adminRows').innerHTML=rows.map(r=>{
+    const options='<option value="">— Select login account —</option>'+ADMIN_USERS.map(u=>'<option value="'+esc(u.user_id)+'" '+(u.user_id===r.auth_user_id?'selected':'')+'>'+esc(u.full_name)+' · '+esc(u.email)+'</option>').join('');
+    return '<tr>'+
+      '<td><b>'+esc(r.employee_name)+'</b><br>'+esc(r.employee_id||'—')+'</td>'+
+      '<td>'+esc(companyName(r.company_code))+'</td>'+
+      '<td>'+esc(r.department||'—')+'<br>'+esc(r.job_title||'—')+'</td>'+
+      '<td><span class="'+statusClass(r.assignment_status)+'">'+esc(r.assignment_status)+'</span></td>'+
+      '<td>'+fmt(r.first_viewed_at)+'</td><td>'+fmt(r.read_at)+'</td><td>'+fmt(r.acknowledged_at)+'</td>'+
+      '<td><select id="link-'+r.assignment_id+'">'+options+'</select>'+(r.linked_email?'<div class="note">Current: '+esc(r.linked_email)+'</div>':'')+'</td>'+
+      '<td><button class="mini btn-blue" onclick="linkUser(\''+r.assignment_id+'\')">Link</button> '+(r.auth_user_id?'<button class="mini btn-danger" onclick="unlinkUser(\''+r.assignment_id+'\')">Unlink</button>':'')+'</td>'+
+      '</tr>';
+  }).join('')||'<tr><td colspan="9">No assignments.</td></tr>';
+}
+async function linkUser(id){const sel=document.getElementById('link-'+id);if(!sel||!sel.value){alert('Select a login account first.');return}try{await rpc('handbook_admin_link_user',{p_assignment_id:id,p_user_id:sel.value});await loadAdmin();alert('Login account linked.')}catch(e){alert(e.message)}}
+async function unlinkUser(id){if(!confirm('Unlink this employee from the current login account?'))return;try{await rpc('handbook_admin_unlink_user',{p_assignment_id:id});await loadAdmin()}catch(e){alert(e.message)}}
+async function assignAll(){try{const n=await rpc('handbook_admin_assign_all_myeden',{});await loadAdmin();alert('Handbook assignments refreshed. Affected rows: '+n)}catch(e){alert(e.message)}}
+async function signOut(){try{if(SESSION&&SESSION.access_token)await api('/auth/v1/logout',{method:'POST'})}catch(e){}clearSession();location.href='dashboard.html'}
+
+init();
+</script>
+</body>
+</html>
