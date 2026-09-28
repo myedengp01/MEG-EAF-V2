@@ -222,7 +222,7 @@ function bodyHtml(lines){
  });
  fp();fl();return out.join('');
 }
-function plainClause(c){return [c.title].concat(c.bodyLines||[]).join('\n')}
+function plainClause(c){return [c.title].concat(c.legalRefs||[]).concat(c.bodyLines||[]).join('\n')}
 function progressKey(ch,c){return ch.code+'|'+c.key}
 function indexDocs(){
  CLAUSE_MAP={};ZH_MAP={};
