@@ -140,7 +140,10 @@ function activeEntityCode(){
 }
 function applyEntityBranding(){
  var b=entityBrand(activeEntityCode()),img=document.getElementById('topEntityLogo');
- if(img&&b.logo)img.src=b.logo;
+ if(img){
+   if(b.logo){img.src=b.logo;img.style.display='block';}
+   else{img.removeAttribute('src');img.style.display='none';}
+ }
  var top=document.getElementById('topCompany');if(top)top.textContent=b.name||companyName(activeEntityCode());
 }
 
@@ -266,7 +269,8 @@ function indexDocs(){
 }
 function renderDoc(){
  var e=HB.employee||{},h=HB.handbook;
- var out='<div class="doc-cover"><img src="'+esc(entityBrand(activeEntityCode()).logo)+'" alt="Entity logo"><div><h1>'+esc(entityBrand(activeEntityCode()).name)+'</h1><p>'+esc(h.title||'Employee Handbook')+' · '+esc(h.version)+' · Governing English edition · Source: '+esc(h.source_page_count||'—')+' pages</p></div></div>';
+ var brand=entityBrand(activeEntityCode());
+ var out='<div class="doc-cover">'+(brand.logo?'<img src="'+esc(brand.logo)+'" alt="Entity logo">':'')+'<div><h1>'+esc(brand.name)+'</h1><p>'+esc(h.title||'Employee Handbook')+' · '+esc(h.version)+' · Governing English edition · Source: '+esc(h.source_page_count||'—')+' pages</p></div></div>';
  if(DOC_EN.prefaceBlocks&&DOC_EN.prefaceBlocks.length)out+='<div class="preface">'+blockHtml(DOC_EN.prefaceBlocks)+'</div>';
  DOC_EN.chapters.forEach(function(ch){
    out+='<h2 class="chapter" id="chapter-'+esc(ch.code)+'">'+esc(ch.title)+'</h2>';
