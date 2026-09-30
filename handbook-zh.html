@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
-<title>MyEden Employee Handbook v2.0 — Authorised Chinese Reference</title>
+<title>Employee Handbook — Authorised Chinese Reference</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,"Microsoft YaHei","Noto Sans CJK SC",sans-serif;background:#f4f7fb;color:#172033}
 .top{background:#0f172a;color:#fff;padding:10px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:20}
@@ -23,12 +23,12 @@
 </head>
 <body>
 <div class="top">
-  <div><h1>MyEden 集团《员工手册》v2.0</h1><small>授权华文参考版 · v2026.09.28-20:00</small></div>
+  <div><h1 id="pageTitle">员工手册</h1><small>授权华文参考版 · v2026.09.30-16:05</small></div>
   <a href="handbook.html">English Governing Version</a>
   <button onclick="window.print()">Print / Save PDF</button>
 </div>
 <div class="wrap">
-  <div class="notice"><b>Reference status:</b> This is the authorised Chinese reference edition. The English MyEden Employee Handbook v2.0 remains the governing version. 如中英文内容存在任何歧义，以英文正式版本为准。</div>
+  <div class="notice"><b>Reference status:</b> This is the authorised Chinese reference edition. The corresponding English Employee Handbook remains the governing version. 如中英文内容存在任何歧义，以英文正式版本为准。</div>
   <div class="doc" id="doc"><div class="loading">Loading authorised Chinese handbook...</div></div>
 </div>
 <script>
@@ -69,10 +69,30 @@ function blocksHtml(blocks){
  });
  flush();return out;
 }
-function render(raw){
+function handbookChineseTitle(h){
+ var code=String(h&&h.handbook_code||'');
+ if(code==='HAPPY-DINO-EMPLOYEE-HANDBOOK')return 'Happy Dino Sdn. Bhd.《员工手册与儿童安全活动守则》';
+ if(code==='ABORNE-EMPLOYEE-HANDBOOK')return 'Aborne Project Sdn. Bhd.《员工手册与活动专业守则》';
+ return 'MyEden 集团《员工手册》';
+}
+async function loadStaticChineseFallback(handbookCode){
+ var map={
+   'ABORNE-EMPLOYEE-HANDBOOK':'handbook-data/aborne-v1.0-zh-authorised.json',
+   'HAPPY-DINO-EMPLOYEE-HANDBOOK':'handbook-data/happy-dino-v1.0-zh-authorised.json'
+ };
+ var path=map[String(handbookCode||'')];
+ if(!path)return null;
+ var r=await fetch(path+'?v=20260930-1605',{cache:'no-store'});
+ if(!r.ok)throw new Error('Authorised Chinese handbook resource could not be loaded.');
+ return await r.json();
+}
+function render(raw,h){
  var d=raw&&raw.document?raw.document:raw;
  if(!d||!Array.isArray(d.blocks))throw new Error('Chinese structured handbook source is unavailable.');
- var out='<div class="cover"><h2>MyEden 集团《员工手册》v2.0</h2><p>授权华文参考版 · 54页 · 生效日期：2026年10月1日</p></div>';
+ var title=handbookChineseTitle(h),pages=(h&&h.source_page_count)||'—',ver=(h&&h.version)||'';
+ document.getElementById('pageTitle').textContent=title+(ver?' '+ver:'');
+ document.title=title+(ver?' '+ver:'')+' — Authorised Chinese Reference';
+ var out='<div class="cover"><h2>'+esc(title)+'</h2><p>授权华文参考版 · '+esc(pages)+'页 · 生效日期：'+esc((h&&h.effective_date)||'2026-10-01')+'</p></div>';
  var currentClause=null,buf=[];
  function flushClause(){if(!currentClause)return;out+='<section class="clause"><div class="clause-title">'+esc(currentClause.text)+'</div><div class="body">'+blocksHtml(buf)+'</div></section>';currentClause=null;buf=[]}
  d.blocks.forEach(function(b){
@@ -86,7 +106,16 @@ function render(raw){
 }
 async function init(){
  SESSION=readSession();if(!SESSION||!SESSION.access_token){location.href='dashboard.html?next=handbook';return}
- try{var zh=await rpc('handbook_get_document',{p_language:'zh'});render(zh)}catch(e){document.getElementById('doc').innerHTML='<div class="loading" style="color:#b42318">'+esc(e.message)+'</div>'}
+ try{
+   var hb=await rpc('handbook_my_assignment',{});
+   if(!hb||!hb.handbook)throw new Error('No issued handbook is linked to this login account.');
+   var zh=await rpc('handbook_get_document',{p_language:'zh'});
+   if(!zh||!zh.document){
+     var staticZh=await loadStaticChineseFallback(hb.handbook.handbook_code);
+     if(staticZh)zh={document:staticZh};
+   }
+   render(zh,hb.handbook);
+ }catch(e){document.getElementById('doc').innerHTML='<div class="loading" style="color:#b42318">'+esc(e.message)+'</div>'}
 }
 init();
 </script>
