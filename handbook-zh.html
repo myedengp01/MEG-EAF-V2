@@ -23,7 +23,7 @@
 </head>
 <body>
 <div class="top">
-  <div><h1 id="pageTitle">员工手册</h1><small>授权华文参考版 · v2026.09.30-16:05</small></div>
+  <div><h1 id="pageTitle">员工手册</h1><small>授权华文参考版 · v2026.09.30-16:20</small></div>
   <a href="handbook.html">English Governing Version</a>
   <button onclick="window.print()">Print / Save PDF</button>
 </div>
@@ -50,6 +50,7 @@ function readSession(){
    return JSON.parse(raw||'null');
  }catch(e){return null}
 }
+function queryParam(name){try{return new URLSearchParams(location.search).get(name)||''}catch(e){return ''}}
 function headers(){var h={'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY};if(SESSION&&SESSION.access_token)h.Authorization='Bearer '+SESSION.access_token;return h}
 async function rpc(n,a){var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/'+n,{method:'POST',headers:headers(),body:JSON.stringify(a||{})});var t=await r.text(),b=null;try{b=t?JSON.parse(t):null}catch(e){}if(!r.ok)throw new Error((b&&(b.message||b.error_description||b.hint))||('HTTP '+r.status));return b}
 function cell(v){return esc(v).replace(/\n/g,'<br>')}
@@ -107,14 +108,59 @@ function render(raw,h){
 async function init(){
  SESSION=readSession();if(!SESSION||!SESSION.access_token){location.href='dashboard.html?next=handbook';return}
  try{
+   var reqCode=queryParam('code'),reqVersionId=queryParam('version_id'),reqEntity=queryParam('entity');
    var hb=await rpc('handbook_my_assignment',{});
-   if(!hb||!hb.handbook)throw new Error('No issued handbook is linked to this login account.');
-   var zh=await rpc('handbook_get_document',{p_language:'zh'});
+   var handbook=hb&&hb.handbook?hb.handbook:null;
+   var zh=null;
+
+   if(reqVersionId){
+     try{
+       var adminZh=await rpc('handbook_admin_get_document',{p_handbook_version_id:reqVersionId,p_language:'zh'});
+       if(adminZh&&adminZh.handbook_code){
+         handbook={
+           id:adminZh.handbook_version_id,
+           handbook_code:adminZh.handbook_code,
+           title:adminZh.handbook_title,
+           version:adminZh.handbook_version,
+           issue_date:adminZh.issue_date,
+           effective_date:adminZh.effective_date,
+           status:adminZh.status,
+           source_page_count:adminZh.page_count
+         };
+         zh=adminZh;
+       }
+     }catch(e){}
+   }
+
+   if(reqCode){
+     if(!handbook||handbook.handbook_code!==reqCode){
+       handbook=Object.assign({},handbook||{},{
+         handbook_code:reqCode,
+         version:queryParam('version')||(handbook&&handbook.version)||'v1.0',
+         effective_date:(handbook&&handbook.effective_date)||'2026-10-01'
+       });
+     }
+   }
+
+   if(!handbook)throw new Error('No issued handbook is linked to this login account.');
+
    if(!zh||!zh.document){
-     var staticZh=await loadStaticChineseFallback(hb.handbook.handbook_code);
+     if(!reqCode || reqCode===handbook.handbook_code){
+       try{zh=await rpc('handbook_get_document',{p_language:'zh'})}catch(e){}
+     }
+   }
+
+   if(!zh||!zh.document){
+     var staticZh=await loadStaticChineseFallback(handbook.handbook_code);
      if(staticZh)zh={document:staticZh};
    }
-   render(zh,hb.handbook);
+
+   if(!zh||!zh.document)throw new Error('No authorised Chinese reference is issued for this handbook.');
+
+   if(handbook.handbook_code==='HAPPY-DINO-EMPLOYEE-HANDBOOK')handbook.source_page_count=35;
+   if(handbook.handbook_code==='ABORNE-EMPLOYEE-HANDBOOK')handbook.source_page_count=26;
+
+   render(zh,handbook);
  }catch(e){document.getElementById('doc').innerHTML='<div class="loading" style="color:#b42318">'+esc(e.message)+'</div>'}
 }
 init();
