@@ -1,0 +1,36 @@
+name: Integrate Employee Master Profile
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/employee-profile-integration.yml'
+permissions:
+  contents: write
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Integrate profile extension and UVN
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('hr.html')
+          s=p.read_text(encoding='utf-8')
+          marker='<script src="v2-hr-extension.js"></script>'
+          addon=marker+'\n<script src="employee-profile-extension.js"></script>'
+          if 'employee-profile-extension.js' not in s:
+              if marker not in s:
+                  raise SystemExit('v2 extension marker not found')
+              s=s.replace(marker,addon,1)
+          s=s.replace('MEG-EAF-HR V2 v2026.09.24-18:50','MEG-EAF-HR V2 v2026.10.01-15:44')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit integration
+        run: |
+          git config user.name "myedengp01"
+          git config user.email "myeden.group@gmail.com"
+          git add hr.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Deploy Employee Master Profile v2026.10.01-15:44"
+          git push
