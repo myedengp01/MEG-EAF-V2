@@ -34,7 +34,7 @@ a{color:var(--blue)}button,input,select{font:inherit}.top{height:66px;position:s
 <aside class="side">
   <a class="nav active" href="#top">⌂ Overview</a>
   <h4>CALCULATORS</h4>
-  <a class="nav" href="#ot">⏱ OT / Rest / Holiday</a>
+  <a class="nav" href="#ot">⏱ OT / Off / Rest / Holiday</a>
   <a class="nav" href="#incomplete">💵 Incomplete Month</a>
   <a class="nav" href="#notice">📅 Notice / Last Day</a>
   <a class="nav" href="#annual">🌴 Annual Leave / Resignation</a>
@@ -55,7 +55,7 @@ a{color:var(--blue)}button,input,select{font:inherit}.top{height:66px;position:s
   <section class="hero">
     <h1>Malaysia Employment Act 1955 — Smart HR Reference & Calculator Suite</h1>
     <p>Fast statutory estimates for HR decision support, together with a searchable digital edition of Employment Act 1955 (Act 265).</p>
-    <div class="badges"><span class="badge">Peninsular Malaysia + Labuan</span><span class="badge">Employment Act 1955</span><span class="badge">2022 amendments effective 1 Jan 2023</span><span class="badge">Reviewed against JTKSM sources in Aug/Sep 2026</span></div>
+    <div class="badges"><span class="badge">Peninsular Malaysia + Labuan</span><span class="badge">Employment Act 1955</span><span class="badge">2022 amendments effective 1 Jan 2023</span><span class="badge">Reviewed against JTKSM/MOHR sources through Oct 2026</span></div>
   </section>
   <div class="notice"><b>Important:</b> This tool provides internal estimates and compliance prompts, not legal advice or an official JTKSM determination. Contract terms, collective agreements, employee category, wage definition and case-specific facts can change the result. Where the contract/handbook gives a more favourable benefit, the more favourable term may apply. Sabah and Sarawak are governed by separate labour legislation. Certain statutory part-time employees have separate leave, holiday and extra-hours rules under the Employment (Part-Time Employees) Regulations 2010; calculators marked for general/monthly-rated employees should not be applied to them without checking those Regulations.</div>
   <div class="searchbar"><input id="topicSearch" placeholder="Search Employment Act topics, e.g. annual leave, notice, overtime, maternity..." oninput="filterRefs()"><button class="btn secondary" onclick="document.getElementById('reference').scrollIntoView()">Search Reference</button></div>
@@ -64,14 +64,28 @@ a{color:var(--blue)}button,input,select{font:inherit}.top{height:66px;position:s
   <div class="calcGrid">
 
     <section class="calc" id="ot">
-      <div class="calcHead"><div class="calcIcon">⏱</div><div><h3>OT / Rest Day / Public Holiday Pay</h3><p>Sections 60, 60A, 60D & 60I</p></div></div>
-      <div class="calcBody"><div class="grid">
+      <div class="calcHead"><div class="calcIcon">⏱</div><div><h3>OT / Company Off Day / Rest Day / Public Holiday Pay</h3><p>Sections 59, 60, 60A, 60D & 60I</p></div></div>
+      <div class="calcBody">
+        <div class="notice" style="margin-top:0"><b>Working-time rule:</b> 45 hours per week is the statutory ceiling, not an automatic pool of ordinary hours. A Company Off Day is not automatically the statutory Rest Day. Meal/rest time is deducted only when the employee was genuinely relieved from work and free to use the break.</div>
+        <div class="grid">
         <div class="field"><label>Monthly wages (RM)</label><input id="otSalary" type="number" min="0" step="0.01" value="3000"></div>
         <div class="field"><label>Normal hours per day</label><input id="otNormalHours" type="number" min="1" max="12" step="0.25" value="8"></div>
-        <div class="field"><label>Work type</label><select id="otType"><option value="normal">Normal working day OT</option><option value="rest">Rest day</option><option value="holiday">Paid public holiday</option></select></div>
-        <div class="field"><label>Hours worked on that day</label><input id="otHours" type="number" min="0" step="0.25" value="2"></div>
-        <div class="field"><label>Normal-day OT hours accumulated this month</label><input id="otMonthHours" type="number" min="0" step="0.25" value="0"></div>
-        <label class="check wide"><input id="otProtected" type="checkbox"> Employee earns over RM4,000 but is in a manual / other First Schedule category that remains covered for statutory OT/rest-day/public-holiday pay.</label>
+        <div class="field"><label>Agreed normal hours per week</label><input id="otContractWeek" type="number" min="1" max="45" step="0.25" value="40"></div>
+        <div class="field"><label>Work type</label><select id="otType">
+          <option value="normal">Normal Working Day OT</option>
+          <option value="offday">Company Off Day — non-statutory Rest Day</option>
+          <option value="rest">Statutory Rest Day — s.59 / s.60</option>
+          <option value="holiday">Paid Public Holiday — s.60D</option>
+        </select></div>
+        <div class="field"><label>Claimed / elapsed hours on that day</label><input id="otHours" type="number" min="0" step="0.25" value="2"></div>
+        <div class="field"><label>Meal/rest break duration (hours)</label><input id="otBreakHours" type="number" min="0" step="0.25" value="0"></div>
+        <label class="check wide"><input id="otBreakFree" type="checkbox"> During the break, the employee was genuinely relieved from duties and free to use the time. If checked, the break is excluded from payable working hours.</label>
+        <div class="field wide"><label>Company Off Day only — is this day outside the employee's agreed normal work schedule?</label><select id="otOffOutside">
+          <option value="yes">Yes — it is an additional company off day outside the agreed normal schedule</option>
+          <option value="no">No / uncertain — the day may form part of the normal contractual roster</option>
+        </select></div>
+        <div class="field wide"><label>Statutory OT hours already accumulated this month (exclude statutory Rest Day / Public Holiday work)</label><input id="otMonthHours" type="number" min="0" step="0.25" value="0"></div>
+        <label class="check wide"><input id="otProtected" type="checkbox"> Employee earns over RM4,000 but falls within an applicable protected First Schedule category (including qualifying manual-work categories) for statutory OT/rest-day/public-holiday premium pay.</label>
       </div><div class="action"><button class="btn" onclick="calcOT()">Calculate</button></div><div id="otResult" class="result"></div></div>
     </section>
 
@@ -293,25 +307,53 @@ function statutoryTier(start,end){const y=completedYears(start,end);return y<2?8
 function lastAnniversary(start,end){let ann=new Date(end.getFullYear(),start.getMonth(),start.getDate());if(ann>end)ann.setFullYear(ann.getFullYear()-1);if(start.getDate()!==ann.getDate()){const max=new Date(ann.getFullYear(),start.getMonth()+1,0).getDate();ann.setDate(Math.min(start.getDate(),max))}return ann}
 
 function calcOT(){
-  const sal=n('otSalary'),normal=n('otNormalHours'),hrs=n('otHours'),type=$('otType').value;
-  if(!sal||!normal||hrs<0)return show('otResult','<span class="bad">Enter valid wages, normal hours and hours worked.</span>');
+  const sal=n('otSalary'),normal=n('otNormalHours'),contractWeek=n('otContractWeek'),claimed=n('otHours'),breakHours=n('otBreakHours'),type=$('otType').value;
+  if(!sal||!normal||!contractWeek||contractWeek>45||claimed<0||breakHours<0||breakHours>claimed)return show('otResult','<span class="bad">Enter valid wages, normal hours, agreed weekly hours, claimed hours and break duration.</span>');
+  const breakDeducted=$('otBreakFree').checked?breakHours:0;
+  const hrs=Math.max(0,claimed-breakDeducted);
   const eligible=sal<=4000||$('otProtected').checked;
   const orp=sal/26,hrp=orp/normal;
-  if(!eligible)return show('otResult',`<span class="warn">Statutory premium-pay provisions are generally not applicable because wages exceed RM4,000/month and no protected First Schedule category was selected.</span><br>Contract/handbook terms should be checked.<div class="formula">ORP reference: ${money(orp)}; HRP reference: ${money(hrp)}</div>`);
-  let amt=0,detail='';
-  if(type==='normal'){amt=hrs*1.5*hrp;detail=`${hrs} hour(s) × 1.5 × HRP ${money(hrp)}`;}
-  else if(type==='rest'){
+  const breakLine=breakHours>0
+    ? `<br>Claimed / elapsed hours: <b>${claimed.toFixed(2)}</b>; break entered: <b>${breakHours.toFixed(2)}</b>; qualifying break deducted: <b>${breakDeducted.toFixed(2)}</b>; payable working hours: <b>${hrs.toFixed(2)}</b>.`
+    : `<br>Payable working hours: <b>${hrs.toFixed(2)}</b>.`;
+  const breakWarn=(breakHours>0&&!$('otBreakFree').checked)
+    ? '<br><span class="warn">Break not deducted because the employee was not confirmed as genuinely relieved from duties/free to use the break.</span>'
+    : '';
+  if(!eligible)return show('otResult',`<span class="warn">Statutory premium-pay provisions are generally not applicable because wages exceed RM4,000/month and no protected First Schedule category was selected.</span><br>Contract/handbook terms should be checked.${breakLine}${breakWarn}<div class="formula">ORP reference: ${money(orp)}; HRP reference: ${money(hrp)}</div>`);
+  if(type==='offday'&&$('otOffOutside').value!=='yes'){
+    return show('otResult',`<span class="warn">Company Off Day premium cannot be auto-calculated because this day is not confirmed as outside the employee's agreed normal work schedule.</span>${breakLine}${breakWarn}<br>Review the contract/roster. If the day is part of normal contractual hours, use the Normal Working Day OT category only for hours beyond the applicable normal hours.<div class="formula">45 hours/week is a statutory maximum, not an automatic ordinary-hours pool.</div>`);
+  }
+  let amt=0,detail='',rateLabel='';
+  if(type==='normal'){
+    amt=hrs*1.5*hrp;
+    rateLabel='Normal Working Day OT';
+    detail=`${hrs.toFixed(2)} hour(s) × 1.5 × HRP ${money(hrp)}`;
+  }else if(type==='offday'){
+    amt=hrs*1.5*hrp;
+    rateLabel='Company Off Day — outside agreed normal schedule';
+    detail=`${hrs.toFixed(2)} hour(s) × 1.5 × HRP ${money(hrp)}`;
+  }else if(type==='rest'){
     const base=hrs<=0?0:(hrs<=normal/2?orp*.5:orp);
     const excess=Math.max(0,hrs-normal);
     amt=base+excess*2*hrp;
-    detail=`Rest-day base ${money(base)}${excess?` + ${excess} excess hour(s) × 2 × HRP ${money(hrp)}`:''}`;
+    rateLabel=hrs<=normal/2?'Statutory Rest Day — up to half normal hours':(hrs<=normal?'Statutory Rest Day — over half up to normal hours':'Statutory Rest Day — normal hours plus excess');
+    detail=`Rest-day base ${money(base)}${excess?` + ${excess.toFixed(2)} excess hour(s) × 2 × HRP ${money(hrp)}`:''}`;
   }else{
     const excess=Math.max(0,hrs-normal);
     amt=hrs<=0?0:(2*orp+excess*3*hrp);
-    detail=`Additional 2 days ORP ${money(2*orp)}${excess?` + ${excess} excess hour(s) × 3 × HRP ${money(hrp)}`:''}`;
+    rateLabel='Paid Public Holiday — additional statutory payment';
+    detail=`Additional 2 days ORP ${money(2*orp)}${excess?` + ${excess.toFixed(2)} excess hour(s) × 3 × HRP ${money(hrp)}`:''}`;
   }
-  const otLimit=(type==='normal'&&n('otMonthHours')>104)?'<br><span class="warn">Monthly normal-day overtime entered exceeds the 104-hour limit prescribed by the Employment (Limitation of Overtime Work) Regulations 1980, unless specific permission applies.</span>':'';
-  show('otResult',`Estimated statutory additional payment: <strong class="big">${money(amt)}</strong><br>ORP = ${money(orp)}; HRP = ${money(hrp)}.<div class="formula">${detail}</div>${otLimit}<br><span class="source">Eligibility still depends on the statutory wage definition and First Schedule employee category. Rest-day/public-holiday work is not counted as overtime for the 104-hour monthly limit under s.60A(4).</span>`);
+  const existing=n('otMonthHours');
+  const countable=(type==='normal'||type==='offday')?hrs:0;
+  const projected=existing+countable;
+  const otLimit=(countable>0&&projected>104)
+    ? `<br><span class="warn">Projected statutory overtime for the month is ${projected.toFixed(2)} hours (${existing.toFixed(2)} already accumulated + ${countable.toFixed(2)} current). This exceeds the 104-hour monthly limit prescribed by the Employment (Limitation of Overtime Work) Regulations 1980 unless lawful permission/exception applies.</span>`
+    : (countable>0?`<br>Projected statutory OT this month: <b>${projected.toFixed(2)} hours</b>.`:'');
+  const weeklyNote=type==='offday'
+    ? `<br><span class="source">Agreed normal week entered: ${contractWeek.toFixed(2)} hours. The calculator does not use any difference between that figure and 45 hours as free ordinary hours.</span>`
+    : '';
+  show('otResult',`Work type: <b>${rateLabel}</b>${breakLine}${breakWarn}<br>ORP = ${money(orp)}; HRP = ${money(hrp)}.<br>Estimated statutory additional payment: <strong class="big">${money(amt)}</strong><div class="formula">${detail}</div>${otLimit}${weeklyNote}<br><span class="source">ORP/HRP follows s.60I. Normal-day/company-off-day OT uses the s.60A overtime rate where the work is outside agreed normal hours; statutory Rest Day uses s.59/s.60; paid public holiday work uses s.60D. Rest-day/public-holiday work is excluded from the s.60A(4) overtime-limit tally.</span>`);
   window.lastOT=amt;
 }
 
