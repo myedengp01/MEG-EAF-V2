@@ -148,7 +148,7 @@ window.renderLists=function(){
 
 function ensureSummaryColumns(){
   var tr=document.querySelector('#summaryTable thead tr');if(!tr)return;
-  var headers=['Name (EN)','Legal Employer','Employment Type','Name (ZH)','IC / Passport','Age','Email','Contact','Gender','Race','Address','Start Date','Approved Salary','Approved Job Title','Working Hours','Department','Decision','Status'];
+  var headers=['Name (EN)','Legal Employer','Employment Type','Name (ZH)','IC / Passport','Age','Email','Contact','Gender','Race','Address','Start Working Date','Resignation / Last Working Date','Approved Salary','Approved Job Title','Working Hours','Department','Decision','Status'];
   tr.innerHTML=headers.map(function(h,i){
     var extra=i===1?' data-v2-company="1"':(i===2?' data-v2-employment-type="1"':'');
     return '<th'+extra+' style="border:1px solid #ccc;padding:5px 8px;text-align:left;">'+e2(h)+'</th>';
@@ -207,12 +207,36 @@ function installSummaryFilters(){
   }
 }
 
+function summaryEmployee(r){
+  return (r&&r.employeeMaster)||null;
+}
+function summaryEmployeeStatus(r){
+  var e=summaryEmployee(r);return e&&e.employment_status?String(e.employment_status).trim():'';
+}
+function summaryEmployeeStartDate(r){
+  var e=summaryEmployee(r);return summaryDateValue(e&&e.start_date);
+}
+function summaryEmployeeLastWorkingDate(r){
+  var e=summaryEmployee(r);return summaryDateValue(e&&(e.actual_last_working_date||e.required_last_working_date));
+}
+function summaryHasResignation(r){
+  var e=summaryEmployee(r);if(!e)return false;
+  return !!(summaryDateValue(e.resignation_letter_date)||summaryDateValue(e.required_last_working_date)||summaryDateValue(e.actual_last_working_date));
+}
+function summaryIsStartWorking(r){
+  var e=summaryEmployee(r);if(!e)return false;
+  var st=summaryEmployeeStatus(r).toLowerCase(),sd=summaryEmployeeStartDate(r),today=new Date().toISOString().slice(0,10);
+  return st==='onboarding'||(!!sd&&sd>=today&&st!=='former'&&!summaryHasResignation(r));
+}
 function refreshSummaryStatusOptions(){
   var sel=byId('summaryStatusFilter');if(!sel)return;
   var current=sel.value,statuses={};
-  (V2.summaryRows||[]).forEach(function(r){if(r&&r.status)statuses[String(r.status)]=1;});
-  sel.innerHTML='<option value="">All Statuses</option>'+Object.keys(statuses).sort().map(function(s){return '<option value="'+e2(s)+'">'+e2(s.charAt(0).toUpperCase()+s.slice(1))+'</option>';}).join('');
-  if(current&&statuses[current])sel.value=current;
+  (V2.summaryRows||[]).forEach(function(r){var s=summaryEmployeeStatus(r);if(s)statuses[s]=1;});
+  sel.innerHTML='<option value="">All Statuses</option>'+
+    '<option value="__start_working__">Start Working</option>'+
+    '<option value="__resignation__">Resignation</option>'+
+    Object.keys(statuses).sort().map(function(s){return '<option value="'+e2(s)+'">'+e2(s.charAt(0).toUpperCase()+s.slice(1))+'</option>';}).join('');
+  if(current&&(current==='__start_working__'||current==='__resignation__'||statuses[current]))sel.value=current;
 }
 
 function summaryCompanyCode(r){
@@ -237,15 +261,17 @@ function renderSummaryRows(){
   var startTo=((byId('summaryStartTo')||{}).value||'');
 
   rows=rows.filter(function(r){
-    var p=r.payload||{},start=summaryDateValue(summaryField(p,'finalStart')),emp=summaryEmploymentType(p),g=summaryGender(p),code=summaryCompanyCode(r);
+    var p=r.payload||{},start=summaryEmployeeStartDate(r),emp=summaryEmploymentType(p),g=summaryGender(p),code=summaryCompanyCode(r),masterStatus=summaryEmployeeStatus(r);
     if(company&&code!==company)return false;
     if(gender&&g!==gender)return false;
-    if(status&&String(r.status||'')!==status)return false;
+    if(status==='__start_working__'&&!summaryIsStartWorking(r))return false;
+    if(status==='__resignation__'&&!summaryHasResignation(r))return false;
+    if(status&&status!=='__start_working__'&&status!=='__resignation__'&&masterStatus!==status)return false;
     if(employment&&emp!==employment)return false;
     if(startFrom&&(!start||start<startFrom))return false;
     if(startTo&&(!start||start>startTo))return false;
     if(q){
-      var hay=[summaryField(p,'nameEnglish'),summaryField(p,'nameChinese'),summaryField(p,'email'),summaryField(p,'contact'),summaryIcOrPassport(p),summaryCompanyName(r),summaryFinalJobTitle(p),emp].join(' ').toLowerCase();
+      var hay=[summaryField(p,'nameEnglish'),summaryField(p,'nameChinese'),summaryField(p,'email'),summaryField(p,'contact'),summaryIcOrPassport(p),summaryCompanyName(r),summaryFinalJobTitle(p),emp,masterStatus].join(' ').toLowerCase();
       if(hay.indexOf(q)<0)return false;
     }
     return true;
@@ -255,9 +281,9 @@ function renderSummaryRows(){
   rows.sort(function(a,b){
     var pa=a.payload||{},pb=b.payload||{},av='',bv='';
     if(sortBy==='company'){av=summaryCompanyName(a);bv=summaryCompanyName(b);}
-    else if(sortBy==='start'){av=summaryDateValue(summaryField(pa,'finalStart'));bv=summaryDateValue(summaryField(pb,'finalStart'));}
+    else if(sortBy==='start'){av=summaryEmployeeStartDate(a);bv=summaryEmployeeStartDate(b);}
     else if(sortBy==='name'){av=summaryField(pa,'nameEnglish');bv=summaryField(pb,'nameEnglish');}
-    else if(sortBy==='status'){av=String(a.status||'');bv=String(b.status||'');}
+    else if(sortBy==='status'){av=summaryEmployeeStatus(a);bv=summaryEmployeeStatus(b);}
     else if(sortBy==='employment'){av=summaryEmploymentType(pa);bv=summaryEmploymentType(pb);}
     else{av=String(a.submitted_at||'');bv=String(b.submitted_at||'');}
     if(!av&&!bv)return 0;if(!av)return 1;if(!bv)return -1;
@@ -265,7 +291,7 @@ function renderSummaryRows(){
   });
 
   if(byId('summaryFilterCount'))byId('summaryFilterCount').textContent='Showing '+rows.length+' of '+(V2.summaryRows||[]).length;
-  if(!rows.length){tbody.innerHTML='<tr><td colspan="18" style="padding:12px;color:#777;text-align:center;">No applications match the selected filters.</td></tr>';return;}
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="19" style="padding:12px;color:#777;text-align:center;">No applications match the selected filters.</td></tr>';return;}
 
   tbody.innerHTML=rows.map(function(r){
     var p=r.payload||{},cells=[
@@ -280,13 +306,14 @@ function renderSummaryRows(){
       summaryGender(p),
       summaryRace(p),
       summaryAddress(p),
-      summaryField(p,'finalStart'),
+      summaryEmployeeStartDate(r),
+      summaryEmployeeLastWorkingDate(r),
       summarySalary(p),
       summaryFinalJobTitle(p),
       summaryWorkingHours(p),
       summaryField(p,'finalDept'),
       summaryField(p,'decision'),
-      r.status
+      summaryEmployeeStatus(r)
     ];
     return '<tr>'+cells.map(function(x){return '<td style="border:1px solid #ccc;padding:5px 8px;">'+e2(x||'—')+'</td>';}).join('')+'</tr>';
   }).join('');
@@ -297,13 +324,21 @@ window.loadSummary=function(){
   ensureSummaryColumns();
   installSummaryFilters();
   var tbody=byId('summaryTbody');
-  tbody.innerHTML='<tr><td colspan="18" style="padding:10px;color:#777;">Loading...</td></tr>';
-  apiFetch('/rest/v1/eaf_applications?select=id,status,company_code,payload,submitted_at&order=submitted_at.desc').then(function(rows){
-    V2.summaryRows=rows||[];
+  tbody.innerHTML='<tr><td colspan="19" style="padding:10px;color:#777;">Loading...</td></tr>';
+  Promise.all([
+    apiFetch('/rest/v1/eaf_applications?select=id,status,company_code,payload,submitted_at&order=submitted_at.desc'),
+    apiFetch('/rest/v1/employee_master?select=source_application_id,start_date,employment_status,resignation_letter_date,required_last_working_date,actual_last_working_date,notice_served,updated_at&source_application_id=not.is.null&order=updated_at.desc')
+  ]).then(function(data){
+    var rows=data[0]||[],employees=data[1]||[],employeeByApplication={};
+    employees.forEach(function(e){
+      if(e&&e.source_application_id&&!employeeByApplication[e.source_application_id])employeeByApplication[e.source_application_id]=e;
+    });
+    rows.forEach(function(r){r.employeeMaster=employeeByApplication[r.id]||null;});
+    V2.summaryRows=rows;
     refreshSummaryStatusOptions();
     renderSummaryRows();
   }).catch(function(err){
-    tbody.innerHTML='<tr><td colspan="18" style="padding:10px;color:#c62828;">Failed to load: '+e2(err.message)+'</td></tr>';
+    tbody.innerHTML='<tr><td colspan="19" style="padding:10px;color:#c62828;">Failed to load: '+e2(err.message)+'</td></tr>';
   });
 };
 
