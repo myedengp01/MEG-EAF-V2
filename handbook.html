@@ -268,6 +268,21 @@ function indexDocs(){
  DOC_EN.chapters.forEach(function(ch){ch.clauses.forEach(function(c){CLAUSE_MAP[progressKey(ch,c)]={chapter:ch,clause:c}})});
  if(DOC_ZH&&DOC_ZH.chapters)DOC_ZH.chapters.forEach(function(ch){ch.clauses.forEach(function(c){ZH_MAP[progressKey(ch,c)]={chapter:ch,clause:c}})});
 }
+function handbookSigningStatusHtml(){
+ var e=HB&&HB.employee||{},a=HB&&HB.assignment||{},h=HB&&HB.handbook||{};
+ var receipt=!!a.receipt_acknowledged_at,finalDone=!!a.acknowledged_at||a.status==='acknowledged';
+ return '<div class="notice" style="margin:14px 0;padding:12px">'+
+ '<b>Digital signing record (separate from the original printed form)</b>'+
+ '<div class="meta-row"><b>Employee:</b> '+esc(e.employee_name||'Not linked')+'</div>'+
+ '<div class="meta-row"><b>Employee ID:</b> '+esc(e.employee_id||'Not recorded')+'</div>'+
+ '<div class="meta-row"><b>Legal employer:</b> '+esc(companyName(e.company_code))+'</div>'+
+ '<div class="meta-row"><b>Job title:</b> '+esc(e.job_title||'Not recorded')+'</div>'+
+ '<div class="meta-row"><b>Handbook:</b> '+esc(h.version||'—')+'</div>'+
+ '<div class="meta-row"><b>Receipt signature:</b> '+(receipt?'Recorded on '+esc(fmt(a.receipt_acknowledged_at)):'Not signed')+'</div>'+
+ '<div class="meta-row"><b>Final handbook acknowledgement:</b> '+(finalDone?'Completed':'Pending')+'</div>'+
+ '<p>Receipt signing confirms receipt only. It does not substitute for the final handbook acknowledgement or the separately required Child Safeguarding Code of Conduct & Undertaking signature.</p>'+
+ '</div>';
+}
 function renderDoc(){
  var e=HB.employee||{},h=HB.handbook;
  var brand=entityBrand(activeEntityCode());
@@ -284,7 +299,7 @@ function renderDoc(){
        '<div class="clause-title">'+esc(c.title)+'</div><div class="tools">'+
        (hasRef?'<button class="iconbtn" title="Legal reference" onclick="showLegal(\''+jsq(pk)+'\')">⚖ Legal</button>':'')+
        (zh?'<button class="iconbtn" title="Authorised Chinese reference" onclick="showChinese(\''+jsq(pk)+'\')">中文</button>':'')+
-       '</div></div><div class="clause-body">'+blockHtml(c.contentBlocks||[])+'</div></section>';
+       '</div></div><div class="clause-body">'+blockHtml(c.contentBlocks||[])+'</div>'+ (pk==='C211'?handbookSigningStatusHtml():'')+'</section>';
    });
  });
  document.getElementById('doc').innerHTML=out;
