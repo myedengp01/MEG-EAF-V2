@@ -399,22 +399,24 @@ async function confirmClause(el,key){
  if(!el.checked)return;
  el.disabled=true;
  try{
-   var res=await rpc('handbook_set_clause_progress',{p_clause_key:key,p_checked:true});
+   var res;
+   try{
+     res=await rpc('handbook_set_clause_progress',{p_clause_key:key,p_checked:true});
+   }catch(firstError){
+     if(!String(firstError.message||'').includes('No handbook assignment is linked')||!SESSION||!SESSION.refresh_token)throw firstError;
+     var expected=HB&&HB.assignment&&HB.assignment.id;
+     if(!expected)throw firstError;
+     await refreshSession();
+     var verified=await rpc('handbook_my_assignment',{});
+     if(!verified||!verified.assignment||verified.assignment.id!==expected)throw new Error('The active sign-in no longer matches the handbook assignment loaded on this page. Please sign out and sign in with the assigned employee account. No reading progress was changed.');
+     res=await rpc('handbook_set_clause_progress',{p_clause_key:key,p_checked:true});
+   }
    CHECKED.add(key);PROGRESS=res||PROGRESS;
    var sec=document.querySelector('[data-key="'+CSS.escape(key)+'"]');if(sec)sec.classList.add('done');
    renderProgress();renderNav();
  }catch(e){
    el.checked=false;el.disabled=false;
-   if(String(e.message||'').includes('No handbook assignment is linked')){
-     try{
-       var current=await rpc('handbook_my_assignment',{});
-       if(current&&current.assignment){
-         alert('The handbook assignment is available, but clause confirmation could not resolve it. Please sign out, sign in again, and retry. Your existing progress is saved. If the problem persists, contact HR with clause '+key+'.');
-       }else{
-         alert('Your current login session has no active linked handbook assignment. Sign out, sign in with your assigned employee account, and retry. No reading progress was changed.');
-       }
-     }catch(checkError){alert('Unable to verify handbook assignment: '+checkError.message);}
-   }else alert(e.message);
+   alert(e.message||'Clause confirmation failed. No progress was recorded.');
  }
 }
 async function markRead(){
