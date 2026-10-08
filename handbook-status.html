@@ -192,6 +192,7 @@ async function openDetail(id){
  }catch(e){document.getElementById('modalBody').innerHTML='<div class="err">'+esc(e.message)+'</div>'}
 }
 
+/* Lifecycle updates must use audited HR operations and verified evidence. */
 async function retireAssignment(id){if(!confirm('Retire this handbook assignment? Historical reading records will be preserved.'))return;try{await rpc('handbook_admin_retire_assignment',{p_assignment_id:id,p_reason:'Retired by Admin'});await refreshRows();closeModal();}catch(e){alert(e.message)}}
 async function restoreAssignment(id){if(!confirm('Restore this handbook assignment?'))return;try{await rpc('handbook_admin_restore_assignment',{p_assignment_id:id});await refreshRows();closeModal();}catch(e){alert(e.message)}}
 async function refreshRows(){
