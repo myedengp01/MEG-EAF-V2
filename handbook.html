@@ -268,6 +268,47 @@ function indexDocs(){
  DOC_EN.chapters.forEach(function(ch){ch.clauses.forEach(function(c){CLAUSE_MAP[progressKey(ch,c)]={chapter:ch,clause:c}})});
  if(DOC_ZH&&DOC_ZH.chapters)DOC_ZH.chapters.forEach(function(ch){ch.clauses.forEach(function(c){ZH_MAP[progressKey(ch,c)]={chapter:ch,clause:c}})});
 }
+function specialNameMatches(){var n=document.getElementById('a3Name');return !!n&&n.value.trim().replace(/\\s+/g,' ').toLowerCase()===String(HB.employee.employee_name||'').trim().replace(/\\s+/g,' ').toLowerCase()}
+function syncA3Checkbox(){var cb=document.getElementById('a3Agree');if(cb)cb.disabled=!specialNameMatches()}
+async function submitA3(){
+ var cb=document.getElementById('a3Agree'),nm=document.getElementById('a3Name');
+ if(!cb||!cb.checked||!specialNameMatches()){alert('Type your registered full name and check the undertaking box.');return}
+ if(!confirm('Confirm your Child Safeguarding Undertaking? This will be locked after submission.'))return;
+ try{var v=await rpc('handbook_submit_special_ack',{p_kind:'A3',p_typed_name:nm.value.trim()});HB.assignment.safeguarding_typed_name=v.safeguarding_typed_name;HB.assignment.safeguarding_acknowledged_at=v.safeguarding_acknowledged_at;renderDoc();alert('A.3 undertaking acknowledged and locked.')}catch(e){alert(e.message)}
+}
+var APP_SIG={strokes:[],current:null,drawing:false};
+function initAppendixSignature(){
+ var cv=document.getElementById('appendixSignature');if(!cv)return;
+ APP_SIG={strokes:[],current:null,drawing:false};
+ var ctx=cv.getContext('2d');ctx.lineWidth=3;ctx.lineCap='round';ctx.strokeStyle='#111827';
+ function point(ev){var r=cv.getBoundingClientRect(),t=ev.touches?ev.touches[0]:ev;return {x:(t.clientX-r.left)*cv.width/r.width,y:(t.clientY-r.top)*cv.height/r.height}}
+ function start(ev){ev.preventDefault();APP_SIG.drawing=true;APP_SIG.current=[point(ev)];APP_SIG.strokes.push(APP_SIG.current);ctx.beginPath();ctx.moveTo(APP_SIG.current[0].x,APP_SIG.current[0].y)}
+ function move(ev){if(!APP_SIG.drawing)return;ev.preventDefault();var p=point(ev);APP_SIG.current.push(p);ctx.lineTo(p.x,p.y);ctx.stroke()}
+ function end(){APP_SIG.drawing=false;APP_SIG.current=null}
+ cv.onpointerdown=function(ev){cv.setPointerCapture(ev.pointerId);start(ev)};
+ cv.onpointermove=move;cv.onpointerup=end;cv.onpointercancel=end;
+}
+function clearAppendixSignature(){var c=document.getElementById('appendixSignature');if(c)c.getContext('2d').clearRect(0,0,c.width,c.height);APP_SIG.strokes=[]}
+async function submitAppendixSignature(){
+ var strokes=APP_SIG.strokes.filter(function(s){return s.length>1});
+ if(!strokes.length){alert('Draw your signature before submitting.');return}
+ if(!confirm('Submit and permanently lock your Appendix B signature?'))return;
+ try{var v=await rpc('handbook_submit_special_ack',{p_kind:'APPENDIX_B',p_signature:{version:1,canvas:{width:1000,height:280},strokes:strokes}});HB.assignment.appendix_b_signed_at=v.appendix_b_signed_at;renderDoc();alert('Appendix B signature recorded and locked.')}catch(e){alert(e.message)}
+}
+function specialSigningHtml(){
+ var a=HB&&HB.assignment||{},e=HB&&HB.employee||{};
+ if(!HB.assignment)return '';
+ var a3=a.safeguarding_acknowledged_at,ap=a.appendix_b_signed_at;
+ return '<div class="notice" style="padding:14px;margin:12px 0"><b>A.3 Child Safeguarding Undertaking — Typed-name acknowledgement</b>'+
+ (a3?'<p>Confirmed by '+esc(a.safeguarding_typed_name||e.employee_name)+' on '+esc(fmt(a3))+' · Locked</p>':
+ '<p>Type your full registered name to enable acknowledgement.</p><input id="a3Name" autocomplete="off" placeholder="'+esc(e.employee_name||'Full registered name')+'" oninput="syncA3Checkbox()" style="width:100%;padding:10px;margin-bottom:10px">'+
+ '<label><input type="checkbox" id="a3Agree" disabled> I acknowledge the A.3 Child Safeguarding Undertaking.</label><p><button onclick="submitA3()">Confirm A.3 Undertaking</button></p>')+'</div>'+
+ '<div class="notice" style="padding:14px;margin:12px 0"><b>Appendix B — Manual electronic signature</b>'+
+ (ap?'<p>Signed on '+esc(fmt(ap))+' · Signature locked and retained in the signing record.</p>':
+ '<p>Draw your signature in the wider area below. Submission is separate from the handbook receipt.</p>'+
+ '<div style="max-width:100%;overflow:hidden"><canvas id="appendixSignature" width="1000" height="280" style="width:100%;height:220px;touch-action:none;background:#fff;border:1px solid #94a3b8;border-radius:8px"></canvas></div>'+
+ '<p><button type="button" onclick="clearAppendixSignature()">Clear</button> <button type="button" onclick="submitAppendixSignature()">Submit Appendix B Signature</button></p>')+'</div>';
+}
 function undertakingDisplayBlocks(blocks){
  var e=HB&&HB.employee||{},a=HB&&HB.assignment||{};
  var finalDone=!!a.acknowledged_at||a.status==='acknowledged';
@@ -321,10 +362,11 @@ function renderDoc(){
        '<div class="clause-title">'+esc(c.title)+'</div><div class="tools">'+
        (hasRef?'<button class="iconbtn" title="Legal reference" onclick="showLegal(\''+jsq(pk)+'\')">⚖ Legal</button>':'')+
        (zh?'<button class="iconbtn" title="Authorised Chinese reference" onclick="showChinese(\''+jsq(pk)+'\')">中文</button>':'')+
-       '</div></div><div class="clause-body">'+blockHtml(pk==='C211'?undertakingDisplayBlocks(c.contentBlocks||[]):(c.contentBlocks||[]))+'</div>'+ (pk==='C211'?handbookSigningStatusHtml():'')+'</section>';
+       '</div></div><div class="clause-body">'+blockHtml(pk==='C211'?undertakingDisplayBlocks(c.contentBlocks||[]):(c.contentBlocks||[]))+'</div>'+ (pk==='C211'?handbookSigningStatusHtml()+specialSigningHtml():'')+'</section>';
    });
  });
  document.getElementById('doc').innerHTML=out;
+ initAppendixSignature();
  renderNav();
 }
 function cssKey(k){return String(k).replace(/[^A-Za-z0-9_-]/g,'-')}
