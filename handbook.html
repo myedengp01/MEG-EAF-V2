@@ -310,26 +310,46 @@ function specialSigningHtml(){
  '<p><button type="button" onclick="clearAppendixSignature()">Clear</button> <button type="button" onclick="submitAppendixSignature()">Submit Appendix B Signature</button></p>')+'</div>';
 }
 function undertakingDisplayBlocks(blocks){
- var e=HB&&HB.employee||{},a=HB&&HB.assignment||{};
- var finalDone=!!a.acknowledged_at||a.status==='acknowledged';
- var tableNo=0;
+ var e=HB&&HB.employee||{},a=HB&&HB.assignment||{},n=0;
  return (blocks||[]).map(function(b){
    if(b.type!=='table')return b;
-   tableNo++;
-   if(tableNo>2)return b;
+   n++;if(n>2)return b;
+   var a3=!!a.safeguarding_acknowledged_at,ap=!!a.appendix_b_signed_at;
    var rows=(b.rows||[]).map(function(r){
      var cells=(r||[]).slice(),label=String(cells[0]||'').trim();
      if(cells.length<2)return cells;
-     if(label==='Name'||label==='Employee Name')cells[1]=e.employee_name||'Not recorded';
+     if(label==='Name'||label==='Employee Name')cells[1]=n===1&&!a3?{html:'<input id="a3Name" aria-label="Type full registered name" autocomplete="off" placeholder="'+esc(e.employee_name||'Full name')+'" oninput="syncA3Checkbox()" style="width:95%;padding:10px">'}:e.employee_name||'Not recorded';
      else if(label==='Legal Employer')cells[1]=companyName(e.company_code);
      else if(label==='NRIC/Employee ID'||label==='Employee ID / NRIC')cells[1]=e.employee_id||'Not recorded';
      else if(label==='Job Title')cells[1]=e.job_title||'Not recorded';
-     else if(label==='Signature')cells[1]=tableNo===1?'Separate child-safeguarding undertaking not signed in this portal':(finalDone?'Final electronic acknowledgement recorded; signed receipt retained':'Final acknowledgement pending (receipt signature does not complete this undertaking)');
-     else if(label==='Date')cells[1]=tableNo===2&&finalDone?fmt(a.acknowledged_at):'Pending signature';
+     else if(label==='Signature'){
+       if(n===1)cells[1]=a3?'Typed-name acknowledgement confirmed and locked':{html:'<label><input id="a3Agree" type="checkbox" disabled> I acknowledge the A.3 Undertaking.</label><p><button type="button" onclick="submitA3()">Confirm A.3 Undertaking</button></p>'};
+       else cells[1]=ap?{html:'<canvas id="appendixSignedCanvas" width="1000" height="280" style="width:100%;height:180px;background:white;border:1px solid #cbd5e1" aria-label="Recorded signed signature"></canvas><p>Signature recorded and locked</p>'}:{html:'<canvas id="appendixSignature" width="1000" height="280" style="width:100%;height:230px;touch-action:none;background:#fff;border:1px solid #94a3b8;border-radius:8px" aria-label="Sign Appendix B here"></canvas><p><button type="button" onclick="clearAppendixSignature()">Clear</button> <button type="button" onclick="submitAppendixSignature()">Submit Appendix B Signature</button></p>'};
+     }else if(label==='Date')cells[1]=n===1?(a3?fmt(a.safeguarding_acknowledged_at):'Pending confirmation'):(ap?fmt(a.appendix_b_signed_at):'Pending signature');
      return cells;
    });
    return Object.assign({},b,{rows:rows});
  });
+}
+function signingTableBlocksHtml(blocks){
+ var out='';
+ (blocks||[]).forEach(function(b){
+   if(b.type!=='table'){out+=blockHtml([b]);return}
+   out+='<div style="overflow:auto"><table class="doc-table">';
+   (b.rows||[]).forEach(function(row,ri){
+     out+='<tr>';
+     (row||[]).forEach(function(cell){out+='<td>'+((cell&&typeof cell==='object'&&Object.prototype.hasOwnProperty.call(cell,'html'))?cell.html:cellHtml(cell))+'</td>'});
+     out+='</tr>';
+   });
+   out+='</table></div>';
+ });
+ return out;
+}
+function renderRecordedAppendixSignature(){
+ var canvas=document.getElementById('appendixSignedCanvas'),data=HB&&HB.assignment&&HB.assignment.appendix_b_signature_json;
+ if(!canvas||!data||!Array.isArray(data.strokes))return;
+ var ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);ctx.lineWidth=3;ctx.lineCap='round';ctx.strokeStyle='#111827';
+ data.strokes.forEach(function(stroke){if(!Array.isArray(stroke)||stroke.length<2)return;ctx.beginPath();stroke.forEach(function(p,i){if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y)});ctx.stroke()});
 }
 function handbookSigningStatusHtml(){
  var e=HB&&HB.employee||{},a=HB&&HB.assignment||{},h=HB&&HB.handbook||{};
@@ -358,15 +378,16 @@ function renderDoc(){
      var pk=progressKey(ch,c),done=CHECKED.has(pk),zh=ZH_MAP[pk],hasRef=c.legalRefs&&c.legalRefs.length;
      out+='<section class="clause'+(done?' done':'')+'" id="clause-'+cssKey(pk)+'" data-key="'+esc(pk)+'">'+
        '<div class="clause-head">'+
-       (pk==='C211'?'<span class="meta-row">Undertaking confirmation below ↓</span>':'<input type="checkbox" '+(done?'checked disabled':'')+' aria-label="Confirm clause '+esc(c.key)+'" onchange="confirmClause(this,\''+jsq(pk)+'\')">')+
+       (pk==='C211'?'<span class="meta-row">Typed-name undertaking</span>':'<input type="checkbox" '+(done?'checked disabled':'')+' aria-label="Confirm clause '+esc(c.key)+'" onchange="confirmClause(this,\''+jsq(pk)+'\')">')+
        '<div class="clause-title">'+esc(c.title)+'</div><div class="tools">'+
        (hasRef?'<button class="iconbtn" title="Legal reference" onclick="showLegal(\''+jsq(pk)+'\')">⚖ Legal</button>':'')+
        (zh?'<button class="iconbtn" title="Authorised Chinese reference" onclick="showChinese(\''+jsq(pk)+'\')">中文</button>':'')+
-       '</div></div><div class="clause-body">'+blockHtml(pk==='C211'?undertakingDisplayBlocks(c.contentBlocks||[]):(c.contentBlocks||[]))+'</div>'+ (pk==='C211'?handbookSigningStatusHtml()+specialSigningHtml():'')+'</section>';
+       '</div></div><div class="clause-body">'+(pk==='C211'?signingTableBlocksHtml(undertakingDisplayBlocks(c.contentBlocks||[])):blockHtml(c.contentBlocks||[]))+'</div>'+'</section>';
    });
  });
  document.getElementById('doc').innerHTML=out;
  initAppendixSignature();
+ renderRecordedAppendixSignature();
  renderNav();
 }
 function cssKey(k){return String(k).replace(/[^A-Za-z0-9_-]/g,'-')}
