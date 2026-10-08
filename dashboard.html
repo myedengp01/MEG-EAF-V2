@@ -228,7 +228,7 @@ async function createStandaloneLegacyEmployee(){
      p_employee_name:name,p_company_code:company,p_employee_id:empId||null,
      p_department:dept||null,p_job_title:job||null,p_user_id:null
    });
-   msg.textContent='Created successfully. Handbook '+(r.handbook_code||'')+' '+(r.handbook_version||'')+' assigned. Login status: Unlinked.';
+   msg.textContent='Created or reused Employee Master: '+(r.employee_uuid||'—')+'; handbook assignment: '+(r.assignment_id||'—')+'. Handbook '+(r.handbook_code||'')+' '+(r.handbook_version||'')+' assigned. Login status: '+(r.linked_user_id?'Linked':'Unlinked')+'.';
    showToast('Legacy employee created and handbook assigned.');
    ['legacyStandaloneName','legacyStandaloneEmpId','legacyStandaloneDept','legacyStandaloneJob'].forEach(function(id){document.getElementById(id).value=''});
  }catch(e){
