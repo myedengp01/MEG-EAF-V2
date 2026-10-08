@@ -247,7 +247,7 @@ function plainClause(c){
  });
  return parts.join('\n');
 }
-function progressKey(ch,c){return c.id||c.key}
+function progressKey(ch,c){var k=c.id||c.key;return k==='C217'&&c.key==='E.3'?'C021':k}
 function legalLinks(ref){
  var arr=[];
  function add(label,url){if(!arr.some(function(x){return x.url===url}))arr.push({label:label,url:url})}
