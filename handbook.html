@@ -268,6 +268,28 @@ function indexDocs(){
  DOC_EN.chapters.forEach(function(ch){ch.clauses.forEach(function(c){CLAUSE_MAP[progressKey(ch,c)]={chapter:ch,clause:c}})});
  if(DOC_ZH&&DOC_ZH.chapters)DOC_ZH.chapters.forEach(function(ch){ch.clauses.forEach(function(c){ZH_MAP[progressKey(ch,c)]={chapter:ch,clause:c}})});
 }
+function undertakingDisplayBlocks(blocks){
+ var e=HB&&HB.employee||{},a=HB&&HB.assignment||{};
+ var finalDone=!!a.acknowledged_at||a.status==='acknowledged';
+ var tableNo=0;
+ return (blocks||[]).map(function(b){
+   if(b.type!=='table')return b;
+   tableNo++;
+   if(tableNo>2)return b;
+   var rows=(b.rows||[]).map(function(r){
+     var cells=(r||[]).slice(),label=String(cells[0]||'').trim();
+     if(cells.length<2)return cells;
+     if(label==='Name'||label==='Employee Name')cells[1]=e.employee_name||'Not recorded';
+     else if(label==='Legal Employer')cells[1]=companyName(e.company_code);
+     else if(label==='NRIC/Employee ID'||label==='Employee ID / NRIC')cells[1]=e.employee_id||'Not recorded';
+     else if(label==='Job Title')cells[1]=e.job_title||'Not recorded';
+     else if(label==='Signature')cells[1]=tableNo===1?'Separate child-safeguarding undertaking not signed in this portal':(finalDone?'Final electronic acknowledgement recorded; signed receipt retained':'Final acknowledgement pending (receipt signature does not complete this undertaking)');
+     else if(label==='Date')cells[1]=tableNo===2&&finalDone?fmt(a.acknowledged_at):'Pending signature';
+     return cells;
+   });
+   return Object.assign({},b,{rows:rows});
+ });
+}
 function handbookSigningStatusHtml(){
  var e=HB&&HB.employee||{},a=HB&&HB.assignment||{},h=HB&&HB.handbook||{};
  var receipt=!!a.receipt_acknowledged_at,finalDone=!!a.acknowledged_at||a.status==='acknowledged';
@@ -299,7 +321,7 @@ function renderDoc(){
        '<div class="clause-title">'+esc(c.title)+'</div><div class="tools">'+
        (hasRef?'<button class="iconbtn" title="Legal reference" onclick="showLegal(\''+jsq(pk)+'\')">⚖ Legal</button>':'')+
        (zh?'<button class="iconbtn" title="Authorised Chinese reference" onclick="showChinese(\''+jsq(pk)+'\')">中文</button>':'')+
-       '</div></div><div class="clause-body">'+blockHtml(c.contentBlocks||[])+'</div>'+ (pk==='C211'?handbookSigningStatusHtml():'')+'</section>';
+       '</div></div><div class="clause-body">'+blockHtml(pk==='C211'?undertakingDisplayBlocks(c.contentBlocks||[]):(c.contentBlocks||[]))+'</div>'+ (pk==='C211'?handbookSigningStatusHtml():'')+'</section>';
    });
  });
  document.getElementById('doc').innerHTML=out;
