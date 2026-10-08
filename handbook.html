@@ -358,7 +358,7 @@ function renderDoc(){
      var pk=progressKey(ch,c),done=CHECKED.has(pk),zh=ZH_MAP[pk],hasRef=c.legalRefs&&c.legalRefs.length;
      out+='<section class="clause'+(done?' done':'')+'" id="clause-'+cssKey(pk)+'" data-key="'+esc(pk)+'">'+
        '<div class="clause-head">'+
-       '<input type="checkbox" '+(done?'checked disabled':'')+' aria-label="Confirm clause '+esc(c.key)+'" onchange="confirmClause(this,\''+jsq(pk)+'\')">'+
+       (pk==='C211'?'<span class="meta-row">Undertaking confirmation below ↓</span>':'<input type="checkbox" '+(done?'checked disabled':'')+' aria-label="Confirm clause '+esc(c.key)+'" onchange="confirmClause(this,\''+jsq(pk)+'\')">')+
        '<div class="clause-title">'+esc(c.title)+'</div><div class="tools">'+
        (hasRef?'<button class="iconbtn" title="Legal reference" onclick="showLegal(\''+jsq(pk)+'\')">⚖ Legal</button>':'')+
        (zh?'<button class="iconbtn" title="Authorised Chinese reference" onclick="showChinese(\''+jsq(pk)+'\')">中文</button>':'')+
