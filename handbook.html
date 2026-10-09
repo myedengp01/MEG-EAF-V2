@@ -351,6 +351,31 @@ function renderRecordedAppendixSignature(){
  var ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);ctx.lineWidth=3;ctx.lineCap='round';ctx.strokeStyle='#111827';
  data.strokes.forEach(function(stroke){if(!Array.isArray(stroke)||stroke.length<2)return;ctx.beginPath();stroke.forEach(function(p,i){if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y)});ctx.stroke()});
 }
+function horizontalSigningTableBlocks(blocks,kind){
+ var a=HB&&HB.assignment||{},e=HB&&HB.employee||{},ack=!!a.safeguarding_acknowledged_at,signed=!!a.appendix_b_signed_at;
+ return (blocks||[]).map(function(b){
+  if(b.type!=='table'||!Array.isArray(b.rows)||b.rows.length<2)return b;
+  var header=b.rows[0].map(function(x){return String(x||'').trim().toLowerCase()});
+  if(!header.includes('signature')||!header.includes('date')||!(header.includes('name')||header.includes('employee name')))return b;
+  var rows=b.rows.map(function(r){return r.slice()});
+  rows[1]=header.map(function(k,i){
+   if(k==='name'||k==='employee name')return kind==='A3'&&!ack?{html:'<input id="a3Name" autocomplete="off" aria-label="Type registered full name" oninput="syncA3Checkbox()" placeholder="'+esc(e.employee_name||'Full name')+'" style="width:100%;padding:8px">'}:e.employee_name||'Not recorded';
+   if(k.includes('employee id')||k.includes('nric'))return e.employee_id||'Not recorded';
+   if(k==='legal employer')return companyName(e.company_code);
+   if(k==='job title')return e.job_title||'Not recorded';
+   if(k==='signature'){
+    if(kind==='A3')return ack?'Typed-name acknowledgement confirmed and locked':{html:'<label><input type="checkbox" id="a3Agree" disabled> I acknowledge the A.3 Undertaking</label><p><button type="button" onclick="submitA3()">Confirm A.3</button></p>'};
+    return signed?{html:'<canvas id="appendixSignedCanvas" width="1000" height="280" style="width:100%;height:150px;background:#fff;border:1px solid #cbd5e1"></canvas><p>Signature recorded and locked</p>'}:{html:'<canvas id="appendixSignature" width="1000" height="280" style="width:100%;height:190px;touch-action:none;background:#fff;border:1px solid #94a3b8"></canvas><p><button type="button" onclick="clearAppendixSignature()">Clear</button> <button type="button" onclick="submitAppendixSignature()">Submit signature</button></p>'};
+   }
+   if(k==='date')return kind==='A3'?(ack?fmt(a.safeguarding_acknowledged_at):'Pending confirmation'):(signed?fmt(a.appendix_b_signed_at):'Pending signature');
+   return rows[1]&&rows[1][i]||'';
+  });
+  return Object.assign({},b,{rows:rows});
+ });
+}
+function containsAppendixSigningTable(blocks){
+ return (blocks||[]).some(function(b){return b.type==='table'&&Array.isArray(b.rows)&&b.rows[0]&&b.rows[0].some(function(x){return String(x).toLowerCase()==='signature'})&&b.rows[0].some(function(x){return String(x).toLowerCase()==='legal employer'})});
+}
 function handbookSigningStatusHtml(){
  var e=HB&&HB.employee||{},a=HB&&HB.assignment||{},h=HB&&HB.handbook||{};
  var receipt=!!a.receipt_acknowledged_at,finalDone=!!a.acknowledged_at||a.status==='acknowledged';
@@ -373,16 +398,16 @@ function renderDoc(){
  if(DOC_EN.prefaceBlocks&&DOC_EN.prefaceBlocks.length)out+='<div class="preface">'+blockHtml(DOC_EN.prefaceBlocks)+'</div>';
  DOC_EN.chapters.forEach(function(ch){
    out+='<h2 class="chapter" id="chapter-'+esc(ch.code)+'">'+esc(ch.title)+'</h2>';
-   if(ch.prefaceBlocks&&ch.prefaceBlocks.length)out+='<div class="preface">'+blockHtml(ch.prefaceBlocks)+'</div>';
+   if(ch.prefaceBlocks&&ch.prefaceBlocks.length)out+='<div class="preface">'+(HB.assignment&&HB.handbook.handbook_code!=='MYEDEN-EMPLOYEE-HANDBOOK'&&containsAppendixSigningTable(ch.prefaceBlocks)?signingTableBlocksHtml(horizontalSigningTableBlocks(ch.prefaceBlocks,'APPENDIX_B')):blockHtml(ch.prefaceBlocks))+'</div>';
    ch.clauses.forEach(function(c){
      var pk=progressKey(ch,c),done=CHECKED.has(pk),zh=ZH_MAP[pk],hasRef=c.legalRefs&&c.legalRefs.length;
      out+='<section class="clause'+(done?' done':'')+'" id="clause-'+cssKey(pk)+'" data-key="'+esc(pk)+'">'+
        '<div class="clause-head">'+
-       (pk==='C211'?'<span class="meta-row">Typed-name undertaking</span>':'<input type="checkbox" '+(done?'checked disabled':'')+' aria-label="Confirm clause '+esc(c.key)+'" onchange="confirmClause(this,\''+jsq(pk)+'\')">')+
+       ((pk==='C211'||(c.key==='A.3'&&HB.handbook.handbook_code!=='MYEDEN-EMPLOYEE-HANDBOOK'))?'<span class="meta-row">Typed-name undertaking</span>':'<input type="checkbox" '+(done?'checked disabled':'')+' aria-label="Confirm clause '+esc(c.key)+'" onchange="confirmClause(this,\''+jsq(pk)+'\')">')+
        '<div class="clause-title">'+esc(c.title)+'</div><div class="tools">'+
        (hasRef?'<button class="iconbtn" title="Legal reference" onclick="showLegal(\''+jsq(pk)+'\')">⚖ Legal</button>':'')+
        (zh?'<button class="iconbtn" title="Authorised Chinese reference" onclick="showChinese(\''+jsq(pk)+'\')">中文</button>':'')+
-       '</div></div><div class="clause-body">'+(pk==='C211'?signingTableBlocksHtml(undertakingDisplayBlocks(c.contentBlocks||[])):blockHtml(c.contentBlocks||[]))+'</div>'+'</section>';
+       '</div></div><div class="clause-body">'+(pk==='C211'?signingTableBlocksHtml(undertakingDisplayBlocks(c.contentBlocks||[])):(c.key==='A.3'&&HB.handbook.handbook_code!=='MYEDEN-EMPLOYEE-HANDBOOK'?signingTableBlocksHtml(horizontalSigningTableBlocks(c.contentBlocks||[],'A3')):blockHtml(c.contentBlocks||[])))+'</div>'+'</section>';
    });
  });
  document.getElementById('doc').innerHTML=out;
