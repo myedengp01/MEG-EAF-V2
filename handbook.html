@@ -251,8 +251,8 @@ function progressKey(ch,c){var k=c.id||c.key;return k==='C217'&&c.key==='E.3'?'C
 function legalLinks(ref){
  var arr=[];
  function add(label,url){if(!arr.some(function(x){return x.url===url}))arr.push({label:label,url:url})}
- if(/Employment Act 1955|雇佣法令/i.test(ref))add('JTKSM · Employment Act 1955','https://jtksm.mohr.gov.my/en/borang/employment-act-1955');
- if(/National Wages|Minimum Wages|最低工资/i.test(ref))add('JTKSM · Minimum Wage Information','https://jtksm.mohr.gov.my/ms/media/keratan-akhbar/kadar-gaji-minimum-rm1700-mulai-1-februari-2025');
+ if(/Employment Act 1955|雇佣法令/i.test(ref))add('Employment Act 1955 · Government-hosted PDF (reference edition)','https://www.investmalaysia.gov.my/media/felj30g0/employment-act-1955.pdf');
+ if(/National Wages|Minimum Wages|最低工资/i.test(ref))add('MOHR · Minimum Wage Guidance','https://emasco.mohr.gov.my/intro?title=dasar-gaji-progresif');
  if(/EPF|KWSP/i.test(ref))add('KWSP · EPF Act 1991','https://www.kwsp.gov.my/en/others/resource-centre/references/epf-act-1991');
  if(/Child Act 2001.*27|儿童法令.*27/i.test(ref))add('KPWKM · Child Act information','https://manis.kpwkm.gov.my/public/information/kanak-kanak-informasi_49');
  if(/Child Register|eDKK|儿童登记/i.test(ref))add('JKM · Child Register / eDKK','https://www.jkm.gov.my/main/article/soalan-lazim-semakan-pesalah-jenayah-seksual-terhadap-kanak-kanak-dalam-daftar-kanak-kanak');
@@ -260,7 +260,7 @@ function legalLinks(ref){
  if(/Computer Crimes|Penal Code|计算机犯罪|刑事法典/i.test(ref))add('AGC · Laws of Malaysia','https://depository.agc.gov.my/community-list');
  if(/Industrial Relations|工会|结社/i.test(ref))add('JPPM · Industrial Relations','https://jpp.mohr.gov.my/en/ems-pelanggaran-hak-hak-berkesatuan-seksyen-8/');
  if(/Occupational Safety|职业安全/i.test(ref))add('DOSH · Occupational Safety and Health Act','https://dosh.gov.my/en/perundangan/akta/akta-2/');
- if(/Minimum Retirement Age|退休年龄/i.test(ref))add('JTKSM · Minimum Retirement Age Act 2012','https://jtksm.mohr.gov.my/en/services/foreign-workers-employment/acts-guidelines');
+ if(/Minimum Retirement Age|退休年龄/i.test(ref))add('MOHR · Minimum Retirement Age Act 2012','https://eakta.mohr.gov.my/sosial');
  return arr;
 }
 function indexDocs(){
