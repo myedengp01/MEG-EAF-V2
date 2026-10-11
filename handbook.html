@@ -53,6 +53,7 @@ html,body{margin:0;height:100%;font-family:Arial,"Noto Sans",sans-serif;color:va
 @page{size:A4;margin:14mm 12mm 16mm 12mm;@bottom-right{content:counter(page) '/' counter(pages);font-family:Arial,sans-serif;font-size:9pt;color:#475569}}@media print{.top,.sidebar,.tools,.clause-head input,.no-print{display:none!important}.layout{display:block;height:auto;padding:0}.main{overflow:visible}.doc{border:0;box-shadow:none;padding:0}.clause{break-inside:avoid}.chapter{break-after:avoid}.clause.done{background:#fff;color:#111}.clause.done .clause-title{color:#111}}
 </style>
 <script src="handbook-entity-branding.js"></script>
+<script src="handbook-malay.js?v=20261011-ms1"></script>
 </head>
 <body>
 <div class="top" id="topbar">
@@ -64,6 +65,7 @@ html,body{margin:0;height:100%;font-family:Arial,"Noto Sans",sans-serif;color:va
   <select class="admin-only" id="adminHandbookSelect" onchange="loadAdminHandbook(this.value)" style="max-width:260px;padding:8px 9px;border-radius:6px;border:0;font-weight:400"></select>
   <button class="btn-white top-ref-btn" type="button" onclick="openClauseSearch()">Search Clauses</button>
   <button class="btn-white top-ref-btn" id="chineseTopBtn" type="button" onclick="openChineseReference()">中文</button>
+  <button class="btn-white top-ref-btn hidden" id="malayTopBtn" type="button" onclick="HandbookMalay.openFull()">Bahasa Malaysia</button>
   <button class="btn-white admin-only" onclick="window.print()">Print / Save PDF</button>
   <a class="btn-white" href="dashboard.html">Dashboard</a>
   <button class="btn-white" onclick="signOut()">Sign Out</button>
@@ -411,6 +413,7 @@ function renderDoc(){
    });
  });
  document.getElementById('doc').innerHTML=out;
+ HandbookMalay.decorate();
  initAppendixSignature();
  renderRecordedAppendixSignature();
  renderNav();
@@ -709,6 +712,7 @@ async function loadAdminHandbook(selection){
    DOC_EN=structuredToDoc(en.document);
    DOC_ZH=(zh&&zh.document)?structuredToDoc(zh.document):null;
    indexDocs();CHECKED=new Set();
+   await HandbookMalay.load(HB.handbook,DOC_EN,CLAUSE_MAP);
    PROGRESS={checked_count:0,required_clause_count:en.clause_count||0,progress_percent:0,effective_threshold_percent:en.default_read_threshold_percent||90};
    var zhBtn=document.getElementById('chineseTopBtn');if(zhBtn)zhBtn.classList.toggle('hidden',!DOC_ZH);
    document.title=(HB.handbook.title||'Employee Handbook')+' '+(HB.handbook.version||'');
@@ -757,6 +761,7 @@ async function init(){
   DOC_EN=structuredToDoc(en.document);
   DOC_ZH=(zh&&zh.document)?structuredToDoc(zh.document):null;
   indexDocs();
+  await HandbookMalay.load(HB.handbook,DOC_EN,CLAUSE_MAP);
   var zhBtn=document.getElementById('chineseTopBtn');if(zhBtn)zhBtn.classList.toggle('hidden',!DOC_ZH);
   document.title=(HB.handbook.title||'Employee Handbook')+' '+(HB.handbook.version||'');
   var progRows=HB.assignment?await rpc('handbook_get_clause_progress',{}):[];
