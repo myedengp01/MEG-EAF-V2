@@ -1,14 +1,17 @@
 (function () {
   'use strict';
   var data = null, map = {}, loadGeneration = 0;
+  var resources = {'MYEDEN-EMPLOYEE-HANDBOOK':{version:'2.0',stem:'myeden-v2.0-ms',clauses:216,tables:26},'HAPPY-DINO-EMPLOYEE-HANDBOOK':{version:'1.0',stem:'happy-dino-v1.0-ms',clauses:142,tables:47}};
   function norm(s) { return String(s || '').replace(/\s+/g, ' ').trim().toLowerCase(); }
-  async function readResource() {
-    var response = await fetch('handbook-data/myeden-v2.0-ms-approved.json?v=20261011-ms1', {cache:'no-store'});
+  async function readResource(code) {
+    var resource = resources[code || 'MYEDEN-EMPLOYEE-HANDBOOK'];
+    if (!resource) throw new Error('Unsupported handbook translation.');
+    var response = await fetch('handbook-data/' + resource.stem + '-approved.json?v=20261012-ms2', {cache:'no-store'});
     if (!response.ok) throw new Error('Bahasa Malaysia translation could not be loaded.');
     var manifest = await response.json();
     var chunks = await Promise.all(manifest.files.map(async function (path) {
-      if (!/^myeden-v2\.0-ms\/chapter-\d{2}\.json$/.test(path)) throw new Error('Invalid translation chapter.');
-      var r = await fetch('handbook-data/' + path + '?v=20261011-ms1', {cache:'no-store'});
+      if (!path.startsWith(resource.stem + '/') || !/\/chapter-\d{2}\.json$/.test(path)) throw new Error('Invalid translation chapter.');
+      var r = await fetch('handbook-data/' + path + '?v=20261012-ms2', {cache:'no-store'});
       if (!r.ok) throw new Error('Bahasa Malaysia chapter could not be loaded.');
       return r.json();
     }));
@@ -38,11 +41,12 @@
     data = null; map = {};
     var button = document.getElementById('malayTopBtn');
     if (button) button.classList.add('hidden');
-    if (!handbook || handbook.handbook_code !== 'MYEDEN-EMPLOYEE-HANDBOOK' || !/^v?2\.0$/i.test(handbook.version || '')) return;
+    var resource = handbook && resources[handbook.handbook_code];
+    if (!resource || String(handbook.version || '').replace(/^v/i,'') !== resource.version) return;
     try {
-      var loaded = await readResource();
+      var loaded = await readResource(handbook.handbook_code);
       if (generation !== loadGeneration) return;
-      if (loaded.approval_status !== 'approved' || loaded.clause_count !== 216 || loaded.table_count !== 26) throw new Error('Invalid approved translation resource.');
+      if (loaded.approval_status !== 'approved' || loaded.handbook_code !== handbook.handbook_code || loaded.clause_count !== resource.clauses || loaded.table_count !== resource.tables) throw new Error('Invalid approved translation resource.');
       var titles = {};
       loaded.clauses.forEach(function (c) { titles[norm(c.source_chapter) + '|' + norm(c.source_title)] = c; });
       Object.keys(englishMap).forEach(function (key) {
@@ -60,7 +64,7 @@
   function show(key) {
     var c = map[key]; if (!c) return;
     var english = window.CLAUSE_MAP[key].clause;
-    window.openDialog('Bahasa Malaysia · ' + english.title,
+    window.openDialog('Bahasa Malaysia Â· ' + english.title,
       '<div class="refbox"><b>English governing version</b><br><br>' + esc(window.plainClause(english)).replace(/\n/g,'<br>') + '</div>' +
       '<div lang="ms" class="clause-body"><h4>' + esc(c.title) + '</h4>' + blocksHtml(c.blocks) + '</div>');
   }
@@ -74,7 +78,7 @@
     // Individual paragraph/list-item reference buttons, including preface material.
     document.querySelectorAll('#doc .clause-body p,#doc .clause-body li,#doc .preface p,#doc .preface li').forEach(function (p) {
       if (p.querySelector('.malay-paragraph-button') || p.querySelector('input,button,canvas')) return;
-      var english = p.textContent, malay = data.paragraphs[norm(english)];
+      var english = p.textContent, malay = data.paragraphs[norm(english)] || data.paragraphs[norm(english).replace(/^•\s*/, '')];
       if (!malay) return;
       var button = document.createElement('button'); button.type = 'button'; button.className = 'iconbtn malay-paragraph-button no-print'; button.textContent = 'BM'; button.title = 'Translate this paragraph into Bahasa Malaysia'; button.style.marginLeft = '8px';
       button.onclick = function () { window.openDialog('Bahasa Malaysia', '<div class="refbox">' + esc(english) + '</div><div lang="ms">' + esc(malay).replace(/\n/g,'<br>') + '</div>'); }; p.appendChild(button);
@@ -82,7 +86,7 @@
   }
   function openFull() {
     if (!data) { alert('Bahasa Malaysia translation is unavailable. Please reload to retry.'); return; }
-    window.open('handbook-ms.html', '_blank', 'noopener');
+    window.open('handbook-ms.html' + (data.handbook_code === 'HAPPY-DINO-EMPLOYEE-HANDBOOK' ? '?handbook=happy-dino' : ''), '_blank', 'noopener');
   }
   window.HandbookMalay = {load:load, decorate:decorate, show:show, openFull:openFull, blocksHtml:blocksHtml,readResource:readResource};
 })();
