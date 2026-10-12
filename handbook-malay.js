@@ -64,7 +64,7 @@
   function show(key) {
     var c = map[key]; if (!c) return;
     var english = window.CLAUSE_MAP[key].clause;
-    window.openDialog('Bahasa Malaysia Â· ' + english.title,
+    window.openDialog('Bahasa Malaysia · ' + english.title,
       '<div class="refbox"><b>English governing version</b><br><br>' + esc(window.plainClause(english)).replace(/\n/g,'<br>') + '</div>' +
       '<div lang="ms" class="clause-body"><h4>' + esc(c.title) + '</h4>' + blocksHtml(c.blocks) + '</div>');
   }
