@@ -1,17 +1,17 @@
 (function () {
   'use strict';
   var data = null, map = {}, loadGeneration = 0;
-  var resources = {'MYEDEN-EMPLOYEE-HANDBOOK':{version:'2.0',stem:'myeden-v2.0-ms',clauses:216,tables:26},'HAPPY-DINO-EMPLOYEE-HANDBOOK':{version:'1.0',stem:'happy-dino-v1.0-ms',clauses:142,tables:47}};
+  var resources = {'MYEDEN-EMPLOYEE-HANDBOOK':{version:'2.0',stem:'myeden-v2.0-ms',clauses:216,tables:26},'HAPPY-DINO-EMPLOYEE-HANDBOOK':{version:'1.0',stem:'happy-dino-v1.0-ms',clauses:142,tables:47},'ABORNE-EMPLOYEE-HANDBOOK':{version:'1.0',stem:'aborne-v1.0-ms',clauses:142,tables:11}};
   function norm(s) { return String(s || '').replace(/\s+/g, ' ').trim().toLowerCase(); }
   async function readResource(code) {
     var resource = resources[code || 'MYEDEN-EMPLOYEE-HANDBOOK'];
     if (!resource) throw new Error('Unsupported handbook translation.');
-    var response = await fetch('handbook-data/' + resource.stem + '-approved.json?v=20261012-ms2', {cache:'no-store'});
+    var response = await fetch('handbook-data/' + resource.stem + '-approved.json?v=20261012-ms3', {cache:'no-store'});
     if (!response.ok) throw new Error('Bahasa Malaysia translation could not be loaded.');
     var manifest = await response.json();
     var chunks = await Promise.all(manifest.files.map(async function (path) {
       if (!path.startsWith(resource.stem + '/') || !/\/chapter-\d{2}\.json$/.test(path)) throw new Error('Invalid translation chapter.');
-      var r = await fetch('handbook-data/' + path + '?v=20261012-ms2', {cache:'no-store'});
+      var r = await fetch('handbook-data/' + path + '?v=20261012-ms3', {cache:'no-store'});
       if (!r.ok) throw new Error('Bahasa Malaysia chapter could not be loaded.');
       return r.json();
     }));
@@ -86,7 +86,8 @@
   }
   function openFull() {
     if (!data) { alert('Bahasa Malaysia translation is unavailable. Please reload to retry.'); return; }
-    window.open('handbook-ms.html' + (data.handbook_code === 'HAPPY-DINO-EMPLOYEE-HANDBOOK' ? '?handbook=happy-dino' : ''), '_blank', 'noopener');
+    var query = {'HAPPY-DINO-EMPLOYEE-HANDBOOK':'?handbook=happy-dino','ABORNE-EMPLOYEE-HANDBOOK':'?handbook=aborne'}[data.handbook_code] || '';
+    window.open('handbook-ms.html' + query, '_blank', 'noopener');
   }
   window.HandbookMalay = {load:load, decorate:decorate, show:show, openFull:openFull, blocksHtml:blocksHtml,readResource:readResource};
 })();
