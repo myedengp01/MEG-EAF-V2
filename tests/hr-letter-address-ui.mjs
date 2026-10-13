@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';import vm from 'node:vm';import {readFile} from 'node:fs/promises';
+const read=p=>readFile(new URL('../'+p,import.meta.url),'utf8');const c=vm.createContext({});c.window=c;vm.runInContext(await read('hr-letter-address.js'),c);
+const a={dataset:{field:'address_line1'},value:'',addEventListener(_,f){this.input=f;}},b={dataset:{field:'state'},value:'',addEventListener(_,f){this.input=f;}};c.HRLetterAddress.bind(a);c.HRLetterAddress.bind(b);
+c.HRLetterAddress.apply([a,b],{address_line1:'Saved address',state:''});assert.equal(a.value,'Saved address');assert.equal(c.HRLetterAddress.pack({},[a,b])._address_override,false);
+a.value='Manual';a.input();assert.equal(c.HRLetterAddress.pack({},[a,b])._address_override,true);c.HRLetterAddress.apply([a,b],{address_line1:'Stale response'},true);assert.equal(a.value,'Manual');c.HRLetterAddress.reset([a,b]);assert.equal(a.value,'');assert.equal(c.HRLetterAddress.pack({},[a,b])._address_override,false);
+for(const f of ['hr-letters-admin.js','hr-letters-upload-page.js','hr-letter-print.js','hr-letter-fields.js'])new vm.Script(await read(f),{filename:f});
+for(const f of ['hr-letters.html','hr-letters-review.html'])for(const m of (await read(f)).matchAll(/<script>([\s\S]*?)<\/script>/g))new vm.Script(m[1],{filename:f});
+class E{constructor(tag){this.tag=tag;this.children=[];this.value='';}set textContent(t){this.value=String(t);this.children=[];}get textContent(){return this.value+this.children.map(n=>n.textContent).join('');}append(...nodes){this.children.push(...nodes);}}
+c.document={createElement:t=>new E(t),createTextNode:t=>{const n=new E('#text');n.textContent=t;return n;}};c.HRLetterBranding={MEG:{name:'Dummy company',letterhead:'test.jpg'}};vm.runInContext(await read('hr-letter-print.js'),c);
+const all=(n,cls)=>[...(n.className===cls?[n]:[]),...n.children.flatMap(n=>all(n,cls))];
+const body='Date: 13 October 2026\nPRIVATE & CONFIDENTIAL\n\nTo:\nDummy Employee\n10 Test Road\n\nTest Town\n\n\nSubject: Test\nDear Dummy,\nTest body';const page=c.HRLetterPrint.render(body,'MEG','DRAFT');const address=all(page,'recipient-address')[0];assert.equal(address.children.length,3);assert.match(address.textContent,/Test Town/);assert.doesNotMatch(address.textContent,/Subject|Dear|Test body/);
+const sample=await read('templates/hr-letters-resignation-tp2.txt');const rendered=c.HRLetterPrint.render(sample,'MEG','DRAFT');assert.equal(all(rendered,'recipient-address').length,1);assert.ok(rendered.textContent.includes('Employee Acknowledgement'));
+console.log('PASS: address input/reset/override state; template scripts; compact address with optional blanks; address/body separation; sample render.');

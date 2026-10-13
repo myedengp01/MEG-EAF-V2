@@ -22,7 +22,7 @@
    const prefix=styles.map(k=>'['+k+']').join('');
    for(const m of line.matchAll(/\[(\/?)([biu])\]/g)){if(!m[1])styles.push(m[2]);else if(styles.at(-1)===m[2])styles.pop();}
    return line.trim()?prefix+line+styles.slice().reverse().map(k=>'[/'+k+']').join(''):line;
-  });let target=sheet,signatory=null,ack=null,signatoryLines=[];
+  });let target=sheet,signatory=null,ack=null,signatoryLines=[],recipient=null;
   const finishSignatory=()=>{if(!signatory)return;
    const lines=signatoryLines.slice();signatory.append(element('p',lines.shift()||'Yours faithfully,'));
    if(lines[0]?.startsWith('For and on behalf of')){const company=lines.shift();signatory.append(element('p',company));if(company==='For and on behalf of'&&lines.length)signatory.append(element('p',lines.shift()));}
@@ -32,8 +32,8 @@
   };
   const signatureFields=(signature,date)=>{target.append(element('p',signature,'employee-signature'));target.append(element('p','Name: __________________________________','employee-field'),element('p','NRIC: __________________________________','employee-field'));if(date)target.append(element('p',date,'employee-field'));};
   for(let i=0;i<lines.length;i++){
-   const line=lines[i].trim();if(!line){if(target===sheet)sheet.append(element('div',undefined,'section-gap'));continue;}
-   if(i===0&&line===line.toUpperCase()&&!/^PRIVATE/.test(line)){
+   const line=lines[i].trim();if(!line){if(recipient)continue;if(target===sheet)sheet.append(element('div',undefined,'section-gap'));continue;}
+   if(/^To:$/i.test(line)){recipient=element('section',undefined,'recipient-address');sheet.append(recipient);target=recipient;continue;}if(recipient&&/^(Dear\b|Subject:|RE:|LETTER OF)/i.test(line)){recipient=null;target=sheet;}if(recipient){recipient.append(element('p',line));continue;}if((i===0||/^LETTER OF /.test(line))&&line===line.toUpperCase()&&!/^PRIVATE/.test(line)){
     const title=[line];while(lines[i+1]?.trim()&&lines[i+1].trim()===lines[i+1].trim().toUpperCase()&&!/^PRIVATE|^Date:/i.test(lines[i+1]))title.push(lines[++i].trim());sheet.append(element('h1',title.join(' ')));continue;
    }
    if(/^Yours (faithfully|sincerely)/i.test(line)){signatory=element('section',undefined,'signatory');sheet.append(signatory);target=signatory;}

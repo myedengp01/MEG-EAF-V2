@@ -29,3 +29,6 @@
 .missing-field{background:#ffe1e1;color:#8b1e1e;padding:0 .15em;border-radius:2px;font-weight:600}
 
 :is(#letterPrint,.letter-preview-page) .acknowledgement { padding-top:2em; }
+
+
+:is(#letterPrint,.letter-preview-page) .recipient-address{margin:10px 0 16px;break-inside:avoid;text-align:left}:is(#letterPrint,.letter-preview-page) .recipient-address p{margin:0;line-height:1.15;text-align:left}:is(#letterPrint,.letter-preview-page) table{break-inside:auto}:is(#letterPrint,.letter-preview-page) tr{break-inside:avoid}
