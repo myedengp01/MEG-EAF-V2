@@ -8,10 +8,10 @@
  function paragraphs(d){return Array.from(d.getElementsByTagNameNS(WORD,'p'));}
  function runs(p){return Array.from(p.getElementsByTagNameNS(WORD,'t'));}
  // Replace from the end so offsets remain correct, even when Word splits a tag across styled runs.
- function fillParagraph(p,values){const nodes=runs(p),text=nodes.map(n=>n.textContent).join('');
+ function fillParagraph(p,values,optional=[]){const nodes=runs(p),text=nodes.map(n=>n.textContent).join('');
   for(const m of Array.from(text.matchAll(tag)).reverse()){
    let offset=0;const start=m.index,end=start+m[0].length;let inserted=false;
-   for(const n of nodes){const s=n.textContent,stop=offset+s.length;if(stop>start&&offset<end){const left=s.slice(0,Math.max(0,start-offset)),right=s.slice(Math.max(0,end-offset));const v=String(values[m[1]]??'').trim();n.textContent=left+(inserted?'':v||'['+m[1].replaceAll('_',' ')+']')+right;n.setAttribute('xml:space','preserve');inserted=true;}offset=stop;}
+   for(const n of nodes){const s=n.textContent,stop=offset+s.length;if(stop>start&&offset<end){const left=s.slice(0,Math.max(0,start-offset)),right=s.slice(Math.max(0,end-offset));const v=String(values[m[1]]??'').trim();n.textContent=left+(inserted?'':v||(optional.includes(m[1])?'':'['+m[1].replaceAll('_',' ')+']'))+right;n.setAttribute('xml:space','preserve');inserted=true;}offset=stop;}
   }
  }
  async function inspect(bytes,format){
@@ -32,7 +32,18 @@
   if(text.replace(tag,'').includes('{{')||text.replace(tag,'').includes('}}'))throw Error('Use complete placeholders such as {{employee_name}}. Loops and formulas are not supported.');
   return {body:text,fields:[...new Set(Array.from(text.matchAll(tag),m=>m[1]))]};
  }
- async function wordBytes(bytes,values){const zip=await JSZip.loadAsync(bytes);for(const name of Object.keys(zip.files).filter(n=>parts.test(n))){const d=xml(await zip.file(name).async('string'));paragraphs(d).forEach(p=>fillParagraph(p,values));
+ // Interpret only the three explicit style tags, keeping original Word run properties.
+ function styleParagraph(p,stack=[]){const nodes=runs(p),joined=nodes.map(n=>n.textContent).join('');if(!/\[\/?[biu]\]/.test(joined)&&!stack.length)return;
+  const spans=[];let pos=0;for(const m of joined.matchAll(/\[\/?[biu]\]/g)){if(m.index>pos)spans.push({start:pos,end:m.index,tags:[...stack]});if(m[0][1]!=='/')stack.push(m[0][1]);else if(stack.at(-1)===m[0][2])stack.pop();pos=m.index+m[0].length;}if(pos<joined.length)spans.push({start:pos,end:joined.length,tags:[...stack]});
+  const offsets=new Map();pos=0;for(const t of nodes){offsets.set(t,pos);pos+=t.textContent.length;}
+  const wordRuns=Array.from(p.getElementsByTagNameNS(WORD,'r'));
+  for(const r of wordRuns){const doc=r.ownerDocument,props=Array.from(r.childNodes).find(c=>c.localName==='rPr');
+   const clone=(child,tags=[])=>{const out=r.cloneNode(false),pr=props?props.cloneNode(true):doc.createElementNS(WORD,'w:rPr');for(const tag of tags){for(const old of Array.from(pr.childNodes).filter(c=>c.localName===tag))pr.removeChild(old);const style=doc.createElementNS(WORD,'w:'+tag);if(tag==='u')style.setAttributeNS(WORD,'w:val','single');pr.appendChild(style);}out.appendChild(pr);out.appendChild(child);r.parentNode.insertBefore(out,r);};
+   for(const child of Array.from(r.childNodes)){if(child.localName==='rPr')continue;if(child.localName!=='t'||!offsets.has(child)){clone(child.cloneNode(true));continue;}const start=offsets.get(child),end=start+child.textContent.length;for(const span of spans){const a=Math.max(start,span.start),b=Math.min(end,span.end);if(a>=b)continue;const t=child.cloneNode(false);t.textContent=child.textContent.slice(a-start,b-start);t.setAttribute('xml:space','preserve');clone(t,span.tags);}}
+   r.parentNode.removeChild(r);
+  }
+ }
+ async function wordBytes(bytes,values,optional=[]){const zip=await JSZip.loadAsync(bytes);for(const name of Object.keys(zip.files).filter(n=>parts.test(n))){const d=xml(await zip.file(name).async('string')),styles=[];paragraphs(d).forEach(p=>{fillParagraph(p,values,optional);styleParagraph(p,styles);});
   for(const n of Array.from(d.getElementsByTagNameNS(WORD,'t')))if(n.textContent.includes('\n')){const chunks=n.textContent.split(/\r?\n/);for(let i=0;i<chunks.length;i++){if(i)n.parentNode.insertBefore(d.createElementNS(WORD,'w:br'),n);const t=n.cloneNode(false);t.textContent=chunks[i];n.parentNode.insertBefore(t,n);}n.parentNode.removeChild(n);}
   zip.file(name,new XMLSerializer().serializeToString(d));}return zip.generateAsync({type:'uint8array'});}
  const storage='https://vzngfswtofegimfcoigx.supabase.co/storage/v1/object/';
@@ -68,7 +79,7 @@
    }}finally{await task.destroy();}
    const url=URL.createObjectURL(blob);return {element:frame,dispose:()=>URL.revokeObjectURL(url),print:()=>{const a=document.createElement('a');a.href=url;a.download='HR-letter-'+status+'.pdf';a.click();},share:async()=>{const f=new File([blob],'HR-letter-'+status+'.pdf',{type:mime.pdf});if(navigator.canShare?.({files:[f]}))await navigator.share({files:[f],title:'Private HR letter'});else {const a=document.createElement('a');a.href=url;a.download=f.name;a.click();root.alert('PDF saved. Attach it to your chosen platform after checking the recipient.');}}};
   }
-  const filled=await wordBytes(bytes,meta.values||{}),container=document.createElement('div');
+  const filled=await wordBytes(bytes,meta.values||{},meta.optional_fields||[]),container=document.createElement('div');
   await docx.renderAsync(filled,container,container,{useBase64URL:true,renderAltChunks:false,renderComments:false,ignoreLastRenderedPageBreak:false});
   container.querySelectorAll('a').forEach(a=>a.removeAttribute('href'));
   const missing=new Set(Object.entries(meta.values||{}).filter(([,v])=>!String(v??'').trim()).map(([k])=>'['+k.replaceAll('_',' ')+']'));
@@ -84,3 +95,4 @@
  }
  root.HRLetterUpload={mime,inspect,wordBytes,upload,download,render,fillParagraph,makePDF};
 })(typeof window!=='undefined'?window:globalThis);
+

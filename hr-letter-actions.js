@@ -5,7 +5,7 @@
   const sheet=root.HRLetterPrint.render(text,code,status);sheet.hidden=true;document.body.append(sheet);
   const image=sheet.querySelector('img');if(image.decode)await image.decode();root.print();
  }
- async function share(text){
+ async function share(text){text=text.replace(/\[\/?[biu]\]/g,'');
   if(navigator.share){try{await navigator.share({title:'HR Letter — Private & Confidential',text});}catch(e){if(e.name!=='AbortError')throw e;}return;}
   await navigator.clipboard.writeText(text);root.alert('Letter text copied. Paste it into WhatsApp or your chosen platform after checking the recipient.');
  }
@@ -26,3 +26,4 @@
  }
  root.HRLetterActions={print,share,upload};
 })(typeof window!=='undefined'?window:globalThis);
+

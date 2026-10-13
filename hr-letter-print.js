@@ -1,13 +1,28 @@
 (function(root){
  'use strict';
- const element=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined){const parts=String(text).split(/(\{\{[a-zA-Z0-9_]+\}\})/g);if(parts.length===1)n.textContent=text;else for(const part of parts){const missing=part.match(/^\{\{([a-zA-Z0-9_]+)\}\}$/);const child=document.createElement(missing?'mark':'span');child.textContent=missing?'['+missing[1].replaceAll('_',' ')+']':part;if(missing)child.className='missing-field';n.append(child);}}if(cls)n.className=cls;return n;};
+
+ const element=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)inline(n,String(text));if(cls)n.className=cls;return n;};
+ function inline(parent,text){const stack=[{node:parent,tag:null}];let offset=0;
+  for(const m of text.matchAll(/\[\/?[biu]\]|\{\{[a-zA-Z0-9_]+\}\}/g)){
+   stack.at(-1).node.append(document.createTextNode(text.slice(offset,m.index)));const token=m[0];
+   if(token.startsWith('{{')){const mark=document.createElement('mark');mark.className='missing-field';mark.textContent='['+token.slice(2,-2).replaceAll('_',' ')+']';stack.at(-1).node.append(mark);}
+   else if(token[1]!=='/'){const tag=token[1],n=document.createElement({b:'strong',i:'em',u:'u'}[tag]);stack.at(-1).node.append(n);stack.push({node:n,tag});}
+   else if(stack.length>1&&stack.at(-1).tag===token[2])stack.pop();else stack.at(-1).node.append(document.createTextNode(token));offset=m.index+token.length;
+  }stack.at(-1).node.append(document.createTextNode(text.slice(offset)));
+ }
+
  function render(text,code,status){
   const brand=root.HRLetterBranding[String(code||'').trim().toUpperCase()];
   if(!brand?.letterhead)throw Error('Company letterhead unavailable.');
   const sheet=element('article');sheet.id='letterPrint';
   const header=element('header',undefined,'letterhead'),image=element('img');image.src=brand.letterhead;image.alt=brand.name+' letterhead';header.append(image);sheet.append(header,element('div',status,'letter-status'));
   const formatted=String(text).replace(/\bRM\s+(-?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?)(?![\d.,])/g,(_,v)=>'RM '+Number(v.replaceAll(',','')).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2})).replace(/(-?\d+(?:\.\d+)?)\s*%/g,(_,v)=>Number(v).toFixed(2)+' %');
-  const lines=formatted.replaceAll('\r\n','\n').split('\n');let target=sheet,signatory=null,ack=null,signatoryLines=[];
+  const styles=[];
+  const lines=formatted.replaceAll('\r\n','\n').split('\n').map(line=>{
+   const prefix=styles.map(k=>'['+k+']').join('');
+   for(const m of line.matchAll(/\[(\/?)([biu])\]/g)){if(!m[1])styles.push(m[2]);else if(styles.at(-1)===m[2])styles.pop();}
+   return line.trim()?prefix+line+styles.slice().reverse().map(k=>'[/'+k+']').join(''):line;
+  });let target=sheet,signatory=null,ack=null,signatoryLines=[];
   const finishSignatory=()=>{if(!signatory)return;
    const lines=signatoryLines.slice();signatory.append(element('p',lines.shift()||'Yours faithfully,'));
    if(lines[0]?.startsWith('For and on behalf of')){const company=lines.shift();signatory.append(element('p',company));if(company==='For and on behalf of'&&lines.length)signatory.append(element('p',lines.shift()));}
@@ -38,3 +53,4 @@
  }
  root.HRLetterPrint={render};
 })(typeof window!=='undefined'?window:globalThis);
+
