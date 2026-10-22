@@ -87,7 +87,7 @@
 var SUPABASE_URL='https://vzngfswtofegimfcoigx.supabase.co';
 var SUPABASE_ANON_KEY='sb_publishable_V5o_-Bkz5M7Y75j-eN03rQ_pkQ8Kem9';
 var SESSION_KEY='meg_hr_session';
-var SESSION=null,HB=null,ROWS=[],FILTERED=[],IS_ADMIN=false,CLAUSES=[];
+var SESSION=null,HB=null,ROWS=[],FILTERED=[],IS_ADMIN=false,CAN_VIEW_STATUS=false,CLAUSES=[];
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function getSession(){try{return JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null')}catch(e){return null}}
@@ -172,10 +172,10 @@ async function openDetail(id){
  document.getElementById('modalTitle').textContent=r.employee_name+' · Reading Detail';
  document.getElementById('modalBody').innerHTML='Loading clause progress...';
  try{
-  var done=IS_ADMIN?await rpc('handbook_admin_assignment_progress',{p_assignment_id:id}):await rpc('handbook_get_clause_progress',{});
+  var done=CAN_VIEW_STATUS?await rpc('handbook_status_assignment_progress',{p_assignment_id:id}):await rpc('handbook_get_clause_progress',{});
   var set=new Set((done||[]).map(function(x){return x.clause_key}));
   var detailClauses=CLAUSES;
-  if(IS_ADMIN){var doc=await rpc('handbook_admin_assignment_document',{p_assignment_id:id,p_language:'en'});detailClauses=structuredClauses(doc);}
+  if(CAN_VIEW_STATUS){var doc=await rpc('handbook_status_assignment_document',{p_assignment_id:id,p_language:'en'});detailClauses=structuredClauses(doc);}
   var html='<div class="detail-grid">'+
    '<div class="detail-box"><b>Employee</b><br>'+esc(r.employee_name)+'<br>'+esc(r.employee_id||'—')+'</div>'+
    '<div class="detail-box"><b>Employer</b><br>'+esc(companyName(r.company_code))+'</div>'+
@@ -195,7 +195,7 @@ async function openDetail(id){
 async function retireAssignment(id){if(!confirm('Retire this handbook assignment? Historical reading records will be preserved.'))return;try{await rpc('handbook_admin_retire_assignment',{p_assignment_id:id,p_reason:'Retired by Admin'});await refreshRows();closeModal();}catch(e){alert(e.message)}}
 async function restoreAssignment(id){if(!confirm('Restore this handbook assignment?'))return;try{await rpc('handbook_admin_restore_assignment',{p_assignment_id:id});await refreshRows();closeModal();}catch(e){alert(e.message)}}
 async function refreshRows(){
- if(IS_ADMIN)ROWS=await rpc('handbook_admin_overview_v2',{});
+ if(CAN_VIEW_STATUS)ROWS=await rpc('handbook_status_overview_v1',{});
  else{
    HB=await rpc('handbook_apply_my_due_rule',{});
    var p=await rpc('handbook_my_progress',{}),a=HB.assignment,e=HB.employee;
@@ -250,17 +250,17 @@ function resetFilters(){['q','company','status','progress','link','due','deemed'
 async function init(){
  SESSION=getSession();if(!SESSION||!SESSION.access_token){location.href='dashboard.html?next=handbook';return}
  try{
-  HB=await rpc('handbook_my_assignment',{});IS_ADMIN=!!(HB&&HB.is_admin);
+  HB=await rpc('handbook_my_assignment',{});IS_ADMIN=!!(HB&&HB.is_admin);CAN_VIEW_STATUS=!!(await rpc('handbook_can_view_status',{}));
   if(HB&&HB.assignment)HB=await rpc('handbook_apply_my_due_rule',{});
-  if(!HB||!HB.handbook)throw new Error('No handbook is available for this account.');
-  if(IS_ADMIN){document.getElementById('printBtn').classList.remove('hidden');loadPolicyForm();ROWS=await rpc('handbook_admin_overview_v2',{})}
+  if(!HB||!HB.handbook){if(!CAN_VIEW_STATUS)throw new Error('No handbook is available for this account.');}
+  if(CAN_VIEW_STATUS){document.getElementById('printBtn').classList.remove('hidden');if(IS_ADMIN)loadPolicyForm();ROWS=await rpc('handbook_status_overview_v1',{})}
   else{
    document.getElementById('filterCard').classList.add('hidden');
    var p=await rpc('handbook_my_progress',{}),a=HB.assignment,e=HB.employee;
    ROWS=[{assignment_id:a&&a.id,employee_id:e&&e.employee_id,employee_name:e&&e.employee_name,company_code:e&&e.company_code,department:e&&e.department,job_title:e&&e.job_title,assignment_status:a&&a.status,auth_user_id:a?'self':null,linked_email:'Current login',assigned_at:a&&a.assigned_at,due_at:a&&a.due_at,first_viewed_at:a&&a.first_viewed_at,read_at:a&&a.read_at,receipt_acknowledged_at:a&&a.receipt_acknowledged_at,deemed_received_at:a&&a.deemed_received_at,deemed_read_at:a&&a.deemed_read_at,checked_clauses:p.checked_count,required_clauses:p.required_clause_count,progress_percent:p.progress_percent,effective_threshold_percent:a&&a.effective_read_threshold_percent,effective_deadline_days:a&&a.effective_deadline_days}];
   }
-  var en=await rpc('handbook_get_document',{p_language:'en'});
-  CLAUSES=structuredClauses(en);
+  if(CAN_VIEW_STATUS&&ROWS.length){var en=await rpc('handbook_status_assignment_document',{p_assignment_id:ROWS[0].assignment_id,p_language:'en'});CLAUSES=structuredClauses(en);}
+  else{var en=await rpc('handbook_get_document',{p_language:'en'});CLAUSES=structuredClauses(en);}
   FILTERED=ROWS.slice();renderTable();renderKpis();
  }catch(e){
   document.getElementById('rows').innerHTML='<tr><td colspan="9" class="err">'+esc(e.message)+'</td></tr>';
