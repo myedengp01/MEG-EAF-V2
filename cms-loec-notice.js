@@ -1,7 +1,7 @@
 /* MEG-EAF V2 · Offer letters (LOEC) moved to the MyEden Group CMS (CLC 7 Nov 2026)
  * When the CMS setting "loec_builder" is "cms", this page no longer creates, issues or revises offer letters:
  *  - "Print Appointment Letter" becomes "Open offer letter in the CMS" for the application on screen;
- *  - the LOEC record panel keeps signed copy, verification and stamp duty, and hides Create / Mark Issued / New Revision;
+ *  - the LOEC record panel keeps signed copy, verification and stamp duty (also in the CMS since 7 Nov 2026, same record), and hides Create / Mark Issued / New Revision;
  *  - a notice explains where to go. The database also refuses new LOEC records made outside the CMS.
  * Setting it back to "both" in the CMS restores the old buttons (nothing here is deleted).
  */
@@ -28,7 +28,7 @@
     d.className = 'cms-loec-notice';
     d.style.cssText = 'margin:8px 0 12px;padding:12px 14px;border-radius:10px;border:1px solid #f59e0b;background:#fff7e6;color:#5b3a00;font-size:13px;line-height:1.5';
     d.innerHTML = '<b>Offer letters (LOEC) are now prepared, approved and issued in the MyEden Group CMS.</b><br>'
-      + 'For an issued letter, the signed copy, verification and stamp duty are still recorded here. '
+      + 'For an issued letter, the signed copy, verification and stamp duty can be recorded here or in the CMS application window (same record). '
       + '<a class="cms-loec-go" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;padding:6px 12px;border-radius:8px;background:#0d47a1;color:#fff;text-decoration:none;font-weight:600">Open offer letter in the CMS →</a>';
     return d;
   }
